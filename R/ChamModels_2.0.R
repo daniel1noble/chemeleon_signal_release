@@ -109,24 +109,24 @@ Display_plot_dS_dat <- Display_1 %>% #data for dS Chromatic constrast
   group_by(Population, BodyRegion) %>% 
   summarise(Mean = mean(dS, na.rm = T), 
             SE = sd(dS)/sqrt(length(unique(ID))),
-            Upper = Mean + SE,
-            Lower = Mean - SE) 
+            Upper = Mean + 1.96*SE,
+            Lower = Mean - 1.96*SE) 
             
 Display_plot_dL_dat <- Display_1 %>% #data for dL Achromatic contrast
   group_by(Population, BodyRegion) %>% 
   summarise(Mean = mean(dL, na.rm = T), 
             SE = sd(dL)/sqrt(length(unique(ID))),
-            Upper = Mean + SE,
-            Lower = Mean - SE) 
+            Upper = Mean + 1.96*SE,
+            Lower = Mean - 1.96*SE) 
 
 #Plotting Chromatic contrast (dS)
-ggplot(Display_plot_dS_dat, aes(x = Population, y = Mean, group = BodyRegion, color = BodyRegion)) +
+p1 <- ggplot(Display_plot_dS_dat, aes(x = Population, y = Mean, group = BodyRegion, color = BodyRegion)) +
   geom_point(size = 3) +
   geom_line() +
   geom_errorbar(aes(ymin = Lower, ymax = Upper), width = 0) + 
   scale_color_manual(values = wes_palette("Cavalcanti1")) + #Change color palette here see: https://github.com/karthik/wesanderson
   xlab("Population") + 
-  ylab("Chromatic contrast") +
+  ylab(TeX("Chromatic contrast ($\\Delta s$)")) +
   theme_bw() +
   theme(#legend.position = "none",
     panel.grid.major = element_blank(), 

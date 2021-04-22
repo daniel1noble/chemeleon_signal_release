@@ -1,5 +1,5 @@
 ---
-title: "Main Manuscript"
+title: "Evolution of a conspicuous dynamic visual signal in an introduced chameleon"
 author: Whiting et al. 
 date: "`r Sys.Date()`"
 bibliography: refs.bib
@@ -31,10 +31,22 @@ knitr::opts_chunk$set(echo = FALSE, cache = TRUE, message = FALSE, warning = FAL
 ```{r getlibrary, echo = FALSE, results = "hide"}
 # load libraries
 devtools::install_github("karthik/wesanderson")
-pacman::p_load(lme4, lmerTest, ggplot2, lsmeans, emmeans, multcomp, dplyr, wesanderson, patchwork, ggarrange)
+pacman::p_load(lme4, lmerTest, ggplot2, lsmeans, emmeans, multcomp, dplyr, wesanderson, patchwork, latex2exp)
+
+p_value <- function(x){
+  if(x <= 0.0001) {tmp = "< 0.0001"}
+  if(x <= 0.001 & x >= 0.0001) {tmp ="< 0.001"}
+  if(x <= 0.01 & x >= 0.001) {tmp ="< 0.01"}
+  if(x >= 0.01) {tmp =x}
+  return(tmp)
+}
+
 ```
 
 ```{r displayModels, echo = FALSE, results = "hide"}
+#########################################################
+# Male-male Competition Displays
+#########################################################
 #Load data and clean a bit
 Display_1 <- read.table("./data/Display_1.csv", 
                           header=TRUE, sep=",", dec=".", strip.white=TRUE)
@@ -46,10 +58,51 @@ Display_1 <- Display_1 %>%
 # create as factor
     Display_1$BodyRegion <- factor(Display_1$BodyRegion)
     
-  
+# Display dl
+    ConspicDisplayAC <- lmer(dL ~ SVL + Population + (1|ID), data=Display_1)
+    summary(ConspicDisplayAC)
+    anovaConspicDisplayAC <- anova(ConspicDisplayAC)
+    
+## Display dS
+         ConspicDisplayCC <- lmer(dS ~ SVL + Population + (1|ID), data=Display_1)
+    anovaConspicDisplayCC <- anova(ConspicDisplayCC)
+    
+    
+#########################################################
+# Courtship Displays
+#########################################################
 
+Courtship <- read.table("./data/Courtship_1.2.csv", 
+                          header=TRUE, sep=",", dec=".", strip.white=TRUE)
+    
+# Courtship dl
+ConspicCourtshipAC <- lmer(dL ~ SVL + Population  + (1|ID), data=Courtship)
+courship_anovaAC <- anova(ConspicCourtshipAC)
 
+# Courtship dS
+  ConspicCourtshipCC <- lmer(dS ~ SVL + Population  + (1|ID), data=Courtship)
+courship_anovaCC <- anova(ConspicCourtshipCC)
 ```
 
-We conducted experiments manipulating both the social and predatory context chameleons encountered in their native Kenyan range, and the introduced Hawaiian range. 
+# Abstract
+Rapid evolution frequently follows a significant change to an organism’s environment, such as during colonization of a novel habitat. Vertebrates, including Caribbean Anolis lizards and Galapagos finches, have demonstrated a remarkable capacity for morphological change of functional traits (limb length, beak size) on ecological time scales. Traits that are sexually selected can be similarly affected, although well-documented examples from wild populations are rare. The Jackson’s chameleon (*Chamaeleo x. jacksonii*) from East Africa was inadvertently introduced to the Hawaiian island of Oahu in 1972. In its native range, Jackson’s chameleons are preyed upon by a wide range of predators, including snakes and birds, which are thought to shape the dynamics of color change in chameleons. We took advantage of the Hawaiian introduction, an environment with only a few potential predators and therefore, very low predation pressure, to test for character release of conspicuous social color signals. To test this hypothesis, we measured color change in response to multiple social and predator stimuli in wild chameleons in both Hawai’i and Kenya. We used visual modelling of colour signals to estimate signal conspicuousness to both the chameleon and predator (bird, snake) visual systems. The Hawai’i and Kenya backgrounds were a similar color, but the major difference was in brightness: the Hawai’i background was darker. As a result, chameleons from both Kenya and Hawai’i were brighter against the Hawai’i background. However, Hawai’i males were more conspicuous (courtship, display) against their own background for some body regions (mainly gular), providing evidence for character release. Also, Hawai’i males were more conspicuous (courtship, display) to snake and bird predators against their own background. We suggest that relaxing natural selection can result in signal release in systems experiencing strong sexual selection.
+
+# Introduction
+
+When Darwin tackled the joint problems of speciation and evolutionary change through natural selection, he was of the view that evolution was a gradual process that took place over extended time periods. This view understandably persisted for at least another 120 years following the publication of On the Origin of Species (Darwin, 1859). We now have numerous examples of evolutionary change following natural selection in both the laboratory and wild, and not only in invertebrates with short generation times. Vertebrates, including Caribbean Anolis lizards and Galapagos finches, have demonstrated a remarkable capacity for morphological change of functional traits (limb length, beak size) on ecological time scales (e.g. @losos97). Furthermore, a far more recent development since Darwin’s seminal work on natural selection is the recognition that sexual selection can also drive significant changes in phenotype over short time intervals. 
+
+Conspicuous colour signals evolve because of the fitness advantage conferred to the signaller, and frequently becomes increasingly elaborate through a combination of male contest competition and female preference (e.g. runaway selection). However, trait exaggeration is typically halted by natural selection because there is a threshold beyond which conspicuousness is too costly. Evolution can respond to this selection pressure in a variety of ways that include shifting conspicuous signals to areas of the body that might be concealed to predators. For example, many conspicuous lizards have colourful throats and venters that they flash at conspecific receivers but which are not easily visible to raptors, which are a significant predator of lizards. Conversely, many species will balance the costs of sexual and natural selection and this is the case in Trinidadian guppies where populations living in predator-free streams are far more conspicuous than in predator-dense streams. These examples are from animals with static colour signals. A parallel solution that reduces the risk of exposure to predators is dynamic colour change because signals can be switched on and off relatively rapidly through neural or endocrine control. A wide range of invertebrates (e.g. cephalopods) and vertebrates (e.g. lizards and frogs) have convergently evolved this ability.  
+
+Unlike animals with static colour signals, we have a poor understanding of how animals with dynamic colour change respond to predation pressure and whether relaxing predation pressure will result in an increasingly conspicuous signal. Tackling this question in the wild is particularly difficult unless we can take advantage of unplanned changes to an organism’s environment such as during colonization of a novel habitat. Living organisms are occasionally translocated great distances by human action to environments far removed from their native range. These novel environments typically have a completely different suite of organisms, including predators, and offer a unique opportunity to study signal evolution in founder populations. Jackson’s chameleons (*Chamaeleo j. xanthopholus*) are just such a case. In 1972, a shipment of chameleons was sent from Kenya to the Hawaiian island of Oahu, destined for the pet trade. The animals arrived in poor condition and were left outdoors to recover, at which point they dispersed and became established on the island. On Oahu, the number of potential predators of chameleons is few (see methods), while in Kenya they are preyed upon by a wide range bird, snake and occasionally, mammal, predators.  This accidental introduction represents a unique opportunity to study the evolution of a dynamic visual signal by comparing native (Kenya) and introduced (Oahu) chameleons. 
+
+# Results
+
+We conducted experiments manipulating both the social and predatory context chameleons encountered, in both their native Kenyan range and their introduced Hawaiian range, to test three hypotheses about colour signal evolution. First, we tested the hypothesis that relaxed predation pressure results in character release of a dynamic visual signal. Sexual selection favours more conspicious signals and these should evolve to be more conspicuous without predators. In suppor of this prediction, male display colouration exhibited in social contexts (i.e., male-male contests and courtship) was more conspicuous to a conspecific in Hawaii compared with Kenya (**Male-Male Contests**: Acromatic ($dl$); $F_{`r anovaConspicDisplayAC$NumDF[2]`,`r anovaConspicDisplayAC$DenDF[2]`}$ = `r anovaConspicDisplayAC[5][2,]`, p = `r p_value(anovaConspicDisplayAC[6][2,])`; Chromatic ($dS$): $F_{`r anovaConspicDisplayCC$NumDF[2]`,`r anovaConspicDisplayCC$DenDF[2]`}$ = `r anovaConspicDisplayCC[5][2,]`, p = `r p_value(anovaConspicDisplayCC[6][2,])`; **Courtship displays**: Acromatic ($dl$); $F_{`r courship_anovaAC$NumDF[2]`,`r courship_anovaAC$DenDF[2]`}$ = `r courship_anovaAC[5][2,]`, p = `r p_value(courship_anovaAC[6][2,])`; Chromatic ($dS$): $F_{`r courship_anovaCC$NumDF[2]`,`r courship_anovaCC$DenDF[2]`}$ = `r courship_anovaCC[5][2,]`, p = `r p_value(courship_anovaCC[6][2,])`), and this was true across all body regions measured (See Supplemental Materials, Table S1). 
+
+
+
+
+Specifically, we tested the following predictions: 1.) display colouration used in male-male contests and courtship will be more conspicuous to a conspecific in Hawaii than Kenya; 2.) display colouration used in response to an encounter with a bird and snake predator will be more conspicuous to both predator types in Hawai’i than Kenya. 3.) under character release, males will have greater capacity to change colour from a subordinate to a dominant state in Hawai’i compared to Kenya.
+    
+We also tested the hypothesis that sensory drive and local adaptation are responsible for driving display coloration. Specifically, we predicted that chameleon display colouration in each population would be more conspicuous within its own signaling environment compared to the other population’s signaling environment. For example, Hawaiian chameleons were historically found in Kenya but under sensory drive and local adaptation they are predicted to be more conspicuous in their current signaling environment, Hawai’i. Likewise, Kenyan chameleons have no history in Hawai’i and are therefore predicted to be more conspicuous within their current signaling environment, Kenya. 
 

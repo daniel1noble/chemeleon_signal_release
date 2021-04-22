@@ -5,6 +5,11 @@ date: "`r Sys.Date()`"
 bibliography: refs.bib
 csl: science.csl
 output: 
+  bookdown::word_document2:
+    toc: no
+    toc_depth: 6
+    number_sections: true
+    reference_docx: template.docx
   bookdown::html_document2:
     code_folding: hide
     number_sections: no
@@ -12,20 +17,30 @@ output:
     toc_depth: 6
     toc_float: yes
     bibliography: refs.bib
-  bookdown::word_document2:
-    toc: no
-    toc_depth: 6
-    number_sections: true
-    reference_docx: template.docx
 editor_options: 
   chunk_output_type: console
 ---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, cache = TRUE, message = FALSE, warning = FALSE, tidy = TRUE, fig.width = 10)
+## numbers >= 10^5 will be denoted in scientific notation,      ## numbers >= 10^5 will be denoted in scientific notation,
+  ## and rounded to 2 digits      ## and rounded to 2 digits
+  options(digits = 2)
+```
+
+```{r getlibrary, echo = FALSE, results = "hide"}
+# load libraries
+devtools::install_github("karthik/wesanderson")
+pacman::p_load(lme4, lmerTest, ggplot2, lsmeans, emmeans, multcomp, dplyr, wesanderson, patchwork, pander, kableExtra, flextable)
+```
 
 
+```{r display, results = "hide"}
 
-```{r display}
+#########################################################
+# Male-male Competition Displays
+#########################################################
 #Load data and clean a bit
-Display_1 <- read.table("../data/Display_1.csv", 
+Display_1 <- read.table("./data/Display_1.csv", 
                           header=TRUE, sep=",", dec=".", strip.white=TRUE)
 
 #exclude bottom flank.
@@ -38,8 +53,202 @@ Display_1 <- Display_1 %>%
 # Fit the model that esatimtes changes across body regions
 ConspicDisplayAC <- lmer(dL ~ SVL + Population + BodyRegion + Background 
                          + Population:Background + Population:BodyRegion + (1|ID), data=Display_1)
+
+# Fit model for linear hypothesis tests
 Display_1$PopBRInt <- interaction(Display_1$Population,Display_1$BodyRegion)
 ConspicDisplayAC2 <- lmer(dL ~ PopBRInt + (1|ID), data=Display_1)
-summary(glht(ConspicDisplayAC2, linfct = mcp(PopBRInt = c("Hawaii.gular - Kenya.gular = 0","Hawaii.midflank - Kenya.midflank = 0", "Hawaii.topflank - Kenya.topflank = 0", 
+
+result1 = glht(ConspicDisplayAC2, linfct = mcp(PopBRInt = c("Hawaii.gular - Kenya.gular = 0",
+                                                            "Hawaii.midflank - Kenya.midflank = 0",     
+                                                            "Hawaii.topflank - Kenya.topflank = 0", 
+                                                             "Hawaii.tailbase - Kenya.tailbase = 0" )))
+
+
+## Display - Chromatic contrast (CC or dS)
+## just this next section has Drew's code, which averages the backround (Leaf_B1, Leaf_B2, Leaf_T1, Leaf_T2, Stem1, Stem2) for each lizard body region measurement.
+## This is the full model; however, we do not need background because the way the data is set up R is taking an average. See next model (background dropped)
+
+# Fit the model that esatimtes changes across body regions
+  ConspicDisplayCC <- lmer(dS ~ SVL + Population + BodyRegion + Background 
+                         + Population:Background + Population:BodyRegion + (1|ID), data=Display_1)
+Display_1$PopBRInt <- interaction(Display_1$Population,Display_1$BodyRegion)
+
+# Fit model for linear hypothesis tests
+ConspicDisplayCC2 <- lmer(dS ~ PopBRInt + (1|ID), data=Display_1)
+summary(glht(ConspicDisplayCC2, linfct = mcp(PopBRInt = c("Hawaii.gular - Kenya.gular = 0",
+                                                          "Hawaii.midflank - Kenya.midflank = 0", 
+                                                          "Hawaii.topflank - Kenya.topflank = 0", 
                                                           "Hawaii.tailbase - Kenya.tailbase = 0" ))))
+
+#########################################################
+# Courtship Displays
+#########################################################
+
+Courtship <- read.table("./data/Courtship_1.2.csv", 
+                          header=TRUE, sep=",", dec=".", strip.white=TRUE)
+
+# Courtship - Chromatic dl
+ConspicCourtshipAC <- lmer(dL ~ SVL + Population + BodyRegion + Background 
+                           + Population:Background + Population:BodyRegion + (1|ID), data=Courtship)
+
+Courtship$PopBRInt <- interaction(Courtship$Population,Courtship$BodyRegion)
+ConspicCourtshipAC2 <- lmer(dL ~ PopBRInt + (1|ID), data=Courtship)
+summary(glht(ConspicCourtshipAC2, linfct = mcp(PopBRInt = c("Hawaii.gular - Kenya.gular = 0","Hawaii.midflank - Kenya.midflank = 0", "Hawaii.topflank - Kenya.topflank = 0", 
+                                                            "Hawaii.tailbase - Kenya.tailbase = 0" ))))
+
+ConspicCourtshipAC <- lmer(dL ~ SVL + Population + BodyRegion +  
+                             + Population:BodyRegion + (1|ID), data=Courtship)
+anova(ConspicCourtshipAC)
+ranova(ConspicCourtshipAC)
+
+
+# Courtship - Chromatic dS
+ConspicCourtshipCC <- lmer(dS ~ SVL + Population + BodyRegion + Background 
+                           + Population:Background + Population:BodyRegion + (1|ID), data=Courtship)
+Courtship$PopBRInt <- interaction(Courtship$Population,Courtship$BodyRegion)
+ConspicCourtshipCC2 <- lmer(dS ~ PopBRInt + (1|ID), data=Courtship)
+summary(glht(ConspicCourtshipCC2, linfct = mcp(PopBRInt = c("Hawaii.gular - Kenya.gular = 0","Hawaii.midflank - Kenya.midflank = 0", "Hawaii.topflank - Kenya.topflank = 0", 
+                                                            "Hawaii.tailbase - Kenya.tailbase = 0" ))))
+
 ```
+
+# Materials and Methods
+
+## Study area and collection of chameleons
+
+We collected most chameleons at night by spotlighting, and a small proportion of individuals during the day. When chameleons were beyond reach, we used 4-m extensible poles that chameleons could be encouraged to step on to, before lowering them to the ground. We then placed them in cotton bags with vegetation to cling to, before returning them to the lab. Field work was conducted in Hawai’i during January-February 2006 and in Kenya during 5-13 April 2006. In Hawai’i, chameleons were collected from a single population in the Manoa Valley, Oahu, accessible along Tantalus Drive at an elevation of ca. x-x. The vegetation in this area consisted of closed-canopy, mid-elevation tropical rain forest, with extensive vines and undergrowth. Most of the plants in this area were nonnative, and chameleons also occurred in hedge-grows and stands of bamboo. The area experiences high annual rainfall (mean: xx). In Kenya, field work was conducted near the foothills of Mt. Kenya, close to the town of Runyenjes. The area is partially cleared for agriculture, leaving small stands of forest. The vegetation was a mix of native trees and shrubs interspersed with exotic species. 
+
+## Behaviour trials
+
+In order to quantify display colouration we staged encounters between conspecifics (male-male and male-female) and model (bird and snake) predators and measured their subsequent display colouration (details below). All chameleons were used in both predator and social trials although in some cases we were unable to quantify all social signals for a particular individual. We conducted all conspecific-social trials first, in case anti-predator trials unduly influenced their social interactions. Behavioural trials were conducted during the chameleons’ natural activity period (09:00-16:00 h) beginning the day following capture and continuing over a 2-3 day period. We erected a frame consisting of branches from the chameleons’ environment that were tied together in a triangle and which sat atop three vertical branches that formed a stand. This structure was about 1.5 m high and each arm was approximately 60 cm. The triangular setup allowed chameleons to display at a comfortable distance and also to escape from aggressive interactions, particularly during male-male trials. All trials were conducted outdoors, but in the shade under the cover of a roof, with vegetation nearby, to simulate their natural environment. The signalling environment was therefore the same for all animals.
+
+We staged trials between males to elicit dominant and subordinate displays and between males and females to elicit courtship displays. This consisted of placing two chameleons at a comfortable distance at which point they typically responded to the conspecific’s presence by rapidly changing colour and behaviour. In male-male trials both individuals would adopt a lemon-yellow display coloration (Fig. x) and advance towards each other. This would be accompanied by head shakes and would lead to horn-locking if males were not obviously asymmetric. Once dominance was settled, the subordinate would turn brown and flee. In male-female (courtship) trials, males would turn the same lemon-yellow and approach the female while head shaking and rocking. The day following social trials we presented each chameleon with a snake and bird model predator (separately). Lizards were drawn at random and the order of presentation (snake or bird first) was random. Both trials were conducted on the same day but were separated by at least three hours. A trial began when a chameleon was removed from its cloth bag and placed on the triangular stand. At this point the lizard was in a neutral colour state. In the case of the snake model, one of us slowly moved the model snake towards the chameleon from both above and below it, without ever contacting the chameleon. In the case of the bird trials, the bird was attached to a x cm wooden pole and was ‘flown’ past the chameleon from above and below it. Trials lasted no more than 2-min and we scored whether the chameleon flipped to the opposite side of the branch, which is a classic anti-predator behaviour by chameleons. Once chameleons changed colour, we quantified their spectral reflectance following the same procedure described for social trials. We also conducted seven trials with a just a branch with no predator attached, as a control for the model predator. The snake model was moulded from a dead boomslang (Dispholidus typus) and painted by a professional artist to resemble a typical green form of this species (previously used in Stuart-Fox…). The bird was ….
+
+## Colour measurements, habitat background and irradiance
+
+During all behaviour trials, we measured the colour of each body region (Fig. x) once only, because chameleons change colour rapidly and we had to reduce the handling stress to the animal. Patches were measured in random sequence to avoid any bias of order. When a chameleon had completely changed colour (to a human observer) and was also performing typical behaviour associated with their display (e.g., head shakes, swaying, gaping, rapid approach or flee) we lightly restrained it with one hand, without removing it from its perch, and measured spectral reflectance using a 1.2 m bifurcated probe connected to an Ocean Optics USB-2000 optic spectrophotometer and a PX2 light source. We used a custom-made probe-holder which we placed in contact with the animal at a standard angle (45; @RN2) and distance (5 mm), thereby excluding ambient light. All measurements were relative to a dark, and a certified 99% white reflectance standard. When chameleons started to change colour in response to our handling we stopped measuring colour and allowed them to continue a social trial before continuing to measure spectral reflectance. In the case of a predator trial we would once again present them with the predator model until they returned to their anti-predator display. This system worked effectively because chameleons readily responded to social and anti-predator stimuli and quickly returned to natural behaviour following handling.
+
+We quantified the background against which chameleons signal by measuring the spectral reflectance of vegetation in their signalling environment. This included 1.) the upper surface of leaves; 2.) the underside of leaves; and 3.) branches. We also measured the habitat light environment by recording irradiance in the chameleons environment.
+
+## Visual modelling
+
+# Supplemental Results
+
+```{r tableS1}
+summary(result1)
+```
+
+```{FigS1, fig.width = 5, fig.height = 10, fig.caption = "test"}
+
+#Making a point plot with error bars split by body size and population 
+#Compute raw means and standard errors for body part and population for dS and assigned this data into Display_plot_dS_dat
+Display_plot_dS_dat <- Display_1 %>% #data for dS Chromatic constrast
+  group_by(Population, BodyRegion) %>% 
+  summarise(Mean = mean(dS, na.rm = T), 
+            SE = sd(dS)/sqrt(length(unique(ID))),
+            Upper = Mean + 1.96*SE,
+            Lower = Mean - 1.96*SE) 
+            
+Display_plot_dL_dat <- Display_1 %>% #data for dL Achromatic contrast
+  group_by(Population, BodyRegion) %>% 
+  summarise(Mean = mean(dL, na.rm = T), 
+            SE = sd(dL)/sqrt(length(unique(ID))),
+            Upper = Mean + 1.96*SE,
+            Lower = Mean - 1.96*SE) 
+
+#Plotting Chromatic contrast (dS)
+p1 <- ggplot(Display_plot_dS_dat, aes(x = Population, y = Mean, group = BodyRegion, color = BodyRegion)) +
+  geom_point(size = 3) +
+  geom_line() +
+  geom_errorbar(aes(ymin = Lower, ymax = Upper), width = 0) + 
+  scale_color_manual(values = wes_palette("Cavalcanti1")) + #Change color palette here see: https://github.com/karthik/wesanderson
+  xlab("") + 
+  ylab(TeX("Chromatic contrast (JND)")) +
+  theme_bw() +
+  theme(legend.position = "none",
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(size=18),
+    axis.title=element_text(size=20,face="bold"),
+    legend.text =element_text(size = 12),
+    legend.title =element_text(size = 12, face = "bold"))
+
+
+#Plotting Achromatic contrast (dL)
+p2 <- ggplot(Display_plot_dL_dat, aes(x = Population, y = Mean, group = BodyRegion, color = BodyRegion)) +
+  geom_point(size = 3) +
+  geom_line() +
+  geom_errorbar(aes(ymin = Lower, ymax = Upper), width = 0) + 
+  scale_color_manual(values = wes_palette("Cavalcanti1")) + #Change color palette here see: https://github.com/karthik/wesanderson
+  xlab("") + 
+  ylab(TeX("Achromatic contrast (JND)")) +
+  theme_bw() +
+  theme(#legend.position = "none",
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(size=18),
+    axis.title=element_text(size=20,face="bold"),
+    legend.text =element_text(size = 12),
+    legend.title =element_text(size = 12, face = "bold"))
+
+#Making a point plot with error bars split by body size and population 
+#Compute raw means and standard errors for body part and population for dS and assigned this data into Display_plot_dS_dat
+Courtship_plot_dS_dat <- Courtship %>% #data for dS Chromatic constrast
+  group_by(Population, BodyRegion) %>% 
+  summarise(Mean = mean(dS, na.rm = T), 
+            SE = sd(dS)/sqrt(length(unique(ID))),
+            Upper = Mean + 1.96*SE,
+            Lower = Mean - 1.96*SE) 
+
+Courtship_plot_dL_dat <- Courtship %>% #data for dL Achromatic contrast
+  group_by(Population, BodyRegion) %>% 
+  summarise(Mean = mean(dL, na.rm = T), 
+            SE = sd(dL)/sqrt(length(unique(ID))),
+            Upper = Mean + 1.96*SE,
+            Lower = Mean - 1.96*SE) 
+
+
+#Plotting Chromatic contrast (dS)
+p3 <- ggplot(Courtship_plot_dS_dat, aes(x = Population, y = Mean, group = BodyRegion, color = BodyRegion)) +
+  geom_point(size = 3) +
+  geom_line() +
+  geom_errorbar(aes(ymin = Lower, ymax = Upper), width = 0) + 
+  scale_color_manual(values = wes_palette("Cavalcanti1")) + #Change color palette here see: https://github.com/karthik/wesanderson
+  xlab("") + 
+  ylab(TeX("Chromatic contrast (JND)")) +
+  theme_bw() +
+  theme(legend.position = "none",
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(size=18),
+    axis.title=element_text(size=20,face="bold"),
+    legend.text =element_text(size = 12),
+    legend.title =element_text(size = 12, face = "bold"))
+
+#Plotting Achromatic contrast (dL)
+p4 <- ggplot(Courtship_plot_dL_dat, aes(x = Population, y = Mean, group = BodyRegion, color = BodyRegion)) +
+  geom_point(size = 3) +
+  geom_line() +
+  geom_errorbar(aes(ymin = Lower, ymax = Upper), width = 0) + 
+  scale_color_manual(values = wes_palette("Cavalcanti1")) + #Change color palette here see: https://github.com/karthik/wesanderson
+  xlab("") + 
+  ylab(TeX("Achromatic contrast (JND)")) +
+  theme_bw() +
+  theme(legend.position = "none",
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(size=18),
+    axis.title=element_text(size=20,face="bold"),
+    legend.text =element_text(size = 12),
+    legend.title =element_text(size = 12, face = "bold"))
+
+
+
+
+p1 + p2 + p3 + p4 + plot_annotation(tag_levels = c('A', 'B', 'C', 'D')) & theme(plot.tag = element_text(face = 'bold', size=20))
+
+```
+
+
+
+# References
