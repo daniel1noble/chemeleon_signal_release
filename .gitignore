@@ -5,3 +5,6 @@
 *.docx
 ms_cache/
 supp_cache/
+ms_files/
+photos/
+supp_files/

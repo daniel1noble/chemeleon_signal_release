@@ -30,7 +30,7 @@ knitr::opts_chunk$set(echo = FALSE, cache = TRUE, message = FALSE, warning = FAL
 ```{r getlibrary, echo = FALSE, results = "hide"}
 # load libraries
 devtools::install_github("karthik/wesanderson")
-pacman::p_load(lme4, lmerTest, ggplot2, lsmeans, emmeans, multcomp, dplyr, wesanderson, patchwork, pander, kableExtra, flextable)
+pacman::p_load(lme4, lmerTest, ggplot2, lsmeans, emmeans, multcomp, dplyr, wesanderson, patchwork, pander, kableExtra, flextable, jpeg)
 ```
 
 
@@ -49,9 +49,12 @@ Display_1 <- Display_1 %>%
 
 # create as factor
     Display_1$BodyRegion <- factor(Display_1$BodyRegion)
+    
+# Center SVL to make intercept interpretable
+Display_1$sc_SVL <- with(Display_1, scale(SVL, scale=FALSE))
 
 # Fit the model that esatimtes changes across body regions
-ConspicDisplayAC <- lmer(dL ~ SVL + Population + BodyRegion + Background 
+ConspicDisplayAC <- lmer(dL ~ sc_SVL + Population + BodyRegion + Background 
                          + Population:Background + Population:BodyRegion + (1|ID), data=Display_1)
 
 # Fit model for linear hypothesis tests
@@ -69,7 +72,7 @@ result1 = glht(ConspicDisplayAC2, linfct = mcp(PopBRInt = c("Hawaii.gular - Keny
 ## This is the full model; however, we do not need background because the way the data is set up R is taking an average. See next model (background dropped)
 
 # Fit the model that esatimtes changes across body regions
-  ConspicDisplayCC <- lmer(dS ~ SVL + Population + BodyRegion + Background 
+  ConspicDisplayCC <- lmer(dS ~ sc_SVL + Population + BodyRegion + Background 
                          + Population:Background + Population:BodyRegion + (1|ID), data=Display_1)
 Display_1$PopBRInt <- interaction(Display_1$Population,Display_1$BodyRegion)
 
@@ -87,19 +90,26 @@ summary(glht(ConspicDisplayCC2, linfct = mcp(PopBRInt = c("Hawaii.gular - Kenya.
 Courtship <- read.table("./data/Courtship_1.2.csv", 
                           header=TRUE, sep=",", dec=".", strip.white=TRUE)
 
+# Center SVL to make intercept interpretable
+Courtship$sc_SVL <- with(Courtship, scale(SVL, scale=FALSE))
+
+# Fit model
+ConspicCourtshipAC <- lmer(dL ~ sc_SVL + Population + BodyRegion +  
+                             + Population:BodyRegion + (1|ID), data=Courtship)
+anova(ConspicCourtshipAC)
+
+ConspicCourtshipAC <- lmer(dL ~ sc_SVL + Population + BodyRegion + (1|ID), data=Courtship)
+summary(ConspicCourtshipAC)
+anova(ConspicCourtshipAC)
+
 # Courtship - Chromatic dl
-ConspicCourtshipAC <- lmer(dL ~ SVL + Population + BodyRegion + Background 
-                           + Population:Background + Population:BodyRegion + (1|ID), data=Courtship)
 
 Courtship$PopBRInt <- interaction(Courtship$Population,Courtship$BodyRegion)
 ConspicCourtshipAC2 <- lmer(dL ~ PopBRInt + (1|ID), data=Courtship)
-summary(glht(ConspicCourtshipAC2, linfct = mcp(PopBRInt = c("Hawaii.gular - Kenya.gular = 0","Hawaii.midflank - Kenya.midflank = 0", "Hawaii.topflank - Kenya.topflank = 0", 
+summary(glht(ConspicCourtshipAC2, linfct = mcp(PopBRInt = c("Hawaii.gular - Kenya.gular = 0",
+                                                            "Hawaii.midflank - Kenya.midflank = 0", 
+                                                            "Hawaii.topflank - Kenya.topflank = 0", 
                                                             "Hawaii.tailbase - Kenya.tailbase = 0" ))))
-
-ConspicCourtshipAC <- lmer(dL ~ SVL + Population + BodyRegion +  
-                             + Population:BodyRegion + (1|ID), data=Courtship)
-anova(ConspicCourtshipAC)
-ranova(ConspicCourtshipAC)
 
 
 # Courtship - Chromatic dS
@@ -107,7 +117,9 @@ ConspicCourtshipCC <- lmer(dS ~ SVL + Population + BodyRegion + Background
                            + Population:Background + Population:BodyRegion + (1|ID), data=Courtship)
 Courtship$PopBRInt <- interaction(Courtship$Population,Courtship$BodyRegion)
 ConspicCourtshipCC2 <- lmer(dS ~ PopBRInt + (1|ID), data=Courtship)
-summary(glht(ConspicCourtshipCC2, linfct = mcp(PopBRInt = c("Hawaii.gular - Kenya.gular = 0","Hawaii.midflank - Kenya.midflank = 0", "Hawaii.topflank - Kenya.topflank = 0", 
+summary(glht(ConspicCourtshipCC2, linfct = mcp(PopBRInt = c("Hawaii.gular - Kenya.gular = 0",
+                                                            "Hawaii.midflank - Kenya.midflank = 0", 
+                                                            "Hawaii.topflank - Kenya.topflank = 0", 
                                                             "Hawaii.tailbase - Kenya.tailbase = 0" ))))
 
 ```
@@ -138,14 +150,14 @@ We quantified the background against which chameleons signal by measuring the sp
 summary(result1)
 ```
 
-```{FigS1, fig.width = 5, fig.height = 10, fig.caption = "test"}
+```{r FigS1, fig.width = 14.33333, fig.height = 11.00000, fig.cap = "Chormatic (A, C) and Achromatic (B, D) contrast in just noticible differences (JND) for Hawaiian and Kenyan lizards relative to their environments. All four body regions (gular, mid-flank, tailbase and topflank) are shown averaged across stems and leaves found in their habitat. Mean JNDs are provided along with 95% confidence intervals. A & B represent male-male contest displays whereas C & D represent courtship displays"}
 
 #Making a point plot with error bars split by body size and population 
 #Compute raw means and standard errors for body part and population for dS and assigned this data into Display_plot_dS_dat
 Display_plot_dS_dat <- Display_1 %>% #data for dS Chromatic constrast
   group_by(Population, BodyRegion) %>% 
-  summarise(Mean = mean(dS, na.rm = T), 
-            SE = sd(dS)/sqrt(length(unique(ID))),
+  summarise( Mean = mean(dS, na.rm = T), 
+               SE = sd(dS)/sqrt(length(unique(ID))),
             Upper = Mean + 1.96*SE,
             Lower = Mean - 1.96*SE) 
             
@@ -158,12 +170,12 @@ Display_plot_dL_dat <- Display_1 %>% #data for dL Achromatic contrast
 
 #Plotting Chromatic contrast (dS)
 p1 <- ggplot(Display_plot_dS_dat, aes(x = Population, y = Mean, group = BodyRegion, color = BodyRegion)) +
-  geom_point(size = 3) +
-  geom_line() +
-  geom_errorbar(aes(ymin = Lower, ymax = Upper), width = 0) + 
+  geom_point(size = 3, position = position_dodge(width=0.2)) +
+  geom_line(position = position_dodge(width=0.2)) +
+  geom_errorbar(aes(ymin = Lower, ymax = Upper), position = position_dodge(width=0.2), width = 0) + 
   scale_color_manual(values = wes_palette("Cavalcanti1")) + #Change color palette here see: https://github.com/karthik/wesanderson
   xlab("") + 
-  ylab(TeX("Chromatic contrast (JND)")) +
+  ylab("Chromatic contrast (JND)") +
   theme_bw() +
   theme(legend.position = "none",
     panel.grid.major = element_blank(), 
@@ -176,13 +188,14 @@ p1 <- ggplot(Display_plot_dS_dat, aes(x = Population, y = Mean, group = BodyRegi
 
 #Plotting Achromatic contrast (dL)
 p2 <- ggplot(Display_plot_dL_dat, aes(x = Population, y = Mean, group = BodyRegion, color = BodyRegion)) +
-  geom_point(size = 3) +
-  geom_line() +
-  geom_errorbar(aes(ymin = Lower, ymax = Upper), width = 0) + 
+  geom_point(size = 3, position = position_dodge(width=0.2)) +
+  geom_line(position = position_dodge(width=0.2)) +
+  geom_errorbar(aes(ymin = Lower, ymax = Upper), position = position_dodge(width=0.2), width = 0) + 
   scale_color_manual(values = wes_palette("Cavalcanti1")) + #Change color palette here see: https://github.com/karthik/wesanderson
   xlab("") + 
-  ylab(TeX("Achromatic contrast (JND)")) +
+  ylab("Achromatic contrast (JND)") +
   theme_bw() +
+  labs(color = "Body Region") + 
   theme(#legend.position = "none",
     panel.grid.major = element_blank(), 
     panel.grid.minor = element_blank(),
@@ -210,12 +223,12 @@ Courtship_plot_dL_dat <- Courtship %>% #data for dL Achromatic contrast
 
 #Plotting Chromatic contrast (dS)
 p3 <- ggplot(Courtship_plot_dS_dat, aes(x = Population, y = Mean, group = BodyRegion, color = BodyRegion)) +
-  geom_point(size = 3) +
-  geom_line() +
-  geom_errorbar(aes(ymin = Lower, ymax = Upper), width = 0) + 
+  geom_point(size = 3, position = position_dodge(width=0.2)) +
+  geom_line(position = position_dodge(width=0.2)) +
+  geom_errorbar(aes(ymin = Lower, ymax = Upper), position = position_dodge(width=0.2), width = 0) + 
   scale_color_manual(values = wes_palette("Cavalcanti1")) + #Change color palette here see: https://github.com/karthik/wesanderson
   xlab("") + 
-  ylab(TeX("Chromatic contrast (JND)")) +
+  ylab("Chromatic contrast (JND)") +
   theme_bw() +
   theme(legend.position = "none",
     panel.grid.major = element_blank(), 
@@ -227,12 +240,12 @@ p3 <- ggplot(Courtship_plot_dS_dat, aes(x = Population, y = Mean, group = BodyRe
 
 #Plotting Achromatic contrast (dL)
 p4 <- ggplot(Courtship_plot_dL_dat, aes(x = Population, y = Mean, group = BodyRegion, color = BodyRegion)) +
-  geom_point(size = 3) +
-  geom_line() +
-  geom_errorbar(aes(ymin = Lower, ymax = Upper), width = 0) + 
+  geom_point(size = 3, position = position_dodge(width=0.2)) +
+  geom_line(position = position_dodge(width=0.2)) +
+  geom_errorbar(aes(ymin = Lower, ymax = Upper), position = position_dodge(width=0.2), width = 0) + 
   scale_color_manual(values = wes_palette("Cavalcanti1")) + #Change color palette here see: https://github.com/karthik/wesanderson
   xlab("") + 
-  ylab(TeX("Achromatic contrast (JND)")) +
+  ylab("Achromatic contrast (JND)") +
   theme_bw() +
   theme(legend.position = "none",
     panel.grid.major = element_blank(), 
@@ -249,6 +262,30 @@ p1 + p2 + p3 + p4 + plot_annotation(tag_levels = c('A', 'B', 'C', 'D')) & theme(
 
 ```
 
+```{r FigS2}
 
+files <- list.files("./photos/ESM/")
+img1 <- readJPEG(paste0("./photos/ESM/", files[1]))
+img2 <- readJPEG(paste0("./photos/ESM/", files[2]))
+img3 <- readJPEG(paste0("./photos/ESM/", files[3]))
+img4 <- readJPEG(paste0("./photos/ESM/", files[4]))
+img5 <- readJPEG(paste0("./photos/ESM/", files[5]))
+img6 <- readJPEG(paste0("./photos/ESM/", files[6]))
 
+p1 <- cowplot::ggdraw()+
+        cowplot::draw_image(img1)
+p2 <- cowplot::ggdraw()+
+        cowplot::draw_image(img2)
+p3 <- cowplot::ggdraw()+
+        cowplot::draw_image(img3)
+p4 <- cowplot::ggdraw()+
+        cowplot::draw_image(img4)
+p5 <- cowplot::ggdraw()+
+        cowplot::draw_image(img5)
+p6 <- cowplot::ggdraw()+
+        cowplot::draw_image(img6)
+
+(p1 + p3 + p6) / (p2 + p5 + p4) + plot_annotation(tag_levels = c("A", "B", "C", "D", "E", "F"))
+  
+```
 # References

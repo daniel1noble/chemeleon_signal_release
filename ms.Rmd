@@ -31,7 +31,7 @@ knitr::opts_chunk$set(echo = FALSE, cache = TRUE, message = FALSE, warning = FAL
 ```{r getlibrary, echo = FALSE, results = "hide"}
 # load libraries
 devtools::install_github("karthik/wesanderson")
-pacman::p_load(lme4, lmerTest, ggplot2, lsmeans, emmeans, multcomp, dplyr, wesanderson, patchwork, latex2exp)
+pacman::p_load(lme4, lmerTest, ggplot2, lsmeans, emmeans, multcomp, dplyr, wesanderson, patchwork, latex2exp, png, cowplot, magick, jpeg)
 
 p_value <- function(x){
   if(x <= 0.0001) {tmp = "< 0.0001"}
@@ -51,6 +51,9 @@ p_value <- function(x){
 Display_1 <- read.table("./data/Display_1.csv", 
                           header=TRUE, sep=",", dec=".", strip.white=TRUE)
 
+# Center SVL to make intercept interpretable
+Display_1$sc_SVL <- with(Display_1, scale(SVL, scale=FALSE))
+
 #exclude bottom flank.
 Display_1 <- Display_1 %>% 
               filter(!BodyRegion == "botflank") %>% as.data.frame() 
@@ -59,12 +62,12 @@ Display_1 <- Display_1 %>%
     Display_1$BodyRegion <- factor(Display_1$BodyRegion)
     
 # Display dl
-    ConspicDisplayAC <- lmer(dL ~ SVL + Population + (1|ID), data=Display_1)
+    ConspicDisplayAC <- lmer(dL ~ sc_SVL + Population + (1|ID), data=Display_1)
     summary(ConspicDisplayAC)
     anovaConspicDisplayAC <- anova(ConspicDisplayAC)
     
 ## Display dS
-         ConspicDisplayCC <- lmer(dS ~ SVL + Population + (1|ID), data=Display_1)
+         ConspicDisplayCC <- lmer(dS ~ sc_SVL + Population + (1|ID), data=Display_1)
     anovaConspicDisplayCC <- anova(ConspicDisplayCC)
     
     
@@ -72,16 +75,21 @@ Display_1 <- Display_1 %>%
 # Courtship Displays
 #########################################################
 
+# Load data
 Courtship <- read.table("./data/Courtship_1.2.csv", 
                           header=TRUE, sep=",", dec=".", strip.white=TRUE)
     
+# Center SVL do intercept is at the mean body size
+Courtship$sc_SVL <- with(Courtship, scale(SVL, scale=FALSE))
+    
 # Courtship dl
-ConspicCourtshipAC <- lmer(dL ~ SVL + Population  + (1|ID), data=Courtship)
+ConspicCourtshipAC <- lmer(dL ~ sc_SVL + Population  + (1|ID), data=Courtship)
+summary(ConspicCourtshipAC)
 courship_anovaAC <- anova(ConspicCourtshipAC)
 
 # Courtship dS
-  ConspicCourtshipCC <- lmer(dS ~ SVL + Population  + (1|ID), data=Courtship)
-courship_anovaCC <- anova(ConspicCourtshipCC)
+  ConspicCourtshipCC <- lmer(dS ~ sc_SVL + Population  + (1|ID), data=Courtship)
+ courship_anovaCC <- anova(ConspicCourtshipCC)
 ```
 
 # Abstract
@@ -97,9 +105,108 @@ Unlike animals with static colour signals, we have a poor understanding of how a
 
 # Results
 
-We conducted experiments manipulating both the social and predatory context chameleons encountered, in both their native Kenyan range and their introduced Hawaiian range, to test three hypotheses about colour signal evolution. First, we tested the hypothesis that relaxed predation pressure results in character release of a dynamic visual signal. Sexual selection favours more conspicious signals and these should evolve to be more conspicuous without predators. In suppor of this prediction, male display colouration exhibited in social contexts (i.e., male-male contests and courtship) was more conspicuous to a conspecific in Hawaii compared with Kenya (**Male-Male Contests**: Acromatic ($dl$); $F_{`r anovaConspicDisplayAC$NumDF[2]`,`r anovaConspicDisplayAC$DenDF[2]`}$ = `r anovaConspicDisplayAC[5][2,]`, p = `r p_value(anovaConspicDisplayAC[6][2,])`; Chromatic ($dS$): $F_{`r anovaConspicDisplayCC$NumDF[2]`,`r anovaConspicDisplayCC$DenDF[2]`}$ = `r anovaConspicDisplayCC[5][2,]`, p = `r p_value(anovaConspicDisplayCC[6][2,])`; **Courtship displays**: Acromatic ($dl$); $F_{`r courship_anovaAC$NumDF[2]`,`r courship_anovaAC$DenDF[2]`}$ = `r courship_anovaAC[5][2,]`, p = `r p_value(courship_anovaAC[6][2,])`; Chromatic ($dS$): $F_{`r courship_anovaCC$NumDF[2]`,`r courship_anovaCC$DenDF[2]`}$ = `r courship_anovaCC[5][2,]`, p = `r p_value(courship_anovaCC[6][2,])`), and this was true across all body regions measured (See Supplemental Materials, Table S1). 
+We manipulated both the social and predatory context chameleons encountered, in both their native Kenyan range and their introduced Hawaiian range, to test three hypotheses about colour signal evolution. First, we tested the hypothesis that relaxed predation pressure results in character release of a dynamic visual signal. Sexual selection favours more conspicious signals. As such, signals should evolve to be more conspicuous when predators are absent. In support of this prediction, male display colouration exhibited in social contexts (i.e., male-male contests and courtship) was more conspicuous to a conspecific in Hawaii compared with Kenya (**Male-Male Contests**: Acromatic contrast ($dl$); $F_{`r anovaConspicDisplayAC$NumDF[2]`,`r anovaConspicDisplayAC$DenDF[2]`}$ = `r anovaConspicDisplayAC[5][2,]`, p = `r p_value(anovaConspicDisplayAC[6][2,])`; Chromatic contrast ($dS$): $F_{`r anovaConspicDisplayCC$NumDF[2]`,`r anovaConspicDisplayCC$DenDF[2]`}$ = `r anovaConspicDisplayCC[5][2,]`, p = `r p_value(anovaConspicDisplayCC[6][2,])`; **Courtship displays**: Acromatic contrast ($dl$); $F_{`r courship_anovaAC$NumDF[2]`,`r courship_anovaAC$DenDF[2]`}$ = `r courship_anovaAC[5][2,]`, p = `r p_value(courship_anovaAC[6][2,])`; Chromatic contrast ($dS$): $F_{`r courship_anovaCC$NumDF[2]`,`r courship_anovaCC$DenDF[2]`}$ = `r courship_anovaCC[5][2,]`, p = `r p_value(courship_anovaCC[6][2,])`), and this was  true across all body regions measured (See Supplemental Materials, Table S1). 
 
 
+
+```{r Figure1}
+## Make figures that average across body regions, but display Social Context
+
+courtship_data <- Courtship %>% 
+                  select(ID, Population, Colour, SVL, BodyRegion, Background, dS, dL)
+  display_data <- Display_1 %>%
+                  select(ID, Population, Colour, SVL, BodyRegion, Background, dS, dL)
+combined_data <- rbind(courtship_data, display_data)
+
+# Now calculate the averages for each population anc Colour (i.e., context)
+
+summary_data <- combined_data %>%
+                group_by(Population, Colour) %>%
+                summarise( Mean_dS = mean(dS, na.rm = T), 
+                             SE_dS = sd(dS)/sqrt(length(unique(ID))),
+                             Upper_dS = Mean_dS + 1.96*SE_dS,
+                             Lower_dS = Mean_dS - 1.96*SE_dS, 
+                           Mean_dL = mean(dL, na.rm = T), 
+                             SE_dL = sd(dL)/sqrt(length(unique(ID))),
+                             Upper_dL = Mean_dL + 1.96*SE_dL,
+                             Lower_dL = Mean_dL - 1.96*SE_dL) %>%
+                mutate(Colour = if_else(Colour == "Courtship", "Courtship", "Male-male contest"))
+
+males <- readPNG("./photos/male_fight.png", native = TRUE)
+#males <- image_scale(males, "200x200")
+
+females <- readPNG("./photos/courtship.png", native = TRUE)
+#females <- image_scale(females, "200x200")
+
+p1 <- ggplot(summary_data, aes(x = Population, y = Mean_dS, group = Colour, color = Colour)) +
+    ylim(2.5, 6.5) + 
+  geom_point(size = 3, position = position_dodge(width=0.5)) +
+  geom_errorbar(aes(ymin = Lower_dS, ymax = Upper_dS), position = position_dodge(width=0.5), width = 0) + 
+  geom_line(position = position_dodge(width=0.5)) + 
+  scale_color_manual(values = wes_palette("Cavalcanti1")) + #Change color palette here see: https://github.com/karthik/wesanderson
+  xlab("") + 
+  ylab("Chromatic contrast (JND)") +
+  annotate("segment", x = 0.85, xend = 1.85, y = 6.1, yend = 6.1, colour = "black") +
+  annotate("segment", x = 1.12, xend = 2.12, y = 5.7, yend = 5.7, colour = "black") + 
+  annotate("text", x = 0.85+(1.85-0.85)/2,  y = 6.2, label = "NS",  size = 6) + 
+  annotate("text", x = 1.12+(2.12-1.12)/2, y = 5.8, label = "NS", size = 6) + 
+  theme_bw() +
+  labs(colour = "Social Context") +
+  theme(legend.position = c(0.28, 0.08),
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(size=18),
+    axis.title=element_text(size=20,face="bold"),
+    legend.text =element_text(size = 12),
+    legend.title =element_text(size = 12, face = "bold")) +
+   inset_element(males,
+                left = 0.45,
+                right = 0.90,
+                bottom = 0.58,
+                top = 0.75, ignore_tag = TRUE) + 
+    inset_element(females,
+                left = 0.30,
+                right = 0.75,
+                bottom = 0.15,
+                top = 0.28, ignore_tag = TRUE) 
+      #annotation_raster(males, xmin = 1.2, xmax = 1.9, ymin = 4.8, ymax = 5.3) + 
+      #annotation_raster(females, xmin = 1, xmax = 1.7, ymin = 3.5, ymax = 4)
+
+p2 <- ggplot(summary_data, aes(x = Population, y = Mean_dL, group = Colour, color = Colour)) +
+  ylim(15, 45) + 
+  geom_point(size = 3, position = position_dodge(width=0.5)) +
+  geom_errorbar(aes(ymin = Lower_dL, ymax = Upper_dL), position = position_dodge(width=0.5), width = 0) + 
+  geom_line(position = position_dodge(width=0.5)) + 
+  scale_color_manual(values = wes_palette("Cavalcanti1")) + #Change color palette here see: https://github.com/karthik/wesanderson
+  xlab("") + 
+  ylab("Achromatic contrast (JND)") +
+   annotate("segment", x = 0.90, xend = 1.90, y = 40, yend = 40, colour = "black") +
+  annotate("segment", x = 1.12, xend = 2.12, y = 42, yend = 42, colour = "black") + 
+  annotate("text", x = 0.9+((1.90 - 0.90)/2), y = 41, label = "**",  size = 6) + 
+  annotate("text", x = 1.12+((2.12 - 1.12)/ 2), y = 43, label = "**", size = 6) + 
+  theme_bw() +
+  theme(legend.position = "none",
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(size=18),
+    axis.title=element_text(size=20,face="bold"),
+    legend.text =element_text(size = 12),
+    legend.title =element_text(size = 12, face = "bold")) +
+    inset_element(males,
+                left = 0.45,
+                right = 0.90,
+                bottom = 0.60,
+                top = 0.75, ignore_tag = TRUE) + 
+    inset_element(females,
+                left = 0.05,
+                right = 0.50,
+                bottom = 0.25,
+                top = 0.38, ignore_tag = TRUE)
+
+plot_grid(p1, p2, labels = c("A", "B"), label_size = 16,
+  label_fontface = "bold", rel_widths=c(1,1))
+
+```
 
 
 Specifically, we tested the following predictions: 1.) display colouration used in male-male contests and courtship will be more conspicuous to a conspecific in Hawaii than Kenya; 2.) display colouration used in response to an encounter with a bird and snake predator will be more conspicuous to both predator types in Hawai’i than Kenya. 3.) under character release, males will have greater capacity to change colour from a subordinate to a dominant state in Hawai’i compared to Kenya.

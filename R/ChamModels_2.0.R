@@ -286,15 +286,15 @@ Courtship_plot_dS_dat <- Courtship_1.2 %>% #data for dS Chromatic constrast
   group_by(Population, BodyRegion) %>% 
   summarise(Mean = mean(dS, na.rm = T), 
             SE = sd(dS)/sqrt(length(unique(ID))),
-            Upper = Mean + SE,
-            Lower = Mean - SE) 
+            Upper = Mean + 1.96*SE,
+            Lower = Mean - 1.96*SE) 
 
 Courtship_plot_dL_dat <- Courtship_1.2 %>% #data for dL Achromatic contrast
   group_by(Population, BodyRegion) %>% 
   summarise(Mean = mean(dL, na.rm = T), 
             SE = sd(dL)/sqrt(length(unique(ID))),
-            Upper = Mean + SE,
-            Lower = Mean - SE) 
+            Upper = Mean + 1.96*SE,
+            Lower = Mean - 1.96*SE) 
 
             
 Courtship_plot_dL_dat
