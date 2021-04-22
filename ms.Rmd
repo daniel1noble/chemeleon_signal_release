@@ -43,7 +43,7 @@ p_value <- function(x){
 
 ```
 
-```{r displayModels, echo = FALSE, results = "hide"}
+```{r Models, echo = FALSE, results = "hide"}
 #########################################################
 # Male-male Competition Displays
 #########################################################
@@ -64,6 +64,7 @@ Display_1 <- Display_1 %>%
 # Display dl
     ConspicDisplayAC <- lmer(dL ~ sc_SVL + Population + (1|ID), data=Display_1)
     summary(ConspicDisplayAC)
+    CI_AC_display <- data.frame(confint(ConspicDisplayAC))
     anovaConspicDisplayAC <- anova(ConspicDisplayAC)
     
 ## Display dS
@@ -85,6 +86,7 @@ Courtship$sc_SVL <- with(Courtship, scale(SVL, scale=FALSE))
 # Courtship dl
 ConspicCourtshipAC <- lmer(dL ~ sc_SVL + Population  + (1|ID), data=Courtship)
 summary(ConspicCourtshipAC)
+CI_AC_court <- data.frame(confint(ConspicCourtshipAC))
 courship_anovaAC <- anova(ConspicCourtshipAC)
 
 # Courtship dS
@@ -105,11 +107,13 @@ Unlike animals with static colour signals, we have a poor understanding of how a
 
 # Results
 
-We manipulated both the social and predatory context chameleons encountered, in both their native Kenyan range and their introduced Hawaiian range, to test three hypotheses about colour signal evolution. First, we tested the hypothesis that relaxed predation pressure results in character release of a dynamic visual signal. Sexual selection favours more conspicious signals. As such, signals should evolve to be more conspicuous when predators are absent. In support of this prediction, male display colouration exhibited in social contexts (i.e., male-male contests and courtship) was more conspicuous to a conspecific in Hawaii compared with Kenya (**Male-Male Contests**: Acromatic contrast ($dl$); $F_{`r anovaConspicDisplayAC$NumDF[2]`,`r anovaConspicDisplayAC$DenDF[2]`}$ = `r anovaConspicDisplayAC[5][2,]`, p = `r p_value(anovaConspicDisplayAC[6][2,])`; Chromatic contrast ($dS$): $F_{`r anovaConspicDisplayCC$NumDF[2]`,`r anovaConspicDisplayCC$DenDF[2]`}$ = `r anovaConspicDisplayCC[5][2,]`, p = `r p_value(anovaConspicDisplayCC[6][2,])`; **Courtship displays**: Acromatic contrast ($dl$); $F_{`r courship_anovaAC$NumDF[2]`,`r courship_anovaAC$DenDF[2]`}$ = `r courship_anovaAC[5][2,]`, p = `r p_value(courship_anovaAC[6][2,])`; Chromatic contrast ($dS$): $F_{`r courship_anovaCC$NumDF[2]`,`r courship_anovaCC$DenDF[2]`}$ = `r courship_anovaCC[5][2,]`, p = `r p_value(courship_anovaCC[6][2,])`), and this was  true across all body regions measured (See Supplemental Materials, Table S1). 
+We manipulated both the social and predatory context chameleons encountered, in both their native Kenyan range and their introduced Hawaiian range, to test three hypotheses about colour signal evolution. Using spectrophotometry and visual modelling that relied on our understanding of the chameleon visual system we quntified chromatic and achromatic contrast against the backgrounds in each environment (i.e., leaves and stems in Kenya and Hawaii).
 
+Sexual selection is expected to favour more conspicuous dymamic sexual signals in Hawaii under relaxed predation because higher predation should favour cryptic signals. In support of this prediction, male display colouration exhibited in social contexts (i.e., male-male contests and courtship) was more conspicuous to a conspecific in Hawaii compared with Kenya (**Male-Male Contests**: Acromatic contrast ($dl$); $F_{`r anovaConspicDisplayAC$NumDF[2]`,`r anovaConspicDisplayAC$DenDF[2]`}$ = `r anovaConspicDisplayAC[5][2,]`, p = `r p_value(anovaConspicDisplayAC[6][2,])`; Chromatic contrast ($dS$): $F_{`r anovaConspicDisplayCC$NumDF[2]`,`r anovaConspicDisplayCC$DenDF[2]`}$ = `r anovaConspicDisplayCC[5][2,]`, p = `r p_value(anovaConspicDisplayCC[6][2,])`; **Courtship displays**: Acromatic contrast ($dl$); $F_{`r courship_anovaAC$NumDF[2]`,`r courship_anovaAC$DenDF[2]`}$ = `r courship_anovaAC[5][2,]`, p = `r p_value(courship_anovaAC[6][2,])`; Chromatic contrast ($dS$): $F_{`r courship_anovaCC$NumDF[2]`,`r courship_anovaCC$DenDF[2]`}$ = `r courship_anovaCC[5][2,]`, p = `r p_value(courship_anovaCC[6][2,])`), and this was  true across all body regions measured (See Supplemental Materials, table S1). Overall, Kenyan chameleons were significantly more crypic compared to introduced Hawaiian counterparts (Acromatic Contrast between Hawaiian and Kenyan Populations, Male-male contests: $\beta$ = `r fixef(ConspicDisplayAC)[3]`, 95% CI = `r CI_AC_display[5,1]` to  `r CI_AC_display[5,2]`, df = `r summary(ConspicDisplayAC)$coefficients[3, "df"]`, t =  `r summary(ConspicDisplayAC)$coefficients[3, "t value"]`, p = `r p_value(summary(ConspicDisplayAC)$coefficients[3, "Pr(>|t|)"])`, Courtship: $\beta$ = `r fixef(ConspicCourtshipAC)[3]`, 95% CI = `r CI_AC_court[5,1]` to  `r CI_AC_court[5,2]`, df = `r summary(ConspicCourtshipAC)$coefficients[3, "df"]`, t =  `r summary(ConspicCourtshipAC)$coefficients[3, "t value"]`, p = `r p_value(summary(ConspicCourtshipAC)$coefficients[3, "Pr(>|t|)"])`, see figure 1a & b). 
 
+Sexual signals are expected to be detected much more easily by predators (ie., snakes and birds) in Hawaii as a result of reduced predation. In support of this prediction, Hawaiian chameleons were significantly more conspicous to both snake and bird predators (figure 1b & c). 
 
-```{r Figure1}
+```{r Figure1, fig.width = 15, fig.height= 9.287443, fig.cap= "Chromatic and achromatic contrast in Just Noticiable Differences (JND), of Hawaiian and Kenyan chameleons against their respective backgrounds (i.e., average environment of stems and leaves). A & B) Contrast of male chameleons during male-male contests and courtship. JNDs are calculated based on the chameleon visual system. 'NS' denotes non-significant contasts, whereas '**' indicates significant differences < 0.001.}
 ## Make figures that average across body regions, but display Social Context
 
 courtship_data <- Courtship %>% 
