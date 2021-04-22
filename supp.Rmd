@@ -1,0 +1,45 @@
+---
+title: "Supplemental Materials, Methods and Results"
+author: Whiting et al. 
+date: "`r Sys.Date()`"
+bibliography: refs.bib
+csl: science.csl
+output: 
+  bookdown::html_document2:
+    code_folding: hide
+    number_sections: no
+    toc: yes
+    toc_depth: 6
+    toc_float: yes
+    bibliography: refs.bib
+  bookdown::word_document2:
+    toc: no
+    toc_depth: 6
+    number_sections: true
+    reference_docx: template.docx
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+```{r display}
+#Load data and clean a bit
+Display_1 <- read.table("../data/Display_1.csv", 
+                          header=TRUE, sep=",", dec=".", strip.white=TRUE)
+
+#exclude bottom flank.
+Display_1 <- Display_1 %>% 
+              filter(!BodyRegion == "botflank") %>% as.data.frame() 
+
+# create as factor
+    Display_1$BodyRegion <- factor(Display_1$BodyRegion)
+
+# Fit the model that esatimtes changes across body regions
+ConspicDisplayAC <- lmer(dL ~ SVL + Population + BodyRegion + Background 
+                         + Population:Background + Population:BodyRegion + (1|ID), data=Display_1)
+Display_1$PopBRInt <- interaction(Display_1$Population,Display_1$BodyRegion)
+ConspicDisplayAC2 <- lmer(dL ~ PopBRInt + (1|ID), data=Display_1)
+summary(glht(ConspicDisplayAC2, linfct = mcp(PopBRInt = c("Hawaii.gular - Kenya.gular = 0","Hawaii.midflank - Kenya.midflank = 0", "Hawaii.topflank - Kenya.topflank = 0", 
+                                                          "Hawaii.tailbase - Kenya.tailbase = 0" ))))
+```
