@@ -122,6 +122,94 @@ summary(glht(ConspicCourtshipCC2, linfct = mcp(PopBRInt = c("Hawaii.gular - Keny
                                                             "Hawaii.topflank - Kenya.topflank = 0", 
                                                             "Hawaii.tailbase - Kenya.tailbase = 0" ))))
 
+
+#########################################################
+# Displays to Predators, birds and snake
+#########################################################
+ Predator <- read.table("./data/Predator_2_3.csv", 
+                       header=TRUE, sep=",", dec=".", strip.white=TRUE)
+ 
+# Clean up
+ Predator <- Predator %>% filter(!BodyRegion == "botflank" & !BodyRegion =='gularbot') %>% as.data.frame() #exclude bottom flank.
+Predator$BodyRegion <- factor(Predator$BodyRegion) #updates levels for the variable BodyRegion
+
+# Transformation, just in case residuals are non-normal they may help. Remember, models assume normality of residuals not normality of the data. None-normality could be driven by effects you wish to model. So, you need to account for these first.
+Predator <- Predator %>% mutate(log_dS = log(dS),
+                                log_dL = log(dL),
+                                sqrt_dS = sqrt(dS),
+                                sqrt_dL = sqrt(dL))
+
+## Predator Model - Achromatic contrast (AC or dL)
+## just this next section has Drew's code, which averages the backround (Leaf_B1, Leaf_B2, Leaf_T1, Leaf_T2, Stem1, Stem2) for each lizard body region measurement.
+## This is the full model; however, we do not need background because the way the data is set up R is taking an average. See next model (background dropped)
+PredatorAC <- lmer(dL ~ Predator + Population + BodyRegion + Background 
+                         + Predator:Background + Predator:BodyRegion + (1|ID), data=Predator)
+anova(PredatorAC)
+
+# Posthoc tests
+Predator$PopBRInt <- interaction(Predator$Population,Predator$BodyRegion)
+PredatorAC2 <- lmer(sqrt_dL ~ PopBRInt + (1|ID), data=Predator)
+summary(glht(PredatorAC2, linfct = mcp(PopBRInt = c("Hawaii.gular - Kenya.gular = 0",
+                                                    "Hawaii.midflank - Kenya.midflank = 0", 
+                                                    "Hawaii.topflank - Kenya.topflank = 0", 
+                                                    "Hawaii.tailbase - Kenya.tailbase = 0" ))))
+## dropping background from model (it is still averaged)
+# anova gives us significance of fixed effects
+# ranova tests random effects (note: report just LRT and df)
+# need the SD of residuals and random effects from summary (just report random effects)
+
+PredatorAC <- lmer(dL ~ Predator + Population + BodyRegion +  
+                           + Population:BodyRegion + (1|ID), data= Predator) # we have gularbot for Kenya but not Hawaii, so exclude it
+anova(PredatorAC)
+ranova(PredatorAC)
+
+#for random effects, use ranova (is variance > 0?) report just LRT and df and need the SD of residuals and random effects from summary (just report random effects)
+
+Predator$PopBRInt <- interaction(Predator$Population,Predator$BodyRegion)
+PredatorAC2 <- lmer(dL ~ PopBRInt + (1|ID), data=Predator)
+summary(glht(PredatorAC2, linfct = mcp(PopBRInt = c("Hawaii.gular - Kenya.gular = 0",
+                                                    "Hawaii.midflank - Kenya.midflank = 0", 
+                                                    "Hawaii.topflank - Kenya.topflank = 0", 
+                                                    "Hawaii.tailbase - Kenya.tailbase = 0" ))))
+
+# Chromatic Contast - dS
+
+## Predator Model - Chromatic contrast (CC or dS)
+## just this next section has Drew's code, which averages the backround (Leaf_B1, Leaf_B2, Leaf_T1, Leaf_T2, Stem1, Stem2) for each lizard body region measurement.
+## This is the full model; however, we do not need background because the way the data is set up R is taking an average. See next model (background dropped)
+PredatorCC <- lmer(sqrt_dS ~ Predator + Population + BodyRegion + Background 
+                   + Predator:Background + Predator:BodyRegion + (1|ID), data=Predator)
+Predator$PopBRInt <- interaction(Predator$Population,Predator$BodyRegion)
+PredatorCC2 <- lmer(sqrt_dS ~ PopBRInt + (1|ID), data=Predator)
+summary(glht(PredatorCC2, linfct = mcp(PopBRInt = c("Hawaii.gular - Kenya.gular = 0","Hawaii.midflank - Kenya.midflank = 0", "Hawaii.topflank - Kenya.topflank = 0", 
+                                                    "Hawaii.tailbase - Kenya.tailbase = 0" ))))
+
+
+## dropping background from model (it is still averaged)
+# anova gives us significance of fixed effects
+# ranova tests random effects (note: report just LRT and df)
+# need the SD of residuals and random effects from summary (just report random effects)
+
+PredatorCC <- lmer(sqrt_dS ~ Predator + Population + BodyRegion +  
+                     + Population:BodyRegion + (1|ID), data=Predator[Predator$BodyRegion!='gularbot',]) # we have gularbot for Kenya but not Hawaii, so exclude it
+anova(PredatorCC)
+ranova(PredatorCC)
+
+### This is old code for when in the above model, predator was nonsignificant, so we can drop it from the model (below). But after sqrt it is significant, so don't use this code. Just keeping it in case.
+PredatorCC <- lmer(sqrt_dS ~ Population + BodyRegion +  
+                     + Population:BodyRegion + (1|ID), data=Predator[Predator$BodyRegion!='gularbot',]) # we have gularbot for Kenya but not Hawaii, so exclude it
+anova(PredatorCC)
+ranova(PredatorCC)
+###
+
+#for random effects, use ranova (is variance > 0?) report just LRT and df and need the SD of residuals and random effects from summary (just report random effects)
+
+Predator$PopBRInt <- interaction(Predator$Population,Predator$BodyRegion)
+PredatorCC2 <- lmer(sqrt_dS ~ PopBRInt + (1|ID), data=Predator[Predator$BodyRegion!='gularbot',])
+summary(glht(PredatorCC2, linfct = mcp(PopBRInt = c("Hawaii.gular - Kenya.gular = 0","Hawaii.midflank - Kenya.midflank = 0", "Hawaii.topflank - Kenya.topflank = 0", 
+                                                    "Hawaii.tailbase - Kenya.tailbase = 0" ))))
+
+
 ```
 
 # Materials and Methods

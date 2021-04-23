@@ -64,6 +64,7 @@ Display_1 <- Display_1 %>%
 # Display dl
     ConspicDisplayAC <- lmer(dL ~ sc_SVL + Population + (1|ID), data=Display_1)
     summary(ConspicDisplayAC)
+    coefAIC_display = fixef(ConspicDisplayAC)[3]
     CI_AC_display <- data.frame(confint(ConspicDisplayAC))
     anovaConspicDisplayAC <- anova(ConspicDisplayAC)
     
@@ -86,12 +87,62 @@ Courtship$sc_SVL <- with(Courtship, scale(SVL, scale=FALSE))
 # Courtship dl
 ConspicCourtshipAC <- lmer(dL ~ sc_SVL + Population  + (1|ID), data=Courtship)
 summary(ConspicCourtshipAC)
+coefAIC_court = fixef(ConspicCourtshipAC)[3]
 CI_AC_court <- data.frame(confint(ConspicCourtshipAC))
 courship_anovaAC <- anova(ConspicCourtshipAC)
 
 # Courtship dS
   ConspicCourtshipCC <- lmer(dS ~ sc_SVL + Population  + (1|ID), data=Courtship)
  courship_anovaCC <- anova(ConspicCourtshipCC)
+ 
+ #########################################################
+# Displays to Predators, birds and snake
+#########################################################
+ Predator <- read.table("./data/Predator_2_3.csv", 
+                       header=TRUE, sep=",", dec=".", strip.white=TRUE)
+ 
+# Clean up
+ Predator <- Predator %>% filter(!BodyRegion == "botflank" & !BodyRegion =='gularbot') %>% as.data.frame() #exclude bottom flank.
+Predator$BodyRegion <- factor(Predator$BodyRegion) #updates levels for the variable BodyRegion
+
+# Transformation
+Predator <- Predator %>% mutate(log_dS = log(dS),
+                                log_dL = log(dL),
+                                sqrt_dS = sqrt(dS),
+                                sqrt_dL = sqrt(dL))
+
+# Models - Achromatic Contrast (dL)
+
+# First, if predator type varies across populations then we would predcit that whether snake and bird actually are different would depend on the population. For example, if, say, in HAwaii and Kenya birds were equally likely as predators then dL would not vary for birds across populations, but would so for snakes. This is an interaction.
+
+PredatorAC <- lmer(dL ~ Predator + Population + Predator:Population + (1|ID), data = Predator) 
+summary(PredatorAC)
+anova_predators_inter <- anova(PredatorAC)
+
+# No support for an interaction, so can drop interaction. Tells us that predation, regardless of whether we are talking snake or bird is just low in Hawaii, otherwise, we would predict that signals would evolve to match the predatory system 
+PredatorAC <- lmer(dL ~ Predator + Population + (1|ID), data = Predator) 
+summary(PredatorAC)
+anova_predators <- anova(PredatorAC)
+
+# Chromatic contrast - dS
+
+PredatorCC <- lmer(dS ~ Predator + Population + Predator:Population + (1|ID), data = Predator) 
+summary(PredatorCC)
+anova_predators_interCC <- anova(PredatorCC)
+
+Predator$pred_pop <- with(Predator, interaction(Predator, Population))
+PredatorCC_pred_pop <- lmer(dS ~ pred_pop + (1|ID), data = Predator) 
+summary(PredatorCC_pred_pop)
+
+hypthesis_test <- glht(PredatorCC_pred_pop, df = 101, # df to get t-distribution, use number of lizards not data points
+             linfct = mcp(pred_pop = c("snake.Hawaii - snake.Kenya = 0",
+                                       "bird.Hawaii  - bird.Kenya = 0",
+                                       "snake.Hawaii - bird.Hawaii = 0",
+                                       "snake.Kenya  - bird.Kenya = 0")))
+summary(hypthesis_test)
+CI_hyp_test <- as.data.frame(confint(hypthesis_test)$confint)
+
+
 ```
 
 # Abstract
@@ -107,13 +158,16 @@ Unlike animals with static colour signals, we have a poor understanding of how a
 
 # Results
 
-We manipulated both the social and predatory context chameleons encountered, in both their native Kenyan range and their introduced Hawaiian range, to test three hypotheses about colour signal evolution. Using spectrophotometry and visual modelling that relied on our understanding of the chameleon visual system we quntified chromatic and achromatic contrast against the backgrounds in each environment (i.e., leaves and stems in Kenya and Hawaii).
+We manipulated both the social and predatory context chameleons encountered, in both their native Kenyan range and their introduced Hawaiian range, to test three hypotheses about colour signal evolution. Using spectrophotometry and visual modelling that relied on our understanding of the known chameleon visual system we quntified chromatic and achromatic contrast against the backgrounds in each environment (i.e., leaves and stems in Kenya and Hawaii).
 
-Sexual selection is expected to favour more conspicuous dymamic sexual signals in Hawaii under relaxed predation because higher predation should favour cryptic signals. In support of this prediction, male display colouration exhibited in social contexts (i.e., male-male contests and courtship) was more conspicuous to a conspecific in Hawaii compared with Kenya (**Male-Male Contests**: Acromatic contrast ($dl$); $F_{`r anovaConspicDisplayAC$NumDF[2]`,`r anovaConspicDisplayAC$DenDF[2]`}$ = `r anovaConspicDisplayAC[5][2,]`, p = `r p_value(anovaConspicDisplayAC[6][2,])`; Chromatic contrast ($dS$): $F_{`r anovaConspicDisplayCC$NumDF[2]`,`r anovaConspicDisplayCC$DenDF[2]`}$ = `r anovaConspicDisplayCC[5][2,]`, p = `r p_value(anovaConspicDisplayCC[6][2,])`; **Courtship displays**: Acromatic contrast ($dl$); $F_{`r courship_anovaAC$NumDF[2]`,`r courship_anovaAC$DenDF[2]`}$ = `r courship_anovaAC[5][2,]`, p = `r p_value(courship_anovaAC[6][2,])`; Chromatic contrast ($dS$): $F_{`r courship_anovaCC$NumDF[2]`,`r courship_anovaCC$DenDF[2]`}$ = `r courship_anovaCC[5][2,]`, p = `r p_value(courship_anovaCC[6][2,])`), and this was  true across all body regions measured (See Supplemental Materials, table S1). Overall, Kenyan chameleons were significantly more crypic compared to introduced Hawaiian counterparts (Acromatic Contrast between Hawaiian and Kenyan Populations, Male-male contests: $\beta$ = `r fixef(ConspicDisplayAC)[3]`, 95% CI = `r CI_AC_display[5,1]` to  `r CI_AC_display[5,2]`, df = `r summary(ConspicDisplayAC)$coefficients[3, "df"]`, t =  `r summary(ConspicDisplayAC)$coefficients[3, "t value"]`, p = `r p_value(summary(ConspicDisplayAC)$coefficients[3, "Pr(>|t|)"])`, Courtship: $\beta$ = `r fixef(ConspicCourtshipAC)[3]`, 95% CI = `r CI_AC_court[5,1]` to  `r CI_AC_court[5,2]`, df = `r summary(ConspicCourtshipAC)$coefficients[3, "df"]`, t =  `r summary(ConspicCourtshipAC)$coefficients[3, "t value"]`, p = `r p_value(summary(ConspicCourtshipAC)$coefficients[3, "Pr(>|t|)"])`, see figure 1a & b). 
+Sexual selection is expected to favour more conspicuous dymamic sexual signals in Hawaii under relaxed predation because higher predation should favour cryptic signals whereas greater conspicuousness of sexual signals should be selected in social contexts. In support of this prediction, male display colouration exhibited in social contexts (i.e., male-male contests and courtship) was more conspicuous to a conspecific in Hawaii compared with Kenya (**Male-Male Contests**: Acromatic contrast ($dl$); $F_{`r anovaConspicDisplayAC$NumDF[2]`,`r anovaConspicDisplayAC$DenDF[2]`}$ = `r anovaConspicDisplayAC[5][2,]`, p = `r p_value(anovaConspicDisplayAC[6][2,])`; Chromatic contrast ($dS$): $F_{`r anovaConspicDisplayCC$NumDF[2]`,`r anovaConspicDisplayCC$DenDF[2]`}$ = `r anovaConspicDisplayCC[5][2,]`, p = `r p_value(anovaConspicDisplayCC[6][2,])`; **Courtship displays**: Acromatic contrast ($dl$); $F_{`r courship_anovaAC$NumDF[2]`,`r courship_anovaAC$DenDF[2]`}$ = `r courship_anovaAC[5][2,]`, p = `r p_value(courship_anovaAC[6][2,])`; Chromatic contrast ($dS$): $F_{`r courship_anovaCC$NumDF[2]`,`r courship_anovaCC$DenDF[2]`}$ = `r courship_anovaCC[5][2,]`, p = `r p_value(courship_anovaCC[6][2,])`), and this was  true across all body regions measured (See Supplemental Materials, table S1). Kenyan chameleons were significantly more crypic compared to introduced Hawaiian counterparts (Acromatic Contrast between Hawaiian and Kenyan Populations, Male-male contests: $\beta$ = `r coefAIC_display`, 95% CI = `r CI_AC_display[5,1]` to  `r CI_AC_display[5,2]`, df = `r summary(ConspicDisplayAC)$coefficients[3, "df"]`, t =  `r summary(ConspicDisplayAC)$coefficients[3, "t value"]`, p = `r p_value(summary(ConspicDisplayAC)$coefficients[3, "Pr(>|t|)"])`, Courtship: $\beta$ = `r coefAIC_court`, 95% CI = `r CI_AC_court[5,1]` to  `r CI_AC_court[5,2]`, df = `r summary(ConspicCourtshipAC)$coefficients[3, "df"]`, t =  `r summary(ConspicCourtshipAC)$coefficients[3, "t value"]`, p = `r p_value(summary(ConspicCourtshipAC)$coefficients[3, "Pr(>|t|)"])`, see figure 1a & b). 
 
-Sexual signals are expected to be detected much more easily by predators (ie., snakes and birds) in Hawaii as a result of reduced predation. In support of this prediction, Hawaiian chameleons were significantly more conspicous to both snake and bird predators (figure 1b & c). 
+As a consequence of signal release, sexual signals are expected to be more easily detected by predators (i.e., snakes and birds) in Hawaii. Differential predation pressure resulting from snake and bird predation varying would also result in populations varying in their conspicuousness to different predators.  In support of these predictions, Hawaiian chameleons were significantly more conspicous to both snake and bird predators (figure 1b & c; Achromatic Contrast: ($dl$); $F_{`r anova_predators$NumDF[2]`,`r anova_predators$DenDF[2]`}$ = `r anova_predators[5][2,]`, p = `r p_value(anova_predators[6][2,])`). Differences in chromatic contrast between populations, however,  depended on the predator (significant predator by population interaction: $F_{`r anova_predators_interCC$NumDF[3]`,`r anova_predators_interCC$DenDF[3]`}$ = `r anova_predators_interCC[5][3,]`, p = `r p_value(anova_predators_interCC[6][3,])`). Interestingly, Kenyan and Hawaiian lizards were equally detectable by snakes, but Kenyan chameleons were significantly more cryptic from birds compared to Hawaiian chamleons (figure 1c; Snakes (Hawaii-Kenya): `r CI_hyp_test[1,1]`, 95% CI = `r CI_hyp_test[1,2]` to `r CI_hyp_test[1,3]`, p = 1; Birds (Hawaii-Kenya): `r CI_hyp_test[2,1]`, 95% CI = `r CI_hyp_test[2,2]` to `r CI_hyp_test[2,3]`, p = < 0.001).
 
-```{r Figure1, fig.width = 15, fig.height= 9.287443, fig.cap= "Chromatic and achromatic contrast in Just Noticiable Differences (JND), of Hawaiian and Kenyan chameleons against their respective backgrounds (i.e., average environment of stems and leaves). A & B) Contrast of male chameleons during male-male contests and courtship. JNDs are calculated based on the chameleon visual system. 'NS' denotes non-significant contasts, whereas '**' indicates significant differences < 0.001.}
+
+
+
+```{r Figure1, fig.width = 14, fig.height= 14, fig.cap= "Chromatic and achromatic contrast in Just Noticiable Differences (JND), of Hawaiian and Kenyan chameleons against their respective backgrounds (i.e., average environment of stems and leaves). A & B) Contrast of male chameleons during male-male contests and courtship. JNDs are calculated based on the chameleon visual system. NS denotes non-significant contasts, whereas astericks indicates significant differences is < 0.001."}
 ## Make figures that average across body regions, but display Social Context
 
 courtship_data <- Courtship %>% 
@@ -122,7 +176,19 @@ courtship_data <- Courtship %>%
                   select(ID, Population, Colour, SVL, BodyRegion, Background, dS, dL)
 combined_data <- rbind(courtship_data, display_data)
 
-# Now calculate the averages for each population anc Colour (i.e., context)
+# Now calculate the averages for each population and Colour (i.e., context) / predation
+
+summary_data_pred <- Predator %>%
+                group_by(Predator, Population) %>%
+                summarise( Mean_dS = mean(dS, na.rm = T), 
+                             SE_dS = sd(dS)/sqrt(length(unique(ID))),
+                             Upper_dS = Mean_dS + 1.96*SE_dS,
+                             Lower_dS = Mean_dS - 1.96*SE_dS, 
+                           Mean_dL = mean(dL, na.rm = T), 
+                             SE_dL = sd(dL)/sqrt(length(unique(ID))),
+                             Upper_dL = Mean_dL + 1.96*SE_dL,
+                             Lower_dL = Mean_dL - 1.96*SE_dL) 
+
 
 summary_data <- combined_data %>%
                 group_by(Population, Colour) %>%
@@ -136,12 +202,14 @@ summary_data <- combined_data %>%
                              Lower_dL = Mean_dL - 1.96*SE_dL) %>%
                 mutate(Colour = if_else(Colour == "Courtship", "Courtship", "Male-male contest"))
 
-males <- readPNG("./photos/male_fight.png", native = TRUE)
-#males <- image_scale(males, "200x200")
 
-females <- readPNG("./photos/courtship.png", native = TRUE)
-#females <- image_scale(females, "200x200")
+#Grab photos
+  males <- readPNG("./photos/male_fight.png", native = TRUE)
+females <- readPNG("./photos/courtship.png",  native = TRUE)
+  snake <- readPNG("./photos/snake_cham.png", native = TRUE)
+   bird <- readPNG("./photos/bird_cham.png",  native = TRUE)
 
+#plots
 p1 <- ggplot(summary_data, aes(x = Population, y = Mean_dS, group = Colour, color = Colour)) +
     ylim(2.5, 6.5) + 
   geom_point(size = 3, position = position_dodge(width=0.5)) +
@@ -207,7 +275,71 @@ p2 <- ggplot(summary_data, aes(x = Population, y = Mean_dL, group = Colour, colo
                 bottom = 0.25,
                 top = 0.38, ignore_tag = TRUE)
 
-plot_grid(p1, p2, labels = c("A", "B"), label_size = 16,
+
+p3 <- ggplot(summary_data_pred, aes(x = Population, y = Mean_dL, group = Predator, color = Predator)) +
+  ylim(10, 30) + 
+  geom_point(size = 3, position = position_dodge(width=0.5)) +
+  geom_errorbar(aes(ymin = Lower_dL, ymax = Upper_dL), position = position_dodge(width=0.5), width = 0) + 
+  geom_line(position = position_dodge(width=0.5)) + 
+  scale_color_manual(values = wes_palette("Cavalcanti1")) + #Change color palette here see: https://github.com/karthik/wesanderson
+  xlab("") + 
+  ylab("Achromatic contrast (JND)") +
+   annotate("segment", x = 0.90, xend = 1.90, y = 28, yend = 28, colour = "black") +
+  annotate("segment", x = 1.12, xend = 2.12, y = 26, yend = 26, colour = "black") + 
+  annotate("text", x = 0.9+((1.90 - 0.90)/2), y = 28.5, label = "**",  size = 6) + 
+  annotate("text", x = 1.12+((2.12 - 1.12)/ 2), y = 26.5, label = "**", size = 6) + 
+  theme_bw() +
+  theme(legend.position = "none",
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(size=18),
+    axis.title=element_text(size=20,face="bold"),
+    legend.text =element_text(size = 12),
+    legend.title =element_text(size = 12, face = "bold")) +
+    inset_element(snake,
+                left = 0.45,
+                right = 0.75,
+                bottom = 0.60,
+                top = 0.70, ignore_tag = TRUE) + 
+    inset_element(bird,
+                left = 0.05,
+                right = 0.50,
+                bottom = 0.25,
+                top = 0.38, ignore_tag = TRUE)
+
+p4 <- ggplot(summary_data_pred, aes(x = Population, y = Mean_dS, group = Predator, color = Predator)) +
+  ylim(1, 9) + 
+  geom_point(size = 3, position = position_dodge(width=0.5)) +
+  geom_errorbar(aes(ymin = Lower_dS, ymax = Upper_dS), position = position_dodge(width=0.5), width = 0) + 
+  geom_line(position = position_dodge(width=0.5)) + 
+  scale_color_manual(values = wes_palette("Cavalcanti1")) + #Change color palette here see: https://github.com/karthik/wesanderson
+  xlab("") + 
+  ylab("Chromatic contrast (JND)") +
+   annotate("segment", x = 0.88, xend = 1.88, y = 8.8, yend = 8.8, colour = "black") +
+  annotate("segment", x = 1.12, xend = 2.12, y =2.5, yend = 2.5, colour = "black") + 
+  annotate("text", x = 0.9+((1.90 - 0.90)/2), y = 8.9, label = "**",  size = 6) + 
+  annotate("text", x = 1.12+((2.12 - 1.12)/ 2), y = 2.7, label = "NS", size = 6) + 
+  theme_bw() +
+  theme(legend.position = c(0.10, 0.08),
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(size=18),
+    axis.title=element_text(size=20,face="bold"),
+    legend.text =element_text(size = 12),
+    legend.title =element_text(size = 12, face = "bold")) +
+    inset_element(bird,
+                left = 0.30,
+                right = 0.60,
+                bottom = 0.45,
+                top = 0.60, ignore_tag = TRUE) + 
+    inset_element(snake,
+                left = 0.02,
+                right = 0.32,
+                bottom = 0.20,
+                top = 0.35, ignore_tag = TRUE)
+
+
+plot_grid(p1, p2, p4, p3, labels = c("A", "B", "C", "D"), label_size = 16,
   label_fontface = "bold", rel_widths=c(1,1))
 
 ```
