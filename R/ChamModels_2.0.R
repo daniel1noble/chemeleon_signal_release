@@ -719,6 +719,8 @@ DisplayBgrdCC <- lmer(dS ~ Population + BodyRegion + Background + Background2
                       + Population*Background + Population*Background2 + BodyRegion*Background + BodyRegion*Background2 +(1|ID), data=DisplayBgrd)
 summary(DisplayBgrdCC)
 anova(DisplayBgrdCC)
+
+
 #View plots of residuals
 qqnorm(residuals(DisplayBgrdCC))
 hist(residuals(DisplayBgrdCC))
