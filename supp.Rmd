@@ -8,7 +8,7 @@ output:
   bookdown::word_document2:
     toc: no
     toc_depth: 6
-    number_sections: true
+    number_sections: false
     reference_docx: template.docx
   bookdown::html_document2:
     code_folding: hide
@@ -39,41 +39,57 @@ pacman::p_load(lme4, lmerTest, ggplot2, lsmeans, emmeans, multcomp, dplyr, wesan
 #########################################################
 # Male-male Competition Displays
 #########################################################
-#Load data and clean a bit
-Display_1 <- read.table("./data/Display_1.csv", 
-                          header=TRUE, sep=",", dec=".", strip.white=TRUE)
+  # Load data and clean a bit
+  Display_1 <- read.table("./data/Display_1.csv", 
+                            header=TRUE, sep=",", dec=".", strip.white=TRUE)
+  
+  # Exclude bottom flank.
+  Display_1 <- Display_1 %>% 
+                filter(!BodyRegion == "botflank") %>% as.data.frame() 
+  
+  # Create as factor
+      Display_1$BodyRegion <- factor(Display_1$BodyRegion)
+      
+  # Center SVL to make intercept interpretable
+  Display_1$sc_SVL <- with(Display_1, scale(SVL, scale=FALSE))
 
-#exclude bottom flank.
-Display_1 <- Display_1 %>% 
-              filter(!BodyRegion == "botflank") %>% as.data.frame() 
 
-# create as factor
-    Display_1$BodyRegion <- factor(Display_1$BodyRegion)
+##########
+## Achromatic Contrast - dL
+##########
+
+    # Fit the model that esatimtes changes across body regions
+    ConspicDisplayAC <- lmer(dL ~ sc_SVL + Population + BodyRegion + Population:BodyRegion + (1|ID), data=Display_1)
+    summary(ConspicDisplayAC)
     
-# Center SVL to make intercept interpretable
-Display_1$sc_SVL <- with(Display_1, scale(SVL, scale=FALSE))
+    # Robust variance estimators (RVE). Mostly all consistent
+    Display_subset <- Display_1 %>% filter(!is.na(sc_SVL), !is.na(Population), !is.na(BodyRegion))
+    robust_ConspicDisplayAC <- coef_test(ConspicDisplayAC, cluster = Display_subset$ID, vcov="CR2")
+    
+    # ANOVA. 
+        anova(Display_subset)
+    
+    # Fit model for linear hypothesis tests
+           Display_1$PopBRInt <- interaction(Display_1$Population,Display_1$BodyRegion)
+            ConspicDisplayAC2 <- lmer(dL ~ -1 + sc_SVL + PopBRInt + (1|ID), data=Display_1)
+            summary(ConspicDisplayAC2)
+    # Fit RVE
+     robust_ConspicDisplayAC2 <- coef_test(ConspicDisplayAC2, cluster = Display_subset$ID, vcov="CR2")
+      
+     # Contrasts hypothesis tests, but use RVE 
+    result1 <-Wald_test(ConspicDisplayAC2, constraints = constrain_pairwise(c(2:9)), vcov="CR2", tidy = TRUE)
+    result1$p_val_bonfer <- sapply(p.adjust(result1$p_val, "bonferroni"), function(x) p_value(x))
+    result1 = glht(ConspicDisplayAC2, linfct = mcp(PopBRInt = c("Hawaii.gular - Kenya.gular = 0",
+                                                                "Hawaii.midflank - Kenya.midflank = 0",     
+                                                                "Hawaii.topflank - Kenya.topflank = 0", 
+                                                                 "Hawaii.tailbase - Kenya.tailbase = 0" )))
+
+##########
+## Chromatic Contrast - dL
+##########
 
 # Fit the model that esatimtes changes across body regions
-ConspicDisplayAC <- lmer(dL ~ sc_SVL + Population + BodyRegion + Background 
-                         + Population:Background + Population:BodyRegion + (1|ID), data=Display_1)
-
-# Fit model for linear hypothesis tests
-Display_1$PopBRInt <- interaction(Display_1$Population,Display_1$BodyRegion)
-ConspicDisplayAC2 <- lmer(dL ~ PopBRInt + (1|ID), data=Display_1)
-
-result1 = glht(ConspicDisplayAC2, linfct = mcp(PopBRInt = c("Hawaii.gular - Kenya.gular = 0",
-                                                            "Hawaii.midflank - Kenya.midflank = 0",     
-                                                            "Hawaii.topflank - Kenya.topflank = 0", 
-                                                             "Hawaii.tailbase - Kenya.tailbase = 0" )))
-
-
-## Display - Chromatic contrast (CC or dS)
-## just this next section has Drew's code, which averages the backround (Leaf_B1, Leaf_B2, Leaf_T1, Leaf_T2, Stem1, Stem2) for each lizard body region measurement.
-## This is the full model; however, we do not need background because the way the data is set up R is taking an average. See next model (background dropped)
-
-# Fit the model that esatimtes changes across body regions
-  ConspicDisplayCC <- lmer(dS ~ sc_SVL + Population + BodyRegion + Background 
-                         + Population:Background + Population:BodyRegion + (1|ID), data=Display_1)
+  ConspicDisplayCC <- lmer(dS ~ sc_SVL + Population + BodyRegion + Population:BodyRegion + (1|ID), data=Display_1)
 Display_1$PopBRInt <- interaction(Display_1$Population,Display_1$BodyRegion)
 
 # Fit model for linear hypothesis tests
