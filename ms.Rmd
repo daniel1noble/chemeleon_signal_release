@@ -31,7 +31,7 @@ knitr::opts_chunk$set(echo = FALSE, cache = TRUE, message = FALSE, warning = FAL
 ```{r getlibrary, echo = FALSE, results = "hide"}
 # load libraries
 devtools::install_github("karthik/wesanderson")
-pacman::p_load(lme4, lmerTest, ggplot2, lsmeans, emmeans, multcomp, dplyr, wesanderson, patchwork, latex2exp, png, cowplot, magick, jpeg)
+pacman::p_load(lme4, lmerTest, ggplot2, lsmeans, emmeans, multcomp, dplyr, wesanderson, patchwork, latex2exp, png, cowplot, magick, jpeg, clubSandwich)
 
 p_value <- function(x){
   if(x <= 0.0001) {tmp = "< 0.0001"}
@@ -64,18 +64,33 @@ Display_1 <- Display_1 %>%
 ##########
 ## Achromatic Contrast - dL
 ##########
+      
+    # Fit the model
     ConspicDisplayAC <- lmer(dL ~ sc_SVL + Population + (1|ID), data=Display_1)
-    summary(ConspicDisplayAC)
-    coefAIC_display = fixef(ConspicDisplayAC)[3]
-    CI_AC_display <- data.frame(confint(ConspicDisplayAC))
+      summary(ConspicDisplayAC)
+     
+    # Get the coefficients, and ANOVA statistics for the paper
+          coefAIC_display <- fixef(ConspicDisplayAC)[3]
+            CI_AC_display <- data.frame(confint(ConspicDisplayAC))
     anovaConspicDisplayAC <- anova(ConspicDisplayAC)
+    
+    # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
+    Display_1_IDs <- Display_1 %>% filter(!is.na(sc_SVL), !is.na(Population)) # filter out misssing data
+    robust_ConspicDisplayAC <- coef_test(ConspicDisplayAC, cluster = Display_1_IDs$ID, vcov = "CR2")
     
 ##########
 # Chromatic contrast - dS
 ##########
+    #Fit the model
          ConspicDisplayCC <- lmer(dS ~ sc_SVL + Population + (1|ID), data=Display_1)
-    anovaConspicDisplayCC <- anova(ConspicDisplayCC)
+         summary(ConspicDisplayCC)
     
+    # Get ANOVA statistics for model for the paper
+         anovaConspicDisplayCC <- anova(ConspicDisplayCC)
+    
+    # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
+    Display_1_IDs <- Display_1 %>% filter(!is.na(sc_SVL), !is.na(Population)) # filter out misssing data
+    robust_ConspicDisplayCC <- coef_test(ConspicDisplayCC, cluster = Display_1_IDs$ID, vcov = "CR2")
     
 #########################################################
 # Social Context: Courtship Displays
@@ -91,18 +106,35 @@ Courtship$sc_SVL <- with(Courtship, scale(SVL, scale=FALSE))
 ##########
 ## Achromatic Contrast - dL
 ##########
-ConspicCourtshipAC <- lmer(dL ~ sc_SVL + Population  + (1|ID), data=Courtship)
-summary(ConspicCourtshipAC)
-coefAIC_court = fixef(ConspicCourtshipAC)[3]
-CI_AC_court <- data.frame(confint(ConspicCourtshipAC))
-courship_anovaAC <- anova(ConspicCourtshipAC)
+
+  # Fit the model
+    ConspicCourtshipAC <- lmer(dL ~ sc_SVL + Population  + (1|ID), data=Courtship)
+    summary(ConspicCourtshipAC)
+
+  # Get model stats for ppaer
+       coefAIC_court <- fixef(ConspicCourtshipAC)[3]
+         CI_AC_court <- data.frame(confint(ConspicCourtshipAC))
+    courship_anovaAC <- anova(ConspicCourtshipAC)
+    
+ # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
+    Courtship_IDs <- Courtship %>% filter(!is.na(sc_SVL), !is.na(Population)) # filter out misssing data
+    robust_ConspicCourtshipAC <- coef_test(ConspicCourtshipAC, cluster = Courtship_IDs$ID, vcov = "CR2")
 
 ##########
 # Chromatic contrast - dS
 ##########
+    
+  # Fit the model
   ConspicCourtshipCC <- lmer(dS ~ sc_SVL + Population  + (1|ID), data=Courtship)
- courship_anovaCC <- anova(ConspicCourtshipCC)
+    summary(ConspicCourtshipCC)
+    
+  # Get the ANOVA stats for paper
+    courship_anovaCC <- anova(ConspicCourtshipCC)
  
+  # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
+    Courtship_IDs <- Courtship %>% filter(!is.na(sc_SVL), !is.na(Population)) # filter out misssing data
+    robust_ConspicCourtshipCC <- coef_test(ConspicCourtshipCC, cluster = Courtship_IDs$ID, vcov = "CR2")
+    
  #########################################################
 # Predator Context: Birds and snakes
 #########################################################
@@ -117,35 +149,60 @@ Predator$BodyRegion <- factor(Predator$BodyRegion) #updates levels for the varia
 ## Achromatic Contrast - dL
 ##########
 
-# First, if predator type varies across populations then we would predcit that whether snake and bird actually are different would depend on the population. For example, if, say, in HAwaii and Kenya birds were equally likely as predators then dL would not vary for birds across populations, but would so for snakes. This is an interaction.
+# First, if predator type varies across populations then we would predcit that whether snake and bird actually are different would depend on the population. For example, if, say, in Hawaii and Kenya birds were equally likely as predators then dL would not vary for birds across populations, but would so for snakes. This is an interaction.
 
-PredatorAC <- lmer(dL ~ Predator + Population + Predator:Population + (1|ID), data = Predator) 
-summary(PredatorAC)
-anova_predators_inter <- anova(PredatorAC)
+  # Fit model testing this idea above
+  PredatorAC_inter <- lmer(dL ~ Predator + Population + Predator:Population + (1|ID), data = Predator) 
+  summary(PredatorAC_inter)
+  
+  # Get ANOVA stats for reporting in the paper of interaction
+  anova_predators_inter <- anova(PredatorAC_inter)
 
-# No support for an interaction, so can drop interaction. Tells us that predation, regardless of whether we are talking snake or bird is just low in Hawaii, otherwise, we would predict that signals would evolve to match the predatory system 
-PredatorAC <- lmer(dL ~ Predator + Population + (1|ID), data = Predator) 
-summary(PredatorAC)
-anova_predators <- anova(PredatorAC)
+# No support for an interaction. Drop interaction and fit the main effects model. Tells us that predation, regardless of whether we are talking about snakes or birds is just low in Hawaii, otherwise, we would predict that signals would evolve to match the predatory system 
+  
+  # Fit main effects model
+    PredatorAC <- lmer(dL ~ Predator + Population + (1|ID), data = Predator) 
+    summary(PredatorAC)
+  
+  # Grab the ANOVA summary stats
+    anova_predators <- anova(PredatorAC)
+
+  # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
+    Predator_IDs <- Predator %>% filter(!is.na(Predator), !is.na(Population)) # filter out misssing data
+    robust_PredatorAC <- coef_test(PredatorAC, cluster = Predator_IDs$ID, vcov = "CR2")
+
 ##########
 # Chromatic contrast - dS
 ##########
-PredatorCC <- lmer(dS ~ Predator + Population + Predator:Population + (1|ID), data = Predator) 
-summary(PredatorCC)
-anova_predators_interCC <- anova(PredatorCC)
 
-Predator$pred_pop <- with(Predator, interaction(Predator, Population))
-PredatorCC_pred_pop <- lmer(dS ~ pred_pop + (1|ID), data = Predator) 
-summary(PredatorCC_pred_pop)
+    # First, if predator type varies across populations then we would predcit that whether snake and bird actually are different would depend on the population. For example, if, say, in Hawaii and Kenya birds were equally likely as predators then dL would not vary for birds across populations, but would so for snakes. This is an interaction.
+    
+    # Fit the interaction model.
+    PredatorCC <- lmer(dS ~ Predator + Population + Predator:Population + (1|ID), data = Predator) 
+    summary(PredatorCC)
 
-hypthesis_test <- glht(PredatorCC_pred_pop, df = 101, # df to get t-distribution, use number of lizards not data points
+    # Get ANOVA statistics for the paper
+    anova_predators_interCC <- anova(PredatorCC)
+
+    # Support for an interaction between predator type and population in the chromatic realm. Planned comparisons. First re-fit model
+      Predator$pred_pop <- with(Predator, interaction(Predator, Population))
+    PredatorCC_pred_pop <- lmer(dS ~ pred_pop + (1|ID), data = Predator) 
+    summary(PredatorCC_pred_pop)
+    
+    # Conduct hypothesis tests of interest
+    hypthesis_test <- glht(PredatorCC_pred_pop, df = 101-1, # df to get t-distribution, use number of lizards not data points
              linfct = mcp(pred_pop = c("snake.Hawaii - snake.Kenya = 0",
                                        "bird.Hawaii  - bird.Kenya = 0",
                                        "snake.Hawaii - bird.Hawaii = 0",
-                                       "snake.Kenya  - bird.Kenya = 0")))
-summary(hypthesis_test)
-CI_hyp_test <- as.data.frame(confint(hypthesis_test)$confint)
+                                    "snake.Kenya  - bird.Kenya = 0")))
+    # Get the contrasts, and statistical data for these plannned comparions.
+      summary(hypthesis_test)
+      CI_hyp_test <- as.data.frame(confint(hypthesis_test)$confint)
 
+    # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
+    Predator_IDs <- Predator %>% filter(!is.na(Predator), !is.na(Population)) # filter out misssing data
+    robust_PredatorCC <- coef_test(PredatorCC, cluster = Predator_IDs$ID, vcov = "CR2")
+      
 #########################################################
 # Local Adaptation: Testing for local adaptation
 #########################################################
@@ -164,46 +221,67 @@ DisplayBgrd$BodyRegion <- factor(DisplayBgrd$BodyRegion) #updates levels for the
 ##########
 # Achromatic Contrast - dL
 ##########
-DispBgrdAC_inter <- lmer(dL ~ Population  + Background_pop + Population:Background_pop + (1|ID), data=DisplayBgrd)
 
-DispBgrdAC <- lmer(dL ~ Population  + Background_pop  + (1|ID), data=DisplayBgrd)
-summary(DispBgrdAC)
-anova(DispBgrdAC_inter, DispBgrdAC)
+  # Here, we want to test if the conspicuousness of lizard signals is locally adapted to the specific background of the Kenyan and Hawaiian population. The predcition is simply that, if we were to place a Hawaiian animal against the Kenyan background that it would be far more conspicuous compared to if we place a Kenyan animal in a Hawaiian background. 
 
-# Robust variance esatimation to correct SE's for fixed effects given spectral curves are used multiple times for generating JNDs for each individuals data. 
-clubSandwich::coef_test(DispBgrdAC, cluster = DisplayBgrd$ID, vcov =  "CR2")
+  # Fit the interaction model
+  DispBgrdAC_inter <- lmer(dL ~ Population  + Background_pop + Population:Background_pop + (1|ID), data=DisplayBgrd)
+  summary(DispBgrdAC_inter)
+  
+  # Fit the main effect model
+  DispBgrdAC <- lmer(dL ~ Population  + Background_pop  + (1|ID), data=DisplayBgrd)
+  summary(DispBgrdAC)
+  
+  # Doesn't look like an interaction, so test.
+  anova(DispBgrdAC_inter, DispBgrdAC)
 
-DisplayBgrd$pop_back <- with(DisplayBgrd, interaction(Population, Background_pop))
-DisplayBgrd_pop_back <- lmer(dL ~ pop_back + (1|ID), data = DisplayBgrd) 
+  # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
+  robust_localAdapt <- clubSandwich::coef_test(DispBgrdAC, cluster = DisplayBgrd$ID, vcov =  "CR2")
 
-# df to get t-distribution, use number of lizards not data points
-hypthesis_test_preppop <- glht(DisplayBgrd_pop_back, df = 69-1, 
-             linfct = mcp(pop_back = c("Hawaii.Kenya  -Hawaii.Hawaii = 0")))
-
-summary(hypthesis_test_preppop)
-p_displ_AC <- as.numeric(summary(hypthesis_test_preppop)$test$pvalues)
-CI_dis_AC <- as.data.frame(confint(hypthesis_test_preppop)$confint)
+  # Planned contrast. Fit the model in a slightly different way
+  DisplayBgrd$pop_back <- with(DisplayBgrd, interaction(Population, Background_pop))
+  DisplayBgrd_pop_back <- lmer(dL ~ pop_back + (1|ID), data = DisplayBgrd) 
+  
+  # df to get t-distribution, use number of lizards not data points
+  hypthesis_test_preppop <- glht(DisplayBgrd_pop_back, df = 69-1, 
+               linfct = mcp(pop_back = c("Hawaii.Kenya  -Hawaii.Hawaii = 0")))
+  
+  # Grab contrast stats for paper
+  summary(hypthesis_test_preppop)
+  p_displ_AC <- as.numeric(summary(hypthesis_test_preppop)$test$pvalues)
+   CI_dis_AC <- as.data.frame(confint(hypthesis_test_preppop)$confint)
 ##########
 # Chromatic Contrast - dS
 ##########
-DispBgrdCC_inter <- lmer(dS ~ Population  + Background_pop + Population:Background_pop + (1|ID), data=DisplayBgrd)
 
-DispBgrdCC <- lmer(dS ~ Population  + Background_pop  + (1|ID), data=DisplayBgrd)
-summary(DispBgrdCC)
-anova(DispBgrdCC_inter, DispBgrdCC)
+ # Here, we want to test if the conspicuousness of lizard signals is locally adapted to the specific background of the Kenyan and Hawaiian population. The predcition is simply that, if we were to place a Hawaiian animal against the Kenyan background that it would be far more conspicuous compared to if we place a Kenyan animal in a Hawaiian background. 
 
-# Robust variance esatimation to correct SE's for fixed effects given spectral curves are used multiple times for generating JNDs for each individuals data. 
-clubSandwich::coef_test(DispBgrdCC, cluster = DisplayBgrd$ID, vcov =  "CR2")
+   # Fit the interaction model
+    DispBgrdCC_inter <- lmer(dS ~ Population  + Background_pop + Population:Background_pop + (1|ID), data=DisplayBgrd)
+    summary(DispBgrdCC_inter)
+   
+    # Fit the main effect model
+          DispBgrdCC <- lmer(dS ~ Population  + Background_pop  + (1|ID), data=DisplayBgrd)
+          summary(DispBgrdCC)
+          
+    # Looks like weak evidence for interaction    
+        anova(DispBgrdCC_inter, DispBgrdCC)
 
-DisplayBgrd$pop_back <- with(DisplayBgrd, interaction(Population, Background_pop))
-DisplayBgrd_pop_backCC <- lmer(dS ~ pop_back + (1|ID), data = DisplayBgrd) 
+    # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
+      robust_DispBgrdCC <- clubSandwich::coef_test(DispBgrdCC, cluster = DisplayBgrd$ID, vcov =  "CR2")
 
-hypthesis_test_preppop_CC <- glht(DisplayBgrd_pop_backCC, df = 69-1, # df to get t-distribution, use number of lizards not data points
+    # Planned contrasts. Refit model in slight different form
+      DisplayBgrd$pop_back <- with(DisplayBgrd, interaction(Population, Background_pop))
+    DisplayBgrd_pop_backCC <- lmer(dS ~ pop_back + (1|ID), data = DisplayBgrd) 
+
+    # Conduct hypothesis test, df to get t-distribution, use number of lizards not data points
+      hypthesis_test_preppop_CC <- glht(DisplayBgrd_pop_backCC, df = 69-1, 
              linfct = mcp(pop_back = c("Hawaii.Kenya  -Hawaii.Hawaii = 0")))
 
-summary(hypthesis_test_preppop_CC)
-p_displ_CC <- as.numeric(summary(hypthesis_test_preppop_CC)$test$pvalues)
-CI_Disp_CC <- as.data.frame(confint(hypthesis_test_preppop_CC)$confint)
+    # Grab the statistics for the paper
+      summary(hypthesis_test_preppop_CC)
+      p_displ_CC <- as.numeric(summary(hypthesis_test_preppop_CC)$test$pvalues)
+      CI_Disp_CC <- as.data.frame(confint(hypthesis_test_preppop_CC)$confint)
 
 ###################
 # Social Context: Courtship
@@ -221,52 +299,67 @@ CourtshipBgrd$BodyRegion <- factor(CourtshipBgrd$BodyRegion)
 ## Achromatic Contrast - dL
 ##########
 
-CourtshipAC_inter <- lmer(dL ~ Population  + Background_pop + Population:Background_pop + (1|ID), data=CourtshipBgrd)
+ # Here, we want to test if the conspicuousness of lizard signals is locally adapted to the specific background of the Kenyan and Hawaiian population. The predcition is simply that, if we were to place a Hawaiian animal against the Kenyan background that it would be far more conspicuous compared to if we place a Kenyan animal in a Hawaiian background. 
 
-CourtshipAC <- lmer(dL ~ Population  + Background_pop  + (1|ID), data=CourtshipBgrd)
-summary(CourtshipAC)
-anova(CourtshipAC_inter, CourtshipAC)
+  # Fit the interaction model
+    CourtshipAC_inter <- lmer(dL ~ Population  + Background_pop + Population:Background_pop + (1|ID), data=CourtshipBgrd)
 
-CourtshipBgrd$pop_back <- with(CourtshipBgrd, interaction(Population, Background_pop))
-CourtshipBgrd_pop_back <- lmer(dL ~ pop_back + (1|ID), data = CourtshipBgrd) 
+  # Fit main effects model
+    CourtshipAC <- lmer(dL ~ Population  + Background_pop  + (1|ID), data=CourtshipBgrd)
+    summary(CourtshipAC)
 
-# Robust variance esatimation to correct SE's for fixed effects given spectral curves are used multiple times for generating JNDs for each individuals data. 
-clubSandwich::coef_test(CourtshipAC, cluster = CourtshipBgrd$ID, vcov =  "CR2")
+  # Interaction needed? No
+    anova(CourtshipAC_inter, CourtshipAC)
 
+   # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
+   robust_CourtshipAC <- clubSandwich::coef_test(CourtshipAC, cluster = CourtshipBgrd$ID, vcov =  "CR2")
 
-hypthesis_test_preppopCourtship <- glht(CourtshipBgrd_pop_back, df = 69-1, # df to get t-distribution, use number of lizards not data points
+  # Planned contrasts / hypothesis tests. Need to fit model a little differently
+    CourtshipBgrd$pop_back <- with(CourtshipBgrd, interaction(Population, Background_pop))
+    CourtshipBgrd_pop_back <- lmer(dL ~ pop_back + (1|ID), data = CourtshipBgrd) 
+    
+  # Hypothesis tests
+      hypthesis_test_preppopCourtship <- glht(CourtshipBgrd_pop_back, df = 69-1, 
+                                        # df to get t-distribution, use number of lizards not data points
              linfct = mcp(pop_back = c("Hawaii.Kenya  -Hawaii.Hawaii = 0")))
 
-summary(hypthesis_test_preppopCourtship)
- p_courtship_AC <- as.numeric(summary(hypthesis_test_preppopCourtship)$test$pvalues)
+      summary(hypthesis_test_preppopCourtship)
+ 
+  # Grab the stats for paper
+      p_courtship_AC <- as.numeric(summary(hypthesis_test_preppopCourtship)$test$pvalues)
 CI_AC_Courtship <- data.frame(confint(hypthesis_test_preppopCourtship)$confint)
 
 ##########
 # Chromatic - dS
 ##########
-CourtshipCC_inter <- lmer(dS ~ Population  + Background_pop + Population:Background_pop + (1|ID), data=CourtshipBgrd)
+ # Here, we want to test if the conspicuousness of lizard signals is locally adapted to the specific background of the Kenyan and Hawaiian population. The predcition is simply that, if we were to place a Hawaiian animal against the Kenyan background that it would be far more conspicuous compared to if we place a Kenyan animal in a Hawaiian background. 
 
+  # Fit interaction model
+    CourtshipCC_inter <- lmer(dS ~ Population  + Background_pop + Population:Background_pop + (1|ID), data=CourtshipBgrd)
+
+  # Fit main effect model
       CourtshipCC <- lmer(dS ~ Population  + Background_pop  + (1|ID), data=CourtshipBgrd)
       summary(CourtshipCC)
-        anova(CourtshipCC)
+      anova(CourtshipCC)
 
-# Test whether interaction is supported
-anova(CourtshipCC_inter, CourtshipCC)
+  # Test whether interaction is supported
+    anova(CourtshipCC_inter, CourtshipCC)
 
-# Robust variance esatimation to correct SE's for fixed effects given spectral curves are used multiple times for generating JNDs for each individuals data. 
-clubSandwich::coef_test(CourtshipCC, cluster = CourtshipBgrd$ID, vcov =  "CR2")
+  # Robust variance esatimation to correct SE's for fixed effects given spectral curves are used multiple times for generating JNDs for each individuals data. 
+  robust_CourtshipCC <- clubSandwich::coef_test(CourtshipCC, cluster = CourtshipBgrd$ID, vcov =  "CR2")
 
-# Posthoc comparions
-  CourtshipBgrd$pop_back <- with(CourtshipBgrd, interaction(Population, Background_pop))
-CourtshipBgrd_pop_backCC <- lmer(dS ~ pop_back + (1|ID), data = CourtshipBgrd) 
+  # Planned comparions
+    CourtshipBgrd$pop_back <- with(CourtshipBgrd, interaction(Population, Background_pop))
+  CourtshipBgrd_pop_backCC <- lmer(dS ~ pop_back + (1|ID), data = CourtshipBgrd) 
 
-# Specific planned comparisons
-hypthesis_test_preppopCourtshipCC <- glht(CourtshipBgrd_pop_backCC, df = 69-1, # df to get t-distribution, use number of lizards not data points
+  # Specific planned comparisons, # df to get t-distribution, use number of lizards not data points
+      hypthesis_test_preppopCourtshipCC <- glht(CourtshipBgrd_pop_backCC, df = 69-1, 
              linfct = mcp(pop_back = c("Hawaii.Kenya - Hawaii.Hawaii = 0")))
 
-summary(hypthesis_test_preppopCourtshipCC)
-p_courtship_CC <- as.numeric(summary(hypthesis_test_preppopCourtshipCC)$test$pvalues)
-CI_CC_Courtship <- data.frame(confint(hypthesis_test_preppopCourtshipCC)$confint)
+  # Grab summary stats for paper
+    summary(hypthesis_test_preppopCourtshipCC)
+    p_courtship_CC <- as.numeric(summary(hypthesis_test_preppopCourtshipCC)$test$pvalues)
+    CI_CC_Courtship <- data.frame(confint(hypthesis_test_preppopCourtshipCC)$confint)
 ```
 
 Martin J. Whiting $^1,*$, Brenden S. Holland $^2$, J. Scott Keogh$^3$, Daniel W.A.Noble$^3$, Katrina J. Rankin$^4$ and Devi M. Stuart-Fox$^4$
@@ -579,7 +672,4 @@ plot_grid(p1.2, p2.2, labels = c("A", "B"), label_size = 16,
 ```
 
 
-Specifically, we tested the following predictions: 1.) display colouration used in male-male contests and courtship will be more conspicuous to a conspecific in Hawaii than Kenya; 2.) display colouration used in response to an encounter with a bird and snake predator will be more conspicuous to both predator types in Hawai’i than Kenya. 3.) under character release, males will have greater capacity to change colour from a subordinate to a dominant state in Hawai’i compared to Kenya.
-    
-We also tested the hypothesis that sensory drive and local adaptation are responsible for driving display coloration. Specifically, we predicted that chameleon display colouration in each population would be more conspicuous within its own signaling environment compared to the other population’s signaling environment. For example, Hawaiian chameleons were historically found in Kenya but under sensory drive and local adaptation they are predicted to be more conspicuous in their current signaling environment, Hawai’i. Likewise, Kenyan chameleons have no history in Hawai’i and are therefore predicted to be more conspicuous within their current signaling environment, Kenya. 
 
