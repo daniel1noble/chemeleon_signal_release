@@ -390,6 +390,8 @@ Local adaptation of sexual signals would result in Hawaiian chameleons being mor
 
 
 ```{r Figure1, fig.width = 14, fig.height= 14, fig.cap= "Chromatic and achromatic contrast in Just Noticiable Differences (JND), of Hawaiian and Kenyan chameleons against their respective backgrounds (i.e., average environment of stems and leaves). A & B) Contrast of male chameleons during male-male contests and courtship. JNDs are calculated based on the chameleon visual system. NS denotes non-significant contasts, whereas astericks indicates significant differences is < 0.001."}
+rerun = FALSE
+if(rerun){
 ## Make figures that average across body regions, but display Social Context
 
 courtship_data <- Courtship %>% 
@@ -446,7 +448,7 @@ p1 <- ggplot(summary_data, aes(x = Population, y = Mean_dS, group = Colour, colo
   annotate("text", x = 1.12+(2.12-1.12)/2, y = 5.8, label = "NS", size = 6) + 
   theme_bw() +
   labs(colour = "Social Context") +
-  theme(legend.position = c(0.28, 0.08),
+  theme(legend.position = c(0.18, 0.08),
     panel.grid.major = element_blank(), 
     panel.grid.minor = element_blank(),
     axis.text=element_text(size=18),
@@ -560,14 +562,20 @@ p4 <- ggplot(summary_data_pred, aes(x = Population, y = Mean_dS, group = Predato
                 bottom = 0.20,
                 top = 0.35, ignore_tag = TRUE)
 
-
+#pdf(file = "./output/figures/Figure1.1.pdf", width = 14, height = 14)
 plot_grid(p1, p2, p4, p3, labels = c("A", "B", "C", "D"), label_size = 16,
   label_fontface = "bold", rel_widths=c(1,1))
-
+#dev.off()
+} else {
+  plot(image_read_pdf("./output/figures/Figure1.pdf"))
+}
 ```
 
 
-```{r Figure2, fig.width = 14, fig.height= 9, fig.cap= ""}
+```{r Figure2, fig.width = 14, fig.height= 9, fig.cap= "Local adaptation of chromatic and acromatic contrast for Hawaiian chameleons against Hawaiian and Kenyan backgrounds."}
+rerun=FALSE
+
+if(rerun){
 ##########
 # Data
 ##########
@@ -617,7 +625,7 @@ p1.2 <- ggplot(summary_data_localAdap, aes(x = Background_pop, y = Mean_dS, grou
   annotate("text", x = 1.12+(2.12-1.12)/2, y = 5.8, label = "NS", size = 6) + 
   theme_bw() +
   labs(colour = "Social Context") +
-  theme(legend.position = c(0.28, 0.08),
+  theme(legend.position = c(0.15, 0.08),
     panel.grid.major = element_blank(), 
     panel.grid.minor = element_blank(),
     axis.text=element_text(size=18),
@@ -665,9 +673,14 @@ p2.2 <- ggplot(summary_data_localAdap, aes(x = Background_pop, y = Mean_dL, grou
                 right = 0.50,
                 bottom = 0.25,
                 top = 0.38, ignore_tag = TRUE)
-
+#pdf(file="./output/figures/Figure2.pdf", height = 10, width = 18)
 plot_grid(p1.2, p2.2, labels = c("A", "B"), label_size = 16,
   label_fontface = "bold", rel_widths=c(1,1))
+#dev.off()
+} else {
+  plot(image_read_pdf("./output/figures/Figure2.pdf"))
+}
+
 
 ```
 
