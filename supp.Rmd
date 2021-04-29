@@ -90,8 +90,8 @@ p_value <- function(x){
 ## Chromatic Contrast - dL
 ##########
 
-# Fit the model that esatimtes changes across body regions
-  ConspicDisplayCC <- lmer(dS ~ sc_SVL + Population + BodyRegion + Population:BodyRegion + (1|ID), data=Display_1)
+ # Fit the model that esatimtes changes across body regions
+    ConspicDisplayCC <- lmer(dS ~ sc_SVL + Population + BodyRegion + Population:BodyRegion + (1|ID), data=Display_1)
     
  # Robust variance estimators (RVE). Mostly all consistent
              Display_subset <- Display_1 %>% filter(!is.na(sc_SVL), !is.na(Population), !is.na(BodyRegion))
@@ -104,7 +104,7 @@ p_value <- function(x){
  
  # Contrasts hypothesis tests, but use RVE 
                  result2 <- Wald_test(ConspicDisplayCC2, constraints = constrain_pairwise(c(2:9)), vcov="CR2", tidy = TRUE)
-    result2$p_val_bonfer <- sapply(p.adjust(result1$p_val, "bonferroni"), function(x) p_value(x))
+    result2$p_val_bonfer <- sapply(p.adjust(result2$p_val, "bonferroni"), function(x) p_value(x))
 
 #########################################################
 # Courtship Displays
@@ -116,59 +116,77 @@ Courtship <- read.table("./data/Courtship_1.2.csv",
 # Center SVL to make intercept interpretable
 Courtship$sc_SVL <- with(Courtship, scale(SVL, scale=FALSE))
 
-# Fit model
-ConspicCourtshipAC <- lmer(dL ~ sc_SVL + Population + BodyRegion +  
-                             + Population:BodyRegion + (1|ID), data=Courtship)
-anova(ConspicCourtshipAC)
 
-ConspicCourtshipAC <- lmer(dL ~ sc_SVL + Population + BodyRegion + (1|ID), data=Courtship)
-summary(ConspicCourtshipAC)
-anova(ConspicCourtshipAC)
+##########
+## Achromatic Contrast - dL
+##########
+  # Fit model
+    ConspicCourtshipAC <- lmer(dL ~ sc_SVL + Population + BodyRegion + Population:BodyRegion + (1|ID), data=Courtship)
+    summary(ConspicCourtshipAC)
+      anova(ConspicCourtshipAC)
 
-# Courtship - Chromatic dl
+  # Robust variance estimators (RVE). Mostly all consistent
+             Courtship_subset <- Courtship %>% filter(!is.na(sc_SVL), !is.na(Population), !is.na(BodyRegion))
+    robust_ConspicCourtshipAC <- coef_test(ConspicCourtshipAC, cluster = Courtship_subset$ID, vcov="CR2")    
+      
+  # Refit model for contrasts
+     Courtship$PopBRInt <- interaction(Courtship$Population,Courtship$BodyRegion)
+    ConspicCourtshipAC2 <- lmer(dL ~ -1 + sc_SVL + PopBRInt + (1|ID), data=Courtship)
 
-Courtship$PopBRInt <- interaction(Courtship$Population,Courtship$BodyRegion)
-ConspicCourtshipAC2 <- lmer(dL ~ PopBRInt + (1|ID), data=Courtship)
-summary(glht(ConspicCourtshipAC2, linfct = mcp(PopBRInt = c("Hawaii.gular - Kenya.gular = 0",
-                                                            "Hawaii.midflank - Kenya.midflank = 0", 
-                                                            "Hawaii.topflank - Kenya.topflank = 0", 
-                                                            "Hawaii.tailbase - Kenya.tailbase = 0" ))))
+  # Contrasts hypothesis tests, but use RVE 
+                 result3 <- Wald_test(ConspicCourtshipAC2, constraints = constrain_pairwise(c(2:9)), vcov="CR2", tidy = TRUE)
+    result3$p_val_bonfer <- sapply(p.adjust(result3$p_val, "bonferroni"), function(x) p_value(x))
 
+##########
+## Chromatic Contrast - dL
+#########
+    
+    # Fit model
+        ConspicCourtshipCC <- lmer(dS ~ sc_SVL + Population + BodyRegion + Population:BodyRegion + (1|ID), data=Courtship)
 
-# Courtship - Chromatic dS
-ConspicCourtshipCC <- lmer(dS ~ SVL + Population + BodyRegion + Background 
-                           + Population:Background + Population:BodyRegion + (1|ID), data=Courtship)
-Courtship$PopBRInt <- interaction(Courtship$Population,Courtship$BodyRegion)
-ConspicCourtshipCC2 <- lmer(dS ~ PopBRInt + (1|ID), data=Courtship)
-summary(glht(ConspicCourtshipCC2, linfct = mcp(PopBRInt = c("Hawaii.gular - Kenya.gular = 0",
-                                                            "Hawaii.midflank - Kenya.midflank = 0", 
-                                                            "Hawaii.topflank - Kenya.topflank = 0", 
-                                                            "Hawaii.tailbase - Kenya.tailbase = 0" ))))
-
+    # Robust variance estimators (RVE). Mostly all consistent
+             Courtship_subset <- Courtship %>% filter(!is.na(sc_SVL), !is.na(Population), !is.na(BodyRegion))
+    robust_ConspicCourtshipCC <- coef_test(ConspicCourtshipCC, cluster = Courtship_subset$ID, vcov="CR2")    
+    
+    # Refit model to get the contrasts between coefficienst we want
+     Courtship$PopBRInt <- interaction(Courtship$Population,Courtship$BodyRegion)
+    ConspicCourtshipCC2 <- lmer(dS ~ -1 + sc_SVL + PopBRInt + (1|ID), data=Courtship)
+    
+    # Contrasts hypothesis tests, but use RVE 
+                 result4 <- Wald_test(ConspicCourtshipCC2, constraints = constrain_pairwise(c(2:9)), vcov="CR2", tidy = TRUE)
+    result4$p_val_bonfer <- sapply(p.adjust(result4$p_val, "bonferroni"), function(x) p_value(x))
+    
 
 #########################################################
 # Displays to Predators, birds and snake
 #########################################################
- Predator <- read.table("./data/Predator_2_3.csv", 
-                       header=TRUE, sep=",", dec=".", strip.white=TRUE)
+   Predator <- read.table("./data/Predator_2_3.csv", 
+                         header=TRUE, sep=",", dec=".", strip.white=TRUE)
+   
+  # Clean up
+             Predator <- Predator %>% filter(!BodyRegion == "botflank" & !BodyRegion =='gularbot') %>% as.data.frame() #exclude bottom flank.
+  Predator$BodyRegion <- factor(Predator$BodyRegion) #updates levels for the variable BodyRegion
+
+##########
+## Achromatic Contrast - dL
+##########
+
+   # Fit model
+      PredatorAC <- lmer(dL ~ Predator + Population + BodyRegion + Predator:BodyRegion + Predator:Population + (1|ID), data=Predator)
+      anova(PredatorAC)
+
+   # Robust variance estimators (RVE). Mostly all consistent
+             Predator_subset <- Predator %>% filter(!is.na(Population), !is.na(BodyRegion))
+    robust_PredatorAC <- coef_test(PredatorAC, cluster = Predator_subset$ID, vcov="CR2")    
+
+  # Fit model for linear hypothesis tests
+    Predator$PopBRInt <- interaction(Predator$Population,Predator$Predator, Predator$BodyRegion)
+     ConspicDisplayCC2 <- lmer(dS ~ -1 + PopBRInt + (1|ID), data=Display_1)
+     summary(ConspicDisplayCC2)
  
-# Clean up
- Predator <- Predator %>% filter(!BodyRegion == "botflank" & !BodyRegion =='gularbot') %>% as.data.frame() #exclude bottom flank.
-Predator$BodyRegion <- factor(Predator$BodyRegion) #updates levels for the variable BodyRegion
-
-# Transformation, just in case residuals are non-normal they may help. Remember, models assume normality of residuals not normality of the data. None-normality could be driven by effects you wish to model. So, you need to account for these first.
-Predator <- Predator %>% mutate(log_dS = log(dS),
-                                log_dL = log(dL),
-                                sqrt_dS = sqrt(dS),
-                                sqrt_dL = sqrt(dL))
-
-## Predator Model - Achromatic contrast (AC or dL)
-## just this next section has Drew's code, which averages the backround (Leaf_B1, Leaf_B2, Leaf_T1, Leaf_T2, Stem1, Stem2) for each lizard body region measurement.
-## This is the full model; however, we do not need background because the way the data is set up R is taking an average. See next model (background dropped)
-PredatorAC <- lmer(dL ~ Predator + Population + BodyRegion + Background 
-                         + Predator:Background + Predator:BodyRegion + (1|ID), data=Predator)
-anova(PredatorAC)
-
+ # Contrasts hypothesis tests, but use RVE 
+                 result2 <- Wald_test(ConspicDisplayCC2, constraints = constrain_pairwise(c(2:9)), vcov="CR2", tidy = TRUE)
+    result2$p_val_bonfer <- sapply(p.adjust(result2$p_val, "bonferroni"), function(x) p_value(x))
 # Posthoc tests
 Predator$PopBRInt <- interaction(Predator$Population,Predator$BodyRegion)
 PredatorAC2 <- lmer(sqrt_dL ~ PopBRInt + (1|ID), data=Predator)
