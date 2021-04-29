@@ -30,7 +30,15 @@ knitr::opts_chunk$set(echo = FALSE, cache = TRUE, message = FALSE, warning = FAL
 ```{r getlibrary, echo = FALSE, results = "hide"}
 # load libraries
 devtools::install_github("karthik/wesanderson")
-pacman::p_load(lme4, lmerTest, ggplot2, lsmeans, emmeans, multcomp, dplyr, wesanderson, patchwork, pander, kableExtra, flextable, jpeg)
+pacman::p_load(lme4, lmerTest, ggplot2, lsmeans, emmeans, multcomp, dplyr, wesanderson, patchwork, pander, kableExtra, flextable, jpeg, clubSandwich)
+
+p_value <- function(x){
+  if(x <= 0.0001) {tmp = "< 0.0001"}
+  if(x <= 0.001 & x >= 0.0001) {tmp ="< 0.001"}
+  if(x <= 0.01 & x >= 0.001) {tmp ="< 0.01"}
+  if(x >= 0.01) {tmp = round(x, digits =2)}
+  return(tmp)
+}
 ```
 
 
@@ -58,7 +66,7 @@ pacman::p_load(lme4, lmerTest, ggplot2, lsmeans, emmeans, multcomp, dplyr, wesan
 ## Achromatic Contrast - dL
 ##########
 
-    # Fit the model that esatimtes changes across body regions
+    # Fit the model that estimates changes across body regions
     ConspicDisplayAC <- lmer(dL ~ sc_SVL + Population + BodyRegion + Population:BodyRegion + (1|ID), data=Display_1)
     summary(ConspicDisplayAC)
     
@@ -66,23 +74,17 @@ pacman::p_load(lme4, lmerTest, ggplot2, lsmeans, emmeans, multcomp, dplyr, wesan
     Display_subset <- Display_1 %>% filter(!is.na(sc_SVL), !is.na(Population), !is.na(BodyRegion))
     robust_ConspicDisplayAC <- coef_test(ConspicDisplayAC, cluster = Display_subset$ID, vcov="CR2")
     
-    # ANOVA. 
-        anova(Display_subset)
-    
     # Fit model for linear hypothesis tests
            Display_1$PopBRInt <- interaction(Display_1$Population,Display_1$BodyRegion)
             ConspicDisplayAC2 <- lmer(dL ~ -1 + sc_SVL + PopBRInt + (1|ID), data=Display_1)
             summary(ConspicDisplayAC2)
-    # Fit RVE
-     robust_ConspicDisplayAC2 <- coef_test(ConspicDisplayAC2, cluster = Display_subset$ID, vcov="CR2")
+    
+     # Fit RVE
+      robust_ConspicDisplayAC2 <- coef_test(ConspicDisplayAC2, cluster = Display_subset$ID, vcov="CR2")
       
      # Contrasts hypothesis tests, but use RVE 
-    result1 <-Wald_test(ConspicDisplayAC2, constraints = constrain_pairwise(c(2:9)), vcov="CR2", tidy = TRUE)
+    result1 <- Wald_test(ConspicDisplayAC2, constraints = constrain_pairwise(c(2:9)), vcov="CR2", tidy = TRUE)
     result1$p_val_bonfer <- sapply(p.adjust(result1$p_val, "bonferroni"), function(x) p_value(x))
-    result1 = glht(ConspicDisplayAC2, linfct = mcp(PopBRInt = c("Hawaii.gular - Kenya.gular = 0",
-                                                                "Hawaii.midflank - Kenya.midflank = 0",     
-                                                                "Hawaii.topflank - Kenya.topflank = 0", 
-                                                                 "Hawaii.tailbase - Kenya.tailbase = 0" )))
 
 ##########
 ## Chromatic Contrast - dL
@@ -90,14 +92,19 @@ pacman::p_load(lme4, lmerTest, ggplot2, lsmeans, emmeans, multcomp, dplyr, wesan
 
 # Fit the model that esatimtes changes across body regions
   ConspicDisplayCC <- lmer(dS ~ sc_SVL + Population + BodyRegion + Population:BodyRegion + (1|ID), data=Display_1)
-Display_1$PopBRInt <- interaction(Display_1$Population,Display_1$BodyRegion)
+    
+ # Robust variance estimators (RVE). Mostly all consistent
+             Display_subset <- Display_1 %>% filter(!is.na(sc_SVL), !is.na(Population), !is.na(BodyRegion))
+    robust_ConspicDisplayCC <- coef_test(ConspicDisplayCC, cluster = Display_subset$ID, vcov="CR2")    
 
-# Fit model for linear hypothesis tests
-ConspicDisplayCC2 <- lmer(dS ~ PopBRInt + (1|ID), data=Display_1)
-summary(glht(ConspicDisplayCC2, linfct = mcp(PopBRInt = c("Hawaii.gular - Kenya.gular = 0",
-                                                          "Hawaii.midflank - Kenya.midflank = 0", 
-                                                          "Hawaii.topflank - Kenya.topflank = 0", 
-                                                          "Hawaii.tailbase - Kenya.tailbase = 0" ))))
+  # Fit model for linear hypothesis tests
+    Display_1$PopBRInt <- interaction(Display_1$Population,Display_1$BodyRegion)
+     ConspicDisplayCC2 <- lmer(dS ~ -1 + sc_SVL + PopBRInt + (1|ID), data=Display_1)
+     summary(ConspicDisplayCC2)
+ 
+ # Contrasts hypothesis tests, but use RVE 
+                 result2 <- Wald_test(ConspicDisplayCC2, constraints = constrain_pairwise(c(2:9)), vcov="CR2", tidy = TRUE)
+    result2$p_val_bonfer <- sapply(p.adjust(result1$p_val, "bonferroni"), function(x) p_value(x))
 
 #########################################################
 # Courtship Displays
