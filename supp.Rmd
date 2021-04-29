@@ -173,27 +173,23 @@ Courtship$sc_SVL <- with(Courtship, scale(SVL, scale=FALSE))
 
    # Fit model
       PredatorAC <- lmer(dL ~ Predator + Population + BodyRegion + Predator:BodyRegion + Predator:Population + (1|ID), data=Predator)
+      summary(PredatorAC)
       anova(PredatorAC)
 
    # Robust variance estimators (RVE). Mostly all consistent
              Predator_subset <- Predator %>% filter(!is.na(Population), !is.na(BodyRegion))
-    robust_PredatorAC <- coef_test(PredatorAC, cluster = Predator_subset$ID, vcov="CR2")    
+           robust_PredatorAC <- coef_test(PredatorAC, cluster = Predator_subset$ID, vcov="CR2")    
 
   # Fit model for linear hypothesis tests
     Predator$PopBRInt <- interaction(Predator$Population,Predator$Predator, Predator$BodyRegion)
-     ConspicDisplayCC2 <- lmer(dS ~ -1 + PopBRInt + (1|ID), data=Display_1)
-     summary(ConspicDisplayCC2)
+     PredatorAC2 <- lmer(dS ~ -1 + PopBRInt + (1|ID), data=Predator)
+     summary(PredatorAC2)
  
  # Contrasts hypothesis tests, but use RVE 
-                 result2 <- Wald_test(ConspicDisplayCC2, constraints = constrain_pairwise(c(2:9)), vcov="CR2", tidy = TRUE)
-    result2$p_val_bonfer <- sapply(p.adjust(result2$p_val, "bonferroni"), function(x) p_value(x))
-# Posthoc tests
-Predator$PopBRInt <- interaction(Predator$Population,Predator$BodyRegion)
-PredatorAC2 <- lmer(sqrt_dL ~ PopBRInt + (1|ID), data=Predator)
-summary(glht(PredatorAC2, linfct = mcp(PopBRInt = c("Hawaii.gular - Kenya.gular = 0",
-                                                    "Hawaii.midflank - Kenya.midflank = 0", 
-                                                    "Hawaii.topflank - Kenya.topflank = 0", 
-                                                    "Hawaii.tailbase - Kenya.tailbase = 0" ))))
+                 result5 <- Wald_test(PredatorAC2, constraints = constrain_pairwise(c(2:9)), vcov="CR2", tidy = TRUE)
+    result5$p_val_bonfer <- sapply(p.adjust(result5$p_val, "bonferroni"), function(x) p_value(x))
+
+  
 ## dropping background from model (it is still averaged)
 # anova gives us significance of fixed effects
 # ranova tests random effects (note: report just LRT and df)
