@@ -76,7 +76,8 @@ Display_1 <- Display_1 %>%
     
     # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
     Display_1_IDs <- Display_1 %>% filter(!is.na(sc_SVL), !is.na(Population)) # filter out misssing data
-    robust_ConspicDisplayAC <- coef_test(ConspicDisplayAC, cluster = Display_1_IDs$ID, vcov = "CR2")
+       robust_ConspicDisplayAC <- coef_test(ConspicDisplayAC, cluster = Display_1_IDs$ID, vcov = "CR2")  
+    robust_ConspicDisplayAC_CI <- conf_int(ConspicDisplayAC, cluster = Display_1_IDs$ID, vcov = "CR2")
     
 ##########
 # Chromatic contrast - dS
@@ -91,6 +92,7 @@ Display_1 <- Display_1 %>%
     # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
     Display_1_IDs <- Display_1 %>% filter(!is.na(sc_SVL), !is.na(Population)) # filter out misssing data
     robust_ConspicDisplayCC <- coef_test(ConspicDisplayCC, cluster = Display_1_IDs$ID, vcov = "CR2")
+ robust_ConspicDisplayCC_CI <- conf_int(ConspicDisplayCC, cluster = Display_1_IDs$ID, vcov = "CR2")
     
 #########################################################
 # Social Context: Courtship Displays
@@ -119,6 +121,7 @@ Courtship$sc_SVL <- with(Courtship, scale(SVL, scale=FALSE))
  # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
     Courtship_IDs <- Courtship %>% filter(!is.na(sc_SVL), !is.na(Population)) # filter out misssing data
     robust_ConspicCourtshipAC <- coef_test(ConspicCourtshipAC, cluster = Courtship_IDs$ID, vcov = "CR2")
+ robust_ConspicCourtshipAC_CI <- conf_int(ConspicCourtshipAC, cluster = Courtship_IDs$ID, vcov = "CR2")
 
 ##########
 # Chromatic contrast - dS
@@ -133,7 +136,8 @@ Courtship$sc_SVL <- with(Courtship, scale(SVL, scale=FALSE))
  
   # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
     Courtship_IDs <- Courtship %>% filter(!is.na(sc_SVL), !is.na(Population)) # filter out misssing data
-    robust_ConspicCourtshipCC <- coef_test(ConspicCourtshipCC, cluster = Courtship_IDs$ID, vcov = "CR2")
+       robust_ConspicCourtshipCC <- coef_test(ConspicCourtshipCC, cluster = Courtship_IDs$ID, vcov = "CR2")
+    robust_ConspicCourtshipCC_CI <- conf_int(ConspicCourtshipCC, cluster = Courtship_IDs$ID, vcov = "CR2")
     
  #########################################################
 # Predator Context: Birds and snakes
