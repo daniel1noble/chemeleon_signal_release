@@ -188,65 +188,30 @@ Courtship$sc_SVL <- with(Courtship, scale(SVL, scale=FALSE))
  # Contrasts hypothesis tests, but use RVE 
                  result5 <- Wald_test(PredatorAC2, constraints = constrain_pairwise(c(2:9)), vcov="CR2", tidy = TRUE)
     result5$p_val_bonfer <- sapply(p.adjust(result5$p_val, "bonferroni"), function(x) p_value(x))
+    
 
+##########
+## Chromatic Contrast - dL
+########
+
+  # Fit Model
+        PredatorCC <- lmer(dS ~ Predator + Population + BodyRegion + Predator:BodyRegion + Predator:Population + (1|ID), data=Predator)
+        summary(PredatorCC)
+          anova(PredatorAC)
   
-## dropping background from model (it is still averaged)
-# anova gives us significance of fixed effects
-# ranova tests random effects (note: report just LRT and df)
-# need the SD of residuals and random effects from summary (just report random effects)
-
-PredatorAC <- lmer(dL ~ Predator + Population + BodyRegion +  
-                           + Population:BodyRegion + (1|ID), data= Predator) # we have gularbot for Kenya but not Hawaii, so exclude it
-anova(PredatorAC)
-ranova(PredatorAC)
-
-#for random effects, use ranova (is variance > 0?) report just LRT and df and need the SD of residuals and random effects from summary (just report random effects)
-
-Predator$PopBRInt <- interaction(Predator$Population,Predator$BodyRegion)
-PredatorAC2 <- lmer(dL ~ PopBRInt + (1|ID), data=Predator)
-summary(glht(PredatorAC2, linfct = mcp(PopBRInt = c("Hawaii.gular - Kenya.gular = 0",
-                                                    "Hawaii.midflank - Kenya.midflank = 0", 
-                                                    "Hawaii.topflank - Kenya.topflank = 0", 
-                                                    "Hawaii.tailbase - Kenya.tailbase = 0" ))))
-
-# Chromatic Contast - dS
-
-## Predator Model - Chromatic contrast (CC or dS)
-## just this next section has Drew's code, which averages the backround (Leaf_B1, Leaf_B2, Leaf_T1, Leaf_T2, Stem1, Stem2) for each lizard body region measurement.
-## This is the full model; however, we do not need background because the way the data is set up R is taking an average. See next model (background dropped)
-PredatorCC <- lmer(sqrt_dS ~ Predator + Population + BodyRegion + Background 
-                   + Predator:Background + Predator:BodyRegion + (1|ID), data=Predator)
-Predator$PopBRInt <- interaction(Predator$Population,Predator$BodyRegion)
-PredatorCC2 <- lmer(sqrt_dS ~ PopBRInt + (1|ID), data=Predator)
-summary(glht(PredatorCC2, linfct = mcp(PopBRInt = c("Hawaii.gular - Kenya.gular = 0","Hawaii.midflank - Kenya.midflank = 0", "Hawaii.topflank - Kenya.topflank = 0", 
-                                                    "Hawaii.tailbase - Kenya.tailbase = 0" ))))
-
-
-## dropping background from model (it is still averaged)
-# anova gives us significance of fixed effects
-# ranova tests random effects (note: report just LRT and df)
-# need the SD of residuals and random effects from summary (just report random effects)
-
-PredatorCC <- lmer(sqrt_dS ~ Predator + Population + BodyRegion +  
-                     + Population:BodyRegion + (1|ID), data=Predator[Predator$BodyRegion!='gularbot',]) # we have gularbot for Kenya but not Hawaii, so exclude it
-anova(PredatorCC)
-ranova(PredatorCC)
-
-### This is old code for when in the above model, predator was nonsignificant, so we can drop it from the model (below). But after sqrt it is significant, so don't use this code. Just keeping it in case.
-PredatorCC <- lmer(sqrt_dS ~ Population + BodyRegion +  
-                     + Population:BodyRegion + (1|ID), data=Predator[Predator$BodyRegion!='gularbot',]) # we have gularbot for Kenya but not Hawaii, so exclude it
-anova(PredatorCC)
-ranova(PredatorCC)
-###
-
-#for random effects, use ranova (is variance > 0?) report just LRT and df and need the SD of residuals and random effects from summary (just report random effects)
-
-Predator$PopBRInt <- interaction(Predator$Population,Predator$BodyRegion)
-PredatorCC2 <- lmer(sqrt_dS ~ PopBRInt + (1|ID), data=Predator[Predator$BodyRegion!='gularbot',])
-summary(glht(PredatorCC2, linfct = mcp(PopBRInt = c("Hawaii.gular - Kenya.gular = 0","Hawaii.midflank - Kenya.midflank = 0", "Hawaii.topflank - Kenya.topflank = 0", 
-                                                    "Hawaii.tailbase - Kenya.tailbase = 0" ))))
-
-
+  # Robust variance estimators (RVE). Mostly all consistent
+             Predator_subset <- Predator %>% filter(!is.na(Population), !is.na(BodyRegion))
+           robust_PredatorCC <- coef_test(PredatorCC, cluster = Predator_subset$ID, vcov="CR2")    
+  
+  # Fit model for linear hypothesis tests
+    Predator$PopBRInt <- interaction(Predator$Population,Predator$Predator, Predator$BodyRegion)
+          PredatorCC2 <- lmer(dS ~ -1 + PopBRInt + (1|ID), data=Predator)
+          summary(PredatorCC2)
+ 
+ # Contrasts hypothesis tests, but use RVE 
+                 result6 <- Wald_test(PredatorCC2, constraints = constrain_pairwise(c(2:9), with_zero = TRUE), vcov="CR2", tidy = TRUE)
+    result6$p_val_bonfer <- sapply(p.adjust(result6$p_val, "bonferroni"), function(x) p_value(x))
+    
 ```
 
 # Materials and Methods
@@ -282,14 +247,14 @@ summary(result1)
 Display_plot_dS_dat <- Display_1 %>% #data for dS Chromatic constrast
   group_by(Population, BodyRegion) %>% 
   summarise( Mean = mean(dS, na.rm = T), 
-               SE = sd(dS)/sqrt(length(unique(ID))),
+               SE = sd(dS)/sqrt(length(unique(ID))-1),
             Upper = Mean + 1.96*SE,
             Lower = Mean - 1.96*SE) 
             
 Display_plot_dL_dat <- Display_1 %>% #data for dL Achromatic contrast
   group_by(Population, BodyRegion) %>% 
   summarise(Mean = mean(dL, na.rm = T), 
-            SE = sd(dL)/sqrt(length(unique(ID))),
+            SE = sd(dL)/sqrt(length(unique(ID))-1),
             Upper = Mean + 1.96*SE,
             Lower = Mean - 1.96*SE) 
 
