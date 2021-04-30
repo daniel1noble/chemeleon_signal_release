@@ -173,7 +173,8 @@ Predator$BodyRegion <- factor(Predator$BodyRegion) #updates levels for the varia
 
   # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
     Predator_IDs <- Predator %>% filter(!is.na(Predator), !is.na(Population)) # filter out misssing data
-    robust_PredatorAC <- coef_test(PredatorAC, cluster = Predator_IDs$ID, vcov = "CR2")
+       robust_PredatorAC <- coef_test(PredatorAC, cluster = Predator_IDs$ID, vcov = "CR2")
+    robust_PredatorAC_CI <-  conf_int(PredatorAC, cluster = Predator_IDs$ID, vcov = "CR2")
 
 ##########
 # Chromatic contrast - dS
@@ -190,22 +191,37 @@ Predator$BodyRegion <- factor(Predator$BodyRegion) #updates levels for the varia
 
     # Support for an interaction between predator type and population in the chromatic realm. Planned comparisons. First re-fit model
       Predator$pred_pop <- with(Predator, interaction(Predator, Population))
-    PredatorCC_pred_pop <- lmer(dS ~ pred_pop + (1|ID), data = Predator) 
+    PredatorCC_pred_pop <- lmer(dS ~ -1 + pred_pop + (1|ID), data = Predator) 
     summary(PredatorCC_pred_pop)
     
-    # Conduct hypothesis tests of interest
-    hypthesis_test <- glht(PredatorCC_pred_pop, df = 101-1, # df to get t-distribution, use number of lizards not data points
-             linfct = mcp(pred_pop = c("snake.Hawaii - snake.Kenya = 0",
-                                       "bird.Hawaii  - bird.Kenya = 0",
-                                       "snake.Hawaii - bird.Hawaii = 0",
-                                    "snake.Kenya  - bird.Kenya = 0")))
-    # Get the contrasts, and statistical data for these plannned comparions.
-      summary(hypthesis_test)
-      CI_hyp_test <- as.data.frame(confint(hypthesis_test)$confint)
+    # Fit RVE, we want contrast effects because annoyingly RVE doesn't provide them so will relevel to get them in the context of RVE
+      
+    # Model allows us to get bird in Hwaii compared to bird in Kenya (contrast 3)
+      PredatorCC_pred_pop1 <- lmer(dS ~  pred_pop + (1|ID), data = Predator) 
+      summary(PredatorCC_pred_pop1)
+      PredatorCC_pred_pop2 <- lmer(dS ~  relevel(pred_pop, ref = "snake.Hawaii") + (1|ID), data = Predator) 
+      summary(PredatorCC_pred_pop2)
+      
+      # Fit the models so we get the estimate and corrected robust standard error for the contrasts we want to make
+      robust_PredatorCC_pred_pop1 <- conf_int(PredatorCC_pred_pop1, cluster = Predator$ID, vcov="CR2")
+      robust_PredatorCC_pred_pop2 <- conf_int(PredatorCC_pred_pop2, cluster = Predator$ID, vcov="CR2")
+      
+     # Contrasts hypothesis tests, but use RVE 
+    result_pred <- Wald_test(PredatorCC_pred_pop, constraints = constrain_pairwise(c(1:4)), vcov="CR2", tidy = TRUE)
+    result_pred$p_val_bonfer <- sapply(p.adjust(result_pred$p_val, "bonferroni"), function(x) p_value(x))
+    
+    
+    # Get the contrasts and Wald stats for comparions
+     CI_hyp_test <- data.frame(
+              comparison = c("Snake (Hawaii-Kenya)", "Birds (Hawaii-Kenya)"), 
+                Estimate = c(robust_PredatorCC_pred_pop2[4,1], robust_PredatorCC_pred_pop1[3, 1]),
+                lwr = c(robust_PredatorCC_pred_pop2[4,4], robust_PredatorCC_pred_pop1[3, 4]),
+                upr = c(robust_PredatorCC_pred_pop2[4,5], robust_PredatorCC_pred_pop1[3, 5]),
+              Fstat = c(result_pred[5,3], result_pred[2,3]),
+              df = c(result_pred[5,5], result_pred[2,5]),
+              p_val = c(result_pred[5,7], result_pred[2,7]),
+              p_bonf = c(result_pred[5,8], result_pred[2,8]))
 
-    # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
-    Predator_IDs <- Predator %>% filter(!is.na(Predator), !is.na(Population)) # filter out misssing data
-    robust_PredatorCC <- coef_test(PredatorCC, cluster = Predator_IDs$ID, vcov = "CR2")
       
 #########################################################
 # Local Adaptation: Testing for local adaptation
@@ -240,20 +256,25 @@ DisplayBgrd$BodyRegion <- factor(DisplayBgrd$BodyRegion) #updates levels for the
   anova(DispBgrdAC_inter, DispBgrdAC)
 
   # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
-  robust_localAdapt <- clubSandwich::coef_test(DispBgrdAC, cluster = DisplayBgrd$ID, vcov =  "CR2")
+  robust_localAdapt <- clubSandwich::conf_int(DispBgrdAC, cluster = DisplayBgrd$ID, vcov =  "CR2")
 
   # Planned contrast. Fit the model in a slightly different way
   DisplayBgrd$pop_back <- with(DisplayBgrd, interaction(Population, Background_pop))
   DisplayBgrd_pop_back <- lmer(dL ~ pop_back + (1|ID), data = DisplayBgrd) 
+  summary(DisplayBgrd_pop_back)
   
-  # df to get t-distribution, use number of lizards not data points
-  hypthesis_test_preppop <- glht(DisplayBgrd_pop_back, df = 69-1, 
-               linfct = mcp(pop_back = c("Hawaii.Kenya  -Hawaii.Hawaii = 0")))
+  robust_DisplayBgrd_pop_back <- clubSandwich::conf_int(DisplayBgrd_pop_back, cluster = DisplayBgrd$ID, vcov =  "CR2")
+   
+  # Contrasts hypothesis tests, but use RVE 
+    result_DisplayBgrd_pop_back <- Wald_test(DisplayBgrd_pop_back, constraints = constrain_pairwise(c(1:4)), vcov="CR2", tidy = TRUE)
+    result_DisplayBgrd_pop_back$p_val_bonfer <- sapply(p.adjust(result_DisplayBgrd_pop_back$p_val, "bonferroni"), function(x) p_value(x))
   
-  # Grab contrast stats for paper
-  summary(hypthesis_test_preppop)
-  p_displ_AC <- as.numeric(summary(hypthesis_test_preppop)$test$pvalues)
-   CI_dis_AC <- as.data.frame(confint(hypthesis_test_preppop)$confint)
+  # Grab contrasts that we need from the robust esatimtes
+  p_displ_AC <- as.numeric(result_DisplayBgrd_pop_back[2,8])
+   CI_dis_AC <- data.frame(Estimate=robust_DisplayBgrd_pop_back$beta[3],
+                           lwr = robust_DisplayBgrd_pop_back$CI_L[3],
+                           upr = robust_DisplayBgrd_pop_back$CI_U[3])
+     
 ##########
 # Chromatic Contrast - dS
 ##########
@@ -278,14 +299,18 @@ DisplayBgrd$BodyRegion <- factor(DisplayBgrd$BodyRegion) #updates levels for the
       DisplayBgrd$pop_back <- with(DisplayBgrd, interaction(Population, Background_pop))
     DisplayBgrd_pop_backCC <- lmer(dS ~ pop_back + (1|ID), data = DisplayBgrd) 
 
-    # Conduct hypothesis test, df to get t-distribution, use number of lizards not data points
-      hypthesis_test_preppop_CC <- glht(DisplayBgrd_pop_backCC, df = 69-1, 
-             linfct = mcp(pop_back = c("Hawaii.Kenya  -Hawaii.Hawaii = 0")))
-
-    # Grab the statistics for the paper
-      summary(hypthesis_test_preppop_CC)
-      p_displ_CC <- as.numeric(summary(hypthesis_test_preppop_CC)$test$pvalues)
-      CI_Disp_CC <- as.data.frame(confint(hypthesis_test_preppop_CC)$confint)
+    # Fit Robust model
+    robust_DisplayBgrd_pop_backCC <- clubSandwich::conf_int(DisplayBgrd_pop_backCC, cluster = DisplayBgrd$ID, vcov =  "CR2")
+   
+    # Contrasts hypothesis tests, but use RVE 
+      result_DisplayBgrd_pop_backCC <- Wald_test(DisplayBgrd_pop_backCC, constraints = constrain_pairwise(c(1:4)), vcov="CR2", tidy = TRUE)
+      result_DisplayBgrd_pop_backCC$p_val_bonfer <- sapply(p.adjust(result_DisplayBgrd_pop_back$p_val, "bonferroni"), function(x) p_value(x))
+    
+    # Grab contrasts that we need from the robust esatimtes
+      p_displ_CC <- result_DisplayBgrd_pop_backCC[2,8]
+       CI_Disp_CC <- data.frame(Estimate=robust_DisplayBgrd_pop_backCC$beta[3],
+                               lwr = robust_DisplayBgrd_pop_backCC$CI_L[3],
+                               upr = robust_DisplayBgrd_pop_backCC$CI_U[3])
 
 ###################
 # Social Context: Courtship
@@ -322,17 +347,19 @@ CourtshipBgrd$BodyRegion <- factor(CourtshipBgrd$BodyRegion)
     CourtshipBgrd$pop_back <- with(CourtshipBgrd, interaction(Population, Background_pop))
     CourtshipBgrd_pop_back <- lmer(dL ~ pop_back + (1|ID), data = CourtshipBgrd) 
     
-  # Hypothesis tests
-      hypthesis_test_preppopCourtship <- glht(CourtshipBgrd_pop_back, df = 69-1, 
-                                        # df to get t-distribution, use number of lizards not data points
-             linfct = mcp(pop_back = c("Hawaii.Kenya  -Hawaii.Hawaii = 0")))
-
-      summary(hypthesis_test_preppopCourtship)
- 
-  # Grab the stats for paper
-      p_courtship_AC <- as.numeric(summary(hypthesis_test_preppopCourtship)$test$pvalues)
-CI_AC_Courtship <- data.frame(confint(hypthesis_test_preppopCourtship)$confint)
-
+   # Fit Robust model
+    robust_CourtshipBgrd_pop_back <- clubSandwich::conf_int(CourtshipBgrd_pop_back, cluster = CourtshipBgrd$ID, vcov =  "CR2")
+   
+    # Contrasts hypothesis tests, but use RVE 
+      result_CourtshipBgrd_pop_back <- Wald_test(CourtshipBgrd_pop_back, constraints = constrain_pairwise(c(1:4)), vcov="CR2", tidy = TRUE)
+      result_CourtshipBgrd_pop_back$p_val_bonfer <- sapply(p.adjust(result_CourtshipBgrd_pop_back$p_val, "bonferroni"), function(x) p_value(x))
+    
+    # Grab contrasts that we need from the robust esatimtes
+      p_courtship_AC <- result_CourtshipBgrd_pop_back[2,8]
+       CI_AC_Courtship <- data.frame(Estimate=robust_CourtshipBgrd_pop_back$beta[3],
+                               lwr = robust_CourtshipBgrd_pop_back$CI_L[3],
+                               upr = robust_CourtshipBgrd_pop_back$CI_U[3])
+    
 ##########
 # Chromatic - dS
 ##########
@@ -356,14 +383,20 @@ CI_AC_Courtship <- data.frame(confint(hypthesis_test_preppopCourtship)$confint)
     CourtshipBgrd$pop_back <- with(CourtshipBgrd, interaction(Population, Background_pop))
   CourtshipBgrd_pop_backCC <- lmer(dS ~ pop_back + (1|ID), data = CourtshipBgrd) 
 
-  # Specific planned comparisons, # df to get t-distribution, use number of lizards not data points
-      hypthesis_test_preppopCourtshipCC <- glht(CourtshipBgrd_pop_backCC, df = 69-1, 
-             linfct = mcp(pop_back = c("Hawaii.Kenya - Hawaii.Hawaii = 0")))
-
-  # Grab summary stats for paper
-    summary(hypthesis_test_preppopCourtshipCC)
-    p_courtship_CC <- as.numeric(summary(hypthesis_test_preppopCourtshipCC)$test$pvalues)
-    CI_CC_Courtship <- data.frame(confint(hypthesis_test_preppopCourtshipCC)$confint)
+  
+     # Fit Robust model
+    robust_CourtshipBgrd_pop_backCC <- clubSandwich::conf_int(CourtshipBgrd_pop_backCC, cluster = CourtshipBgrd$ID, vcov =  "CR2")
+   
+    # Contrasts hypothesis tests, but use RVE 
+      result_CourtshipBgrd_pop_backCC <- Wald_test(CourtshipBgrd_pop_backCC, constraints = constrain_pairwise(c(1:4)), vcov="CR2", tidy = TRUE)
+      result_CourtshipBgrd_pop_backCC$p_val_bonfer <- sapply(p.adjust(result_CourtshipBgrd_pop_backCC$p_val, "bonferroni"), function(x) p_value(x))
+    
+    # Grab contrasts that we need from the robust esatimtes
+      p_courtship_CC <- result_CourtshipBgrd_pop_backCC[2,8]
+       CI_CC_Courtship <- data.frame(Estimate=robust_CourtshipBgrd_pop_backCC$beta[3],
+                               lwr = robust_CourtshipBgrd_pop_backCC$CI_L[3],
+                               upr = robust_CourtshipBgrd_pop_backCC$CI_U[3])
+  
 ```
 
 Martin J. Whiting $^{1,*}$, Brenden S. Holland $^{2}$, J. Scott Keogh$^{3}$, Daniel W.A.Noble$^{3}$, Katrina J. Rankin$^{4}$ and Devi M. Stuart-Fox$^{4}$
@@ -387,7 +420,7 @@ We manipulated both the social and predatory context chameleons encountered, in 
 
 Sexual selection is expected to favour more conspicuous dymamic sexual signals in Hawaii under relaxed predation because higher predation should favour cryptic signals whereas greater conspicuousness of sexual signals should be selected in social contexts. In support of this prediction, male display colouration exhibited in social contexts (i.e., male-male contests and courtship) was more conspicuous to a conspecific in Hawaii compared with Kenya (Male-Male Contests: Acromatic contrast ($dl$); $F_{`r anovaConspicDisplayAC$NumDF[2]`,`r anovaConspicDisplayAC$DenDF[2]`}$ = `r anovaConspicDisplayAC[5][2,]`, p = `r p_value(anovaConspicDisplayAC[6][2,])`; Chromatic contrast ($dS$): $F_{`r anovaConspicDisplayCC$NumDF[2]`,`r anovaConspicDisplayCC$DenDF[2]`}$ = `r anovaConspicDisplayCC[5][2,]`, p = `r p_value(anovaConspicDisplayCC[6][2,])`; Courtship displays: Acromatic contrast ($dl$); $F_{`r courship_anovaAC$NumDF[2]`,`r courship_anovaAC$DenDF[2]`}$ = `r courship_anovaAC[5][2,]`, p = `r p_value(courship_anovaAC[6][2,])`; Chromatic contrast ($dS$): $F_{`r courship_anovaCC$NumDF[2]`,`r courship_anovaCC$DenDF[2]`}$ = `r courship_anovaCC[5][2,]`, p = `r p_value(courship_anovaCC[6][2,])`), and this was  true across all body regions measured (See Supplemental Materials, table S1). Kenyan chameleons from populations where predation is high were significantly more crypic compared to introduced Hawaiian counterparts (Acromatic Contrast between Hawaiian and Kenyan Populations, Male-male contests: $\beta$ = `r coefAIC_display`, 95% CI = `r CI_AC_display[5,1]` to  `r CI_AC_display[5,2]`, df = `r summary(ConspicDisplayAC)$coefficients[3, "df"]`, t =  `r summary(ConspicDisplayAC)$coefficients[3, "t value"]`, p = `r p_value(summary(ConspicDisplayAC)$coefficients[3, "Pr(>|t|)"])`, Courtship: $\beta$ = `r coefAIC_court`, 95% CI = `r CI_AC_court[5,1]` to  `r CI_AC_court[5,2]`, df = `r summary(ConspicCourtshipAC)$coefficients[3, "df"]`, t =  `r summary(ConspicCourtshipAC)$coefficients[3, "t value"]`, p = `r p_value(summary(ConspicCourtshipAC)$coefficients[3, "Pr(>|t|)"])`, see figure 1a & b). 
 
-As a consequence of signal release, sexual signals are expected to be more easily detected by predators (i.e., snakes and birds) in Hawaii. Differential predation pressure resulting from snake and bird predation varying would also result in populations varying in their conspicuousness to different predators.  In support of these predictions, Hawaiian chameleons were significantly more conspicous to both snake and bird predators (figure 1b & c; Achromatic Contrast: ($dl$); $F_{`r anova_predators$NumDF[2]`,`r anova_predators$DenDF[2]`}$ = `r anova_predators[5][2,]`, p = `r p_value(anova_predators[6][2,])`). Differences in chromatic contrast between populations, however,  depended on the predator (significant predator by population interaction: $F_{`r anova_predators_interCC$NumDF[3]`,`r anova_predators_interCC$DenDF[3]`}$ = `r anova_predators_interCC[5][3,]`, p = `r p_value(anova_predators_interCC[6][3,])`). Interestingly, Kenyan and Hawaiian lizards were equally detectable by snakes, but Kenyan chameleons were significantly more cryptic from birds compared to Hawaiian chamleons (figure 1c; Snakes (Hawaii-Kenya): `r CI_hyp_test[1,1]`, 95% CI = `r CI_hyp_test[1,2]` to `r CI_hyp_test[1,3]`, p = 1; Birds (Hawaii-Kenya): `r CI_hyp_test[2,1]`, 95% CI = `r CI_hyp_test[2,2]` to `r CI_hyp_test[2,3]`, p = < 0.001).
+As a consequence of signal release, sexual signals are expected to be more easily detected by predators (i.e., snakes and birds) in Hawaii. Differential predation pressure resulting from snake and bird predation varying would also result in populations varying in their conspicuousness to different predators.  In support of these predictions, Hawaiian chameleons were significantly more conspicous to both snake and bird predators (figure 1b & c; Achromatic Contrast: ($dl$); $F_{`r anova_predators$NumDF[2]`,`r anova_predators$DenDF[2]`}$ = `r anova_predators[5][2,]`, p = `r p_value(anova_predators[6][2,])`). Differences in chromatic contrast between populations, however,  depended on the predator (significant predator by population interaction: $F_{`r anova_predators_interCC$NumDF[3]`,`r anova_predators_interCC$DenDF[3]`}$ = `r anova_predators_interCC[5][3,]`, p = `r p_value(anova_predators_interCC[6][3,])`). Interestingly, Kenyan and Hawaiian lizards were equally detectable by snakes, but Kenyan chameleons were significantly more cryptic from birds compared to Hawaiian chamleons (figure 1c; Snakes (Hawaii-Kenya): `r CI_hyp_test[1,2]`, 95% CI = `r CI_hyp_test[1,3]` to `r CI_hyp_test[1,4]`, p = 1; Birds (Hawaii-Kenya): `r CI_hyp_test[2,2]`, 95% CI = `r CI_hyp_test[2,3]` to `r CI_hyp_test[2,4]`, p = `r CI_hyp_test[2,8]`).
 
 Local adaptation of sexual signals would result in Hawaiian chameleons being more conspicous to conspecifics in the Hawaiian environment compared to their native Kenyan environment. While it was not possible to conduct common garden experiments to provide definitive tests of local adaptation, our results support the local adaptation hypothesis given that Hawaiian chameleons were more conspicous to other chamleeons in the Hawaiian environment compared to the same chameleons in a Kenyan environment in both social contexts (figure 2; Contrast between Hawaiian lizard on Kenyan vs Hawaiian on Hawaiin background - Male-male contests: Achromatic ($dl$), $\beta$ = `r CI_dis_AC[1,1]`, 95% CI = `r CI_dis_AC[1,2]` to `r CI_dis_AC[1,3]`, p = `r p_value(p_displ_AC)`, Chromatic ($dS$) $\beta$ = `r CI_Disp_CC[1,1]`, 95% CI = `r CI_Disp_CC[1,2]` to `r CI_Disp_CC[1,3]`, p = `r p_value(p_displ_CC)`; Courtship: Achromatic ($dl$), $\beta$ = `r CI_AC_Courtship[1,1]`, 95% CI = `r CI_AC_Courtship[1,2]` to `r CI_AC_Courtship[1,3]`, p = `r p_value(p_courtship_AC)`, Chromatic ($dS$) $\beta$ = `r CI_CC_Courtship[1,1]`, 95% CI = `r CI_CC_Courtship[1,2]` to `r CI_CC_Courtship[1,3]`, p = `r p_value(p_courtship_CC)`).
 
