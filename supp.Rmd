@@ -258,7 +258,8 @@ result5_snake <-  result5[grep("snake", result5$hypothesis), ] %>% mutate(Specie
   # Clean
   final_r5 <- final_r5 %>% 
               select(-test, -delta, -df_num) %>%
-              mutate(hypothesis = gsub("PopBRInt", "", hypothesis)) %>%
+              mutate(hypothesis = gsub("PopBRInt", "", hypothesis),
+                     p_val = sapply(p_val, function(x) p_value(x))) %>%
               select(Species, hypothesis, Fstat, df_denom, p_val, p_val_bonfer)
 
 
@@ -314,7 +315,8 @@ result6_snake <- result6[grep("snake", result6$hypothesis), ] %>% mutate(Species
 # Clean
  final_r6 <- final_r6 %>% 
               select(-test, -delta, -df_num) %>%
-              mutate(hypothesis = gsub("PopBRInt", "", hypothesis)) %>%
+              mutate(hypothesis = gsub("PopBRInt", "", hypothesis),
+                     p_val = sapply(p_val, function(x) p_value(x))) %>%
               select(Species, hypothesis, Fstat, df_denom, p_val, p_val_bonfer)
  
  # Table
