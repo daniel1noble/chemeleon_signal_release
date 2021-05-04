@@ -182,16 +182,18 @@ Courtship$sc_SVL <- with(Courtship, scale(SVL, scale=FALSE))
 
   # Fit model for linear hypothesis tests
     Predator$PopBRInt <- interaction(Predator$Population,Predator$Predator, Predator$BodyRegion)
-     PredatorAC2 <- lmer(dS ~ -1 + PopBRInt + (1|ID), data=Predator)
+     PredatorAC2 <- lmer(dL ~ -1 + PopBRInt + (1|ID), data=Predator)
      summary(PredatorAC2)
  
  # Contrasts hypothesis tests, but use RVE 
-                 result5 <- Wald_test(PredatorAC2, constraints = constrain_pairwise(c(2:9)), vcov="CR2", tidy = TRUE)
+                 result5 <- Wald_test(PredatorAC2, constraints = constrain_pairwise(c(1:16)), vcov="CR2", tidy = TRUE)
+ string <- c("PopBRIntKenya.snake.midflank - PopBRIntHawaii.snake.midflank|PopBRIntKenya.snake.gular - PopBRIntHawaii.snake.gular|PopBRIntKenya.snake.tailbase - PopBRIntHawaii.snake.tailbase|PopBRIntKenya.snake.topflank - PopBRIntHawaii.snake.topflank|PopBRIntKenya.bird.midflank - PopBRIntHawaii.bird.midflank|PopBRIntKenya.bird.gular - PopBRIntHawaii.bird.gular|PopBRIntKenya.bird.tailbase - PopBRIntHawaii.bird.tailbase|PopBRIntKenya.bird.topflank - PopBRIntHawaii.bird.topflank")
+    result5 <- result5[grep(string, result5$hypothesis),]
     result5$p_val_bonfer <- sapply(p.adjust(result5$p_val, "bonferroni"), function(x) p_value(x))
     
 
 ##########
-## Chromatic Contrast - dL
+## Chromatic Contrast - dS
 ########
 
   # Fit Model
@@ -209,9 +211,13 @@ Courtship$sc_SVL <- with(Courtship, scale(SVL, scale=FALSE))
           summary(PredatorCC2)
  
  # Contrasts hypothesis tests, but use RVE 
-                 result6 <- Wald_test(PredatorCC2, constraints = constrain_pairwise(c(2:9), with_zero = TRUE), vcov="CR2", tidy = TRUE)
+                 result6 <- Wald_test(PredatorCC2, constraints = constrain_pairwise(c(1:16), with_zero = TRUE), vcov="CR2", tidy = TRUE)
+                   string <- c("PopBRIntKenya.snake.midflank - PopBRIntHawaii.snake.midflank|PopBRIntKenya.snake.gular - PopBRIntHawaii.snake.gular|PopBRIntKenya.snake.tailbase - PopBRIntHawaii.snake.tailbase|PopBRIntKenya.snake.topflank - PopBRIntHawaii.snake.topflank|PopBRIntKenya.bird.midflank - PopBRIntHawaii.bird.midflank|PopBRIntKenya.bird.gular - PopBRIntHawaii.bird.gular|PopBRIntKenya.bird.tailbase - PopBRIntHawaii.bird.tailbase|PopBRIntKenya.bird.topflank - PopBRIntHawaii.bird.topflank")
+    result6 <- result6[grep(string, result6$hypothesis),]
     result6$p_val_bonfer <- sapply(p.adjust(result6$p_val, "bonferroni"), function(x) p_value(x))
     
+  
+  
 ```
 
 # Materials and Methods
@@ -236,9 +242,89 @@ We quantified the background against which chameleons signal by measuring the sp
 
 # Supplemental Results
 
-```{r tableS1}
-summary(result1)
+### Changes in visual signals across body regions show similar patterns
+We took measurements of spectral reflectance for different body regions of each chamaleon. In our primary analysis, we averaged across these different body regions because we were interested only in whether visual signals were different in Kenya and Hawaii overall. This was justified given that, across the different body regions, effects were largely in a similar direction, and often of similar magnitude (Figure \@ref(fig:FigS1) and Table \@ref(tab:tableS1)). 
+
+```{r tableS1, tab.cap = "Pairwise comparisons of achormatic contrast between Kenyan and Hawaiian chameleon displays to a snake and bird visual system. Four different body regions ('gular', 'midflank', 'tailbase', topflank') are provided along with pairwise Wald test for contrast significance. Wald test uses a robust variance correction on the standard errors."}
+
+# Split snakes and birds
+result5_snake <-  result5[grep("snake", result5$hypothesis), ] %>% mutate(Species = c("Snake", rep("",3)))
+ result5_bird <- result5[grep("bird", result5$hypothesis), ] %>% mutate(Species = c("Bird", rep("",3)))
+
+ # Bind together in order
+  final_r5 <- rbind(result5_snake,result5_bird)
+  
+  
+  # Clean
+  final_r5 <- final_r5 %>% 
+              select(-test, -delta, -df_num) %>%
+              mutate(hypothesis = gsub("PopBRInt", "", hypothesis)) %>%
+              select(Species, hypothesis, Fstat, df_denom, p_val, p_val_bonfer)
+
+
+table_style <- function(table){
+    table <- table %>% width(j = 1, width = 1) %>% width(j = 2, width = 2.5) %>% 
+             align(align = "center", part = "header") %>% 
+              align(i = 1:8, j = 1:6, align = "center", part = "body") %>% 
+            compose(part = "header", j = 1, value = as_paragraph(as_b("Predator"))) %>% 
+             compose( part = "header", j = 2, value = as_paragraph(as_b("Contrast"))) %>% 
+            compose(part = "header", j = 3, value = as_paragraph(as_b("F"))) %>%
+            compose(part = "header", j = 4, value = as_paragraph(as_b("DF"))) %>% 
+            compose(part = "header", j = 5, value = as_paragraph(as_b("p"))) %>% 
+            compose(part = "header", j = 6, value = as_paragraph(as_b("p"), as_sub(as_b("Bonferroni")))) %>%
+            compose(part = "body", i = 1, j = 2, 
+                    value = as_paragraph("Kenya", as_sub("gular"), " - ", "Hawaii", as_sub("gular")))  %>% 
+            compose(part = "body", i = 2, j = 2, 
+                    value = as_paragraph("Kenya", as_sub("midflank"), " - ", "Hawaii", as_sub("midflank"))) %>% 
+            compose(part = "body", i = 3, j = 2, 
+                    value = as_paragraph("Kenya", as_sub("tailbase"), " - ", "Hawaii", as_sub("tailbase"))) %>% 
+            compose(part = "body", i = 4, j = 2, 
+                    value = as_paragraph("Kenya", as_sub("topflank"), " - ", "Hawaii", as_sub("topflank"))) %>% 
+            compose(part = "body", i = 5, j = 2, 
+                    value = as_paragraph("Kenya", as_sub("gular"), " - ", "Hawaii", as_sub("gular")))  %>% 
+            compose(part = "body", i = 6, j = 2, 
+                    value = as_paragraph("Kenya", as_sub("midflank"), " - ", "Hawaii", as_sub("midflank"))) %>% 
+            compose(part = "body", i = 7, j = 2, 
+                    value = as_paragraph("Kenya", as_sub("tailbase"), " - ", "Hawaii", as_sub("tailbase"))) %>% 
+            compose(part = "body", i = 8, j = 2, 
+                    value = as_paragraph("Kenya", as_sub("topflank"), " - ", "Hawaii", as_sub("topflank")))
+ return(table)
+}
+
+ft5 <- flextable(final_r5) %>%
+        table_style(.) %>% 
+        add_header_row(values = "Achromatic Contrast", colwidths = 6)  
+  
+ ft5
+
+ 
 ```
+
+```{r tableS2, tab.cap = "Pairwise comparisons of achormatic contrast between Kenyan and Hawaiian chameleon displays to a snake and bird visual system. Four different body regions ('gular', 'midflank', 'tailbase', topflank') are provided along with pairwise Wald test for contrast significance. Wald test uses a robust variance correction on the standard errors."}
+
+# Split snakes and birds
+
+result6_snake <- result6[grep("snake", result6$hypothesis), ] %>% mutate(Species = c("Snake", rep("",3)))
+ result6_bird <- result6[grep("bird", result6$hypothesis), ] %>% mutate(Species = c("Bird", rep("",3)))
+
+# Bind together in order
+ final_r6 <- rbind(result6_snake,result6_bird)
+
+ 
+# Clean
+ final_r6 <- final_r6 %>% 
+              select(-test, -delta, -df_num) %>%
+              mutate(hypothesis = gsub("PopBRInt", "", hypothesis)) %>%
+              select(Species, hypothesis, Fstat, df_denom, p_val, p_val_bonfer)
+ 
+ # Table
+ ft6 <- flextable(final_r6) %>%
+        table_style(.) %>% 
+        add_header_row(values = "Chromatic Contrast", colwidths = 6) 
+ 
+ ft6
+```
+
 
 ```{r FigS1, fig.width = 14.33333, fig.height = 11.00000, fig.cap = "Chormatic (A, C) and Achromatic (B, D) contrast in just noticible differences (JND) for Hawaiian and Kenyan lizards relative to their environments. All four body regions (gular, mid-flank, tailbase and topflank) are shown averaged across stems and leaves found in their habitat. Mean JNDs are provided along with 95% confidence intervals. A & B represent male-male contest displays whereas C & D represent courtship displays"}
 
