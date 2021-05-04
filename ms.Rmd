@@ -113,7 +113,7 @@ Courtship$sc_SVL <- with(Courtship, scale(SVL, scale=FALSE))
     ConspicCourtshipAC <- lmer(dL ~ sc_SVL + Population  + (1|ID), data=Courtship)
     summary(ConspicCourtshipAC)
 
-  # Get model stats for ppaer
+  # Get model stats for paper
        coefAIC_court <- fixef(ConspicCourtshipAC)[3]
          CI_AC_court <- data.frame(confint(ConspicCourtshipAC))
     courship_anovaAC <- anova(ConspicCourtshipAC)
