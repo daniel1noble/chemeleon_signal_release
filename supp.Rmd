@@ -321,7 +321,7 @@ result6_snake <- result6[grep("snake", result6$hypothesis), ] %>% mutate(Species
 ```
 
 
-```{r FigS1, fig.width = 14.33333, fig.height = 11.00000, fig.cap = "Chormatic (A, C) and Achromatic (B, D) contrast in just noticible differences (JND) for Hawaiian and Kenyan lizards relative to their environments. All four body regions (gular, mid-flank, tailbase and topflank) are shown averaged across stems and leaves found in their habitat. Mean JNDs are provided along with 95% confidence intervals. A & B represent male-male contest displays whereas C & D represent courtship displays"}
+```{r FigS1, fig.width = 13, fig.height = 12, fig.cap = "Chormatic (A, C) and Achromatic (B, D) contrast in just noticible differences (JND) for Hawaiian and Kenyan lizards relative to their environments. All four body regions (gular, mid-flank, tailbase and topflank) are shown averaged across stems and leaves found in their habitat. Mean JNDs are provided along with 95% confidence intervals. A & B represent male-male contest displays whereas C & D represent courtship displays"}
 
 #Making a point plot with error bars split by body size and population 
 #Compute raw means and standard errors for body part and population for dS and assigned this data into Display_plot_dS_dat
@@ -367,7 +367,7 @@ p2 <- ggplot(Display_plot_dL_dat, aes(x = Population, y = Mean, group = BodyRegi
   ylab("Achromatic contrast (JND)") +
   theme_bw() +
   labs(color = "Body Region") + 
-  theme(#legend.position = "none",
+  theme(legend.position = c(0.85, 0.85),
     panel.grid.major = element_blank(), 
     panel.grid.minor = element_blank(),
     axis.text=element_text(size=18),
@@ -418,7 +418,7 @@ p4 <- ggplot(Courtship_plot_dL_dat, aes(x = Population, y = Mean, group = BodyRe
   xlab("") + 
   ylab("Achromatic contrast (JND)") +
   theme_bw() +
-  theme(legend.position = "none",
+  theme(legend.position = c(0.85, 0.85),
     panel.grid.major = element_blank(), 
     panel.grid.minor = element_blank(),
     axis.text=element_text(size=18),
@@ -429,7 +429,7 @@ p4 <- ggplot(Courtship_plot_dL_dat, aes(x = Population, y = Mean, group = BodyRe
 
 
 
-p1 + p2 + p3 + p4 + plot_annotation(tag_levels = c('A', 'B', 'C', 'D')) & theme(plot.tag = element_text(face = 'bold', size=20))
+p1 + p2 + p3 + p4 + plot_annotation(tag_levels = c('A', 'B', 'C', 'D')) & theme(plot.tag = element_text(face = 'bold', size=30))
 
 ```
 
@@ -468,7 +468,7 @@ p3 <- ggplot(summary_data_pred, aes(x = Population, y = Mean_dL, group = BodyReg
   ylab("Achromatic contrast (JND)") +
   theme_bw() +
   labs(color = "Body Region") + 
-  theme(legend.position = c(0.85, 0.85), 
+  theme(legend.position = c(0.90, 0.85), 
         strip.background = element_blank(),
     strip.text.x = element_text(size = 24, face = "bold"),
     panel.grid.major = element_blank(), 
@@ -488,7 +488,7 @@ p4 <- ggplot(summary_data_pred, aes(x = Population, y = Mean_dS, group = BodyReg
   ylab("Chromatic contrast (JND)") +
   labs(colour = "Body Region") + 
   theme_bw() +
-  theme(legend.position = c(0.85, 0.85),
+  theme(legend.position = c(0.90, 0.85),
     strip.background = element_blank(),
     strip.text.x = element_text(size = 24, face = "bold"),
     panel.grid.major = element_blank(), 
@@ -498,12 +498,12 @@ p4 <- ggplot(summary_data_pred, aes(x = Population, y = Mean_dS, group = BodyReg
     legend.text =element_text(size = 12),
     legend.title =element_text(size = 12, face = "bold"))
 
-plot_grid(p4, p3, nrow = 2, ncol = 1, labels = c("A", "B"), label_size = 16,
+plot_grid(p4, p3, nrow = 2, ncol = 1, labels = c("A", "B"), label_size = 30,
   label_fontface = "bold", rel_widths=c(1,1))
 
 ```
 
-```{r FigS3, fig.width = 13, fig.height = 8, fig.cap = "Local adaptation. All four body regions (gular, mid-flank, tailbase and topflank) are shown averaged across stems and leaves found in their habitat. Mean JNDs are provided along with 95% confidence intervals. A & B represent male-male contest displays whereas C & D represent courtship displays"}
+```{r FigS3, fig.width = 13, fig.height = 7.5, fig.cap = "Local adaptation. All four body regions (gular, mid-flank, tailbase and topflank) are shown averaged across stems and leaves found in their habitat. Mean JNDs are provided along with 95% confidence intervals. A & B represent male-male contest displays whereas C & D represent courtship displays"}
 # Courship data
 
 CourtshipBgrd <- read.table("./data/Courtship_5.csv", 
@@ -571,7 +571,7 @@ p1.2 <- ggplot(courtship_summary, aes(x = Background_pop, y = Mean_dS, color = B
   # annotate("text", x = 1.12+(2.12-1.12)/2, y = 5.8, label = "NS", size = 6) + 
   theme_bw() +
   labs(colour = "Body Region") +
-  theme(legend.position = c(0.15, 0.08),
+  theme(legend.position = "none",
     panel.grid.major = element_blank(), 
     panel.grid.minor = element_blank(),
     axis.text=element_text(size=18),
@@ -587,7 +587,7 @@ p2.2 <- ggplot(display_summary, aes(x = Background_pop, y = Mean_dL, group = Bod
   xlab("Background Environment") + 
   ylab("Achromatic contrast (JND)") +
   theme_bw() +
-  theme(legend.position = "none",
+  theme(legend.position = c(0.80, 0.85),
     panel.grid.major = element_blank(), 
     panel.grid.minor = element_blank(),
     axis.text=element_text(size=18),
@@ -596,7 +596,7 @@ p2.2 <- ggplot(display_summary, aes(x = Background_pop, y = Mean_dL, group = Bod
     legend.title =element_text(size = 12, face = "bold")) 
 
 #pdf(file="./output/figures/Figure2.pdf", height = 10, width = 18)
-plot_grid(p1.2, p2.2, labels = c("A", "B"), label_size = 16,
+plot_grid(p1.2, p2.2, labels = c("A", "B"), label_size = 30,
   label_fontface = "bold", rel_widths=c(1,1))
 
 ```
