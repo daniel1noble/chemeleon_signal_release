@@ -30,15 +30,8 @@ knitr::opts_chunk$set(echo = FALSE, cache = TRUE, message = FALSE, warning = FAL
 ```{r getlibrary, echo = FALSE, results = "hide"}
 # load libraries
 devtools::install_github("karthik/wesanderson")
-pacman::p_load(lme4, lmerTest, ggplot2, lsmeans, emmeans, multcomp, dplyr, wesanderson, patchwork, pander, kableExtra, flextable, jpeg, clubSandwich)
-
-p_value <- function(x){
-  if(x <= 0.0001) {tmp = "< 0.0001"}
-  if(x <= 0.001 & x >= 0.0001) {tmp ="< 0.001"}
-  if(x <= 0.01 & x >= 0.001) {tmp ="< 0.01"}
-  if(x >= 0.01) {tmp = round(x, digits =2)}
-  return(tmp)
-}
+pacman::p_load(lme4, lmerTest, ggplot2, lsmeans, emmeans, multcomp, dplyr, wesanderson, patchwork, latex2exp, png, cowplot, magick, jpeg, clubSandwich)
+source("./R/func.R")
 ```
 
 
@@ -243,7 +236,7 @@ We quantified the background against which chameleons signal by measuring the sp
 # Supplemental Results
 
 ### Changes in visual signals across body regions show similar patterns
-We took measurements of spectral reflectance for different body regions of each chamaleon. In our primary analysis, we averaged across these different body regions because we were interested only in whether visual signals were different in Kenya and Hawaii overall. This was justified given that, across the different body regions, effects were largely in a similar direction, and often of similar magnitude (Figure \@ref(fig:FigS1) and Table \@ref(tab:tableS1)). 
+We took measurements of spectral reflectance for different body regions of each chamaleon. In our primary analysis, we averaged across different body regions because we were interested only in whether visual signals were different in Kenya and Hawaii overall. This was justified given that, across the different body regions, effects were largely in a similar direction, and often of similar magnitude (Figure \@ref(fig:FigS1) and Table \@ref(tab:tableS1), \@ref(tab:tableS2)). 
 
 ```{r tableS1, tab.cap = "Pairwise comparisons of achormatic contrast between Kenyan and Hawaiian chameleon displays to a snake and bird visual system. Four different body regions ('gular', 'midflank', 'tailbase', topflank') are provided along with pairwise Wald test for contrast significance. Wald test uses a robust variance correction on the standard errors."}
 
@@ -440,9 +433,35 @@ p1 + p2 + p3 + p4 + plot_annotation(tag_levels = c('A', 'B', 'C', 'D')) & theme(
 
 ```
 
+```{r FigS2.1, fig.width = 14.33333, fig.height = 11.00000, fig.cap = "Local adaptation. All four body regions (gular, mid-flank, tailbase and topflank) are shown averaged across stems and leaves found in their habitat. Mean JNDs are provided along with 95% confidence intervals. A & B represent male-male contest displays whereas C & D represent courtship displays"}
 
-```{r FigS3, fig.width = 14.33333, fig.height = 11.00000, fig.cap = "Local adaptation. All four body regions (gular, mid-flank, tailbase and topflank) are shown averaged across stems and leaves found in their habitat. Mean JNDs are provided along with 95% confidence intervals. A & B represent male-male contest displays whereas C & D represent courtship displays"}
 
+```
+
+
+
+```{r FigS2, fig.width = 14.33333, fig.height = 11.00000, fig.cap = "Local adaptation. All four body regions (gular, mid-flank, tailbase and topflank) are shown averaged across stems and leaves found in their habitat. Mean JNDs are provided along with 95% confidence intervals. A & B represent male-male contest displays whereas C & D represent courtship displays"}
+# Courship data
+
+CourtshipBgrd <- read.table("./data/Courtship_5.csv", 
+                        header=TRUE, sep=",", dec=".", strip.white=TRUE)
+
+CourtshipBgrd <- CourtshipBgrd %>% 
+                filter(!BodyRegion == "botflank") %>% 
+                mutate(Background_pop = ifelse(Background2 == "own", Population, if_else(Background2 == "other" & Population == "Hawaii", "Kenya", "Hawaii"))) %>% 
+                as.data.frame() #exclude bottom flank.
+CourtshipBgrd$BodyRegion <- factor(CourtshipBgrd$BodyRegion)
+
+
+# Display data
+DisplayBgrd <- read.table("./data/Display_5.csv", 
+                        header=TRUE, sep=",", dec=".", strip.white=TRUE)
+
+DisplayBgrd <- DisplayBgrd %>% 
+                filter(!BodyRegion == "botflank") %>% 
+                mutate(Background_pop = ifelse(Background2 == "own", Population, if_else(Background2 == "other" & Population == "Hawaii", "Kenya", "Hawaii"))) %>% 
+                as.data.frame() #exclude bottom flank.
+DisplayBgrd$BodyRegion <- factor(DisplayBgrd$BodyRegion) #updates levels for the variable BodyRegion
 
 ##########
 # Data
@@ -546,4 +565,5 @@ p6 <- cowplot::ggdraw()+
 (p1 + p3 + p6) / (p2 + p5 + p4) + plot_annotation(tag_levels = c("A", "B", "C", "D", "E", "F"))
   
 ```
+
 # References
