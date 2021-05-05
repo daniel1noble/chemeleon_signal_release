@@ -236,7 +236,7 @@ We quantified the background against which chameleons signal by measuring the sp
 # Supplemental Results
 
 ### Changes in visual signals across body regions show similar patterns
-We took measurements of spectral reflectance for different body regions of each chamaleon. In our primary analysis, we averaged across different body regions because we were interested only in whether visual signals were different in Kenya and Hawaii overall. This was justified given that, across the different body regions, effects were largely in a similar direction, and often of similar magnitude (Figure \@ref(fig:FigS1) and Table \@ref(tab:tableS1), \@ref(tab:tableS2)). 
+We took measurements of spectral reflectance for different body regions of each chamaleon. In our primary analysis, we averaged across different body regions because we were interested only in whether visual signals were different in Kenya and Hawaii overall. This was justified given that, across the different body regions, effects were largely in a similar direction, and often of similar magnitude (Figures \@ref(fig:FigS1), \@ref(fig:FigS2), \@ref(fig:FigS3)) and Tables \@ref(tab:tableS1), \@ref(tab:tableS2)). 
 
 ```{r tableS1, tab.cap = "Pairwise comparisons of achormatic contrast between Kenyan and Hawaiian chameleon displays to a snake and bird visual system. Four different body regions ('gular', 'midflank', 'tailbase', topflank') are provided along with pairwise Wald test for contrast significance. Wald test uses a robust variance correction on the standard errors."}
 
@@ -433,14 +433,77 @@ p1 + p2 + p3 + p4 + plot_annotation(tag_levels = c('A', 'B', 'C', 'D')) & theme(
 
 ```
 
-```{r FigS2.1, fig.width = 14.33333, fig.height = 11.00000, fig.cap = "Local adaptation. All four body regions (gular, mid-flank, tailbase and topflank) are shown averaged across stems and leaves found in their habitat. Mean JNDs are provided along with 95% confidence intervals. A & B represent male-male contest displays whereas C & D represent courtship displays"}
+```{r FigS2, fig.width = 12, fig.height = 12, fig.cap = "Predators All four body regions (gular, mid-flank, tailbase and topflank) are shown averaged across stems and leaves found in their habitat. Mean JNDs are provided along with 95% confidence intervals. A & B represent male-male contest displays whereas C & D represent courtship displays"}
 
+# Load the data
+Predator <- read.table("./data/Predator_2_3.csv", 
+                       header=TRUE, sep=",", dec=".", strip.white=TRUE)
+ 
+# Clean up
+ Predator <- Predator %>% filter(!BodyRegion == "botflank" & !BodyRegion =='gularbot') %>% as.data.frame() #exclude bottom flank.
+Predator$BodyRegion <- factor(Predator$BodyRegion) #updates levels for the variable BodyRegion
+
+
+# Calculate summary data
+summary_data_pred <- Predator %>%
+                group_by(Predator, Population, BodyRegion) %>%
+                summarise( Mean_dS = mean(dS, na.rm = T), 
+                             SE_dS = sd(dS)/sqrt(length(unique(ID))),
+                             Upper_dS = Mean_dS + 1.96*SE_dS,
+                             Lower_dS = Mean_dS - 1.96*SE_dS, 
+                           Mean_dL = mean(dL, na.rm = T), 
+                             SE_dL = sd(dL)/sqrt(length(unique(ID))),
+                             Upper_dL = Mean_dL + 1.96*SE_dL,
+                             Lower_dL = Mean_dL - 1.96*SE_dL) %>%
+                mutate(Predator = if_else(Predator == "bird", "Birds", "Snakes"))
+
+# PLot 
+p3 <- ggplot(summary_data_pred, aes(x = Population, y = Mean_dL, group = BodyRegion, color = BodyRegion)) + facet_wrap(~Predator) +
+  ylim(8, 30) + 
+  geom_point(size = 3, position = position_dodge(width=0.5)) +
+  geom_errorbar(aes(ymin = Lower_dL, ymax = Upper_dL), position = position_dodge(width=0.5), width = 0) + 
+  geom_line(position = position_dodge(width=0.5)) + 
+  scale_color_manual(values = wes_palette("Cavalcanti1")) + #Change color palette here see: https://github.com/karthik/wesanderson
+  xlab("") + 
+  ylab("Achromatic contrast (JND)") +
+  theme_bw() +
+  labs(color = "Body Region") + 
+  theme(legend.position = c(0.85, 0.85), 
+        strip.background = element_blank(),
+    strip.text.x = element_text(size = 24, face = "bold"),
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(size=18),
+    axis.title=element_text(size=20,face="bold"),
+    legend.text =element_text(size = 12),
+    legend.title =element_text(size = 12, face = "bold")) 
+
+p4 <- ggplot(summary_data_pred, aes(x = Population, y = Mean_dS, group = BodyRegion, color = BodyRegion)) + facet_wrap(~Predator) +
+  ylim(1, 9) + 
+  geom_point(size = 3, position = position_dodge(width=0.5)) +
+  geom_errorbar(aes(ymin = Lower_dS, ymax = Upper_dS), position = position_dodge(width=0.5), width = 0) + 
+  geom_line(position = position_dodge(width=0.5)) + 
+  scale_color_manual(values = wes_palette("Cavalcanti1")) + #Change color palette here see: https://github.com/karthik/wesanderson
+  xlab("") + 
+  ylab("Chromatic contrast (JND)") +
+  labs(colour = "Body Region") + 
+  theme_bw() +
+  theme(legend.position = c(0.85, 0.85),
+    strip.background = element_blank(),
+    strip.text.x = element_text(size = 24, face = "bold"),
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(size=18),
+    axis.title=element_text(size=20,face="bold"),
+    legend.text =element_text(size = 12),
+    legend.title =element_text(size = 12, face = "bold"))
+
+plot_grid(p4, p3, nrow = 2, ncol = 1, labels = c("A", "B"), label_size = 16,
+  label_fontface = "bold", rel_widths=c(1,1))
 
 ```
 
-
-
-```{r FigS2, fig.width = 14.33333, fig.height = 11.00000, fig.cap = "Local adaptation. All four body regions (gular, mid-flank, tailbase and topflank) are shown averaged across stems and leaves found in their habitat. Mean JNDs are provided along with 95% confidence intervals. A & B represent male-male contest displays whereas C & D represent courtship displays"}
+```{r FigS3, fig.width = 13, fig.height = 8, fig.cap = "Local adaptation. All four body regions (gular, mid-flank, tailbase and topflank) are shown averaged across stems and leaves found in their habitat. Mean JNDs are provided along with 95% confidence intervals. A & B represent male-male contest displays whereas C & D represent courtship displays"}
 # Courship data
 
 CourtshipBgrd <- read.table("./data/Courtship_5.csv", 
@@ -538,8 +601,7 @@ plot_grid(p1.2, p2.2, labels = c("A", "B"), label_size = 16,
 
 ```
 
-
-```{r FigS3}
+```{r FigS4, fig.cap = "Examples of chameleon colour signal change in response to different social and predatory contexts"}
 
 files <- list.files("./photos/ESM/")
 img1 <- readJPEG(paste0("./photos/ESM/", files[1]))
