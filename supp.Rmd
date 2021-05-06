@@ -60,7 +60,8 @@ source("./R/func.R")
 ##########
 
     # Fit the model that estimates changes across body regions
-    ConspicDisplayAC <- lmer(dL ~ sc_SVL + Population + BodyRegion + Population:BodyRegion + (1|ID), data=Display_1)
+    ConspicDisplayAC <- lmer(dL ~ sc_SVL + Population + BodyRegion + 
+                               Population:BodyRegion + (1|ID), data=Display_1)
     summary(ConspicDisplayAC)
     ConspicDisplayAC_main <- lmer(dL ~ sc_SVL + Population + BodyRegion +  (1|ID), data=Display_1)
     
@@ -123,7 +124,8 @@ Courtship$sc_SVL <- with(Courtship, scale(SVL, scale=FALSE))
 ## Achromatic Contrast - dL
 ##########
   # Fit model
-    ConspicCourtshipAC <- lmer(dL ~ sc_SVL + Population + BodyRegion + Population:BodyRegion + (1|ID), data=Courtship)
+    ConspicCourtshipAC <- lmer(dL ~ sc_SVL + Population + BodyRegion + 
+                                 Population:BodyRegion + (1|ID), data=Courtship)
     summary(ConspicCourtshipAC)
     
   # Main effects Model
@@ -355,6 +357,29 @@ fulltableP <- fulltableP %>% mutate(JND = c("Achromatic Contrast", rep("",4), "C
 S4 <- flextable(fulltableP) %>%
         table_style3(.)
 S4
+```
+
+
+```{r tableS5, tab.cap = "Linear mixed effects model results using sandwich estimators and Saitterwaite degrees of freedom correction."}
+robust_sc_table <- rbind(robust_ConspicDisplayAC,
+                          robust_ConspicDisplayCC,
+                          robust_ConspicCourtshipAC,
+                          robust_ConspicCourtshipCC) %>% 
+                    mutate(p_Satt = sapply(p_Satt, function(x) p_value(x)),
+                           SocialContext = c("Male-Male Display", rep("", 17), 
+                                             "Courtship Display", rep("", 17)),
+                           JND = c("Achromatic Contrast", rep("", 8), 
+                                   "Chromatic Contrast", rep("", 8), 
+                                   "Achromatic Contrast", rep("", 8), 
+                                   "Chromatic Contrast", rep("", 8)))
+
+robust_sc_table$parameter <- rownames(robust_sc_table)
+
+robust_sc_table <- robust_sc_table %>% select(SocialContext, JND, parameter, beta, SE, tstat, df, p_Satt)
+
+
+tableS5 <- flextable(robust_sc_table) %>%  table_style4()
+tableS5
 ```
 
 ```{r FigS1, fig.width = 13, fig.height = 12, fig.cap = "Chormatic (A, C) and Achromatic (B, D) contrast in just noticible differences (JND) for Hawaiian and Kenyan lizards relative to their environments. All four body regions (gular, mid-flank, tailbase and topflank) are shown averaged across stems and leaves found in their habitat. Mean JNDs are provided along with 95% confidence intervals. A & B represent male-male contest displays whereas C & D represent courtship displays"}
