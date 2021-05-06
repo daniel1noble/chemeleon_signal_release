@@ -116,3 +116,16 @@ table_style2 <- function(table){
     compose(part = "header", j = 7, value = as_paragraph(as_b("p"))) 
   return(table)
 }
+
+table_style3 <- function(table){
+  table <- table %>% width(j = 1, width = 1) %>% width(j = 2, width = 2.5) %>% 
+    align(align = "center", part = "header") %>% 
+    align(i = 1:8, j = 1:6, align = "center", part = "body") %>% 
+    compose(part = "header", j = 1, value = as_paragraph(as_b("Visual Spectrum"))) %>% 
+    compose(part = "header", j = 2, value = as_paragraph(as_b("Variable"))) %>% 
+    compose( part = "header", j = 3, value = as_paragraph(as_b("F"))) %>% 
+    compose(part = "header", j = 4, value = as_paragraph(as_b("df"), as_sub(as_b("num")))) %>%
+    compose(part = "header", j = 5, value = as_paragraph(as_b("df"), as_sub(as_b("denom")))) %>% 
+    compose(part = "header", j = 6, value = as_paragraph(as_b("p"))) 
+  return(table)
+}
