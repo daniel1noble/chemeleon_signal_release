@@ -62,7 +62,11 @@ source("./R/func.R")
     # Fit the model that estimates changes across body regions
     ConspicDisplayAC <- lmer(dL ~ sc_SVL + Population + BodyRegion + Population:BodyRegion + (1|ID), data=Display_1)
     summary(ConspicDisplayAC)
+    ConspicDisplayAC_main <- lmer(dL ~ sc_SVL + Population + BodyRegion +  (1|ID), data=Display_1)
     
+    # Wald Table - Test for interaction, plus refit model and test sig of each factor. Uses RVEs
+    wald_table_ConspicDisplayAC <-  wald_table(model_main =  ConspicDisplayAC_main , model_inter = ConspicDisplayAC)
+
     # Robust variance estimators (RVE). Mostly all consistent
     Display_subset <- Display_1 %>% filter(!is.na(sc_SVL), !is.na(Population), !is.na(BodyRegion))
     robust_ConspicDisplayAC <- coef_test(ConspicDisplayAC, cluster = Display_subset$ID, vcov="CR2")
@@ -85,6 +89,11 @@ source("./R/func.R")
 
  # Fit the model that esatimtes changes across body regions
     ConspicDisplayCC <- lmer(dS ~ sc_SVL + Population + BodyRegion + Population:BodyRegion + (1|ID), data=Display_1)
+    ConspicDisplayCC_main <- lmer(dS ~ sc_SVL + Population + BodyRegion + (1|ID), data=Display_1)
+    
+    
+# Wald Table - Test for interaction, plus refit model and test sig of each factor. Uses RVEs
+    wald_table_ConspicDisplayCC <-  wald_table(model_main =  ConspicDisplayCC_main, model_inter = ConspicDisplayCC)
     
  # Robust variance estimators (RVE). Mostly all consistent
              Display_subset <- Display_1 %>% filter(!is.na(sc_SVL), !is.na(Population), !is.na(BodyRegion))
@@ -116,8 +125,12 @@ Courtship$sc_SVL <- with(Courtship, scale(SVL, scale=FALSE))
   # Fit model
     ConspicCourtshipAC <- lmer(dL ~ sc_SVL + Population + BodyRegion + Population:BodyRegion + (1|ID), data=Courtship)
     summary(ConspicCourtshipAC)
-      anova(ConspicCourtshipAC)
+    
+  # Main effects Model
+    ConspicCourtshipAC_main <- lmer(dL ~ sc_SVL + Population + BodyRegion + (1|ID), data=Courtship)
 
+   # Wald Table - Test for interaction, plus refit model and test sig of each factor. Uses RVEs
+    wald_table_ConspicCourtshipAC <-  wald_table(model_main =  ConspicCourtshipAC_main, model_inter = ConspicCourtshipAC)  
   # Robust variance estimators (RVE). Mostly all consistent
              Courtship_subset <- Courtship %>% filter(!is.na(sc_SVL), !is.na(Population), !is.na(BodyRegion))
     robust_ConspicCourtshipAC <- coef_test(ConspicCourtshipAC, cluster = Courtship_subset$ID, vcov="CR2")    
@@ -134,8 +147,14 @@ Courtship$sc_SVL <- with(Courtship, scale(SVL, scale=FALSE))
 ## Chromatic Contrast - dL
 #########
     
-    # Fit model
+    # Fit model, interaction
         ConspicCourtshipCC <- lmer(dS ~ sc_SVL + Population + BodyRegion + Population:BodyRegion + (1|ID), data=Courtship)
+    
+    # Fit main effects
+    ConspicCourtshipCC_main <- lmer(dS ~ sc_SVL + Population + BodyRegion + (1|ID), data=Courtship)
+    
+    # Wald Table - Test for interaction, plus refit model and test sig of each factor. Uses RVEs
+    wald_table_ConspicCourtshipCC <-  wald_table(model_main =  ConspicCourtshipCC_main, model_inter = ConspicCourtshipCC)
 
     # Robust variance estimators (RVE). Mostly all consistent
              Courtship_subset <- Courtship %>% filter(!is.na(sc_SVL), !is.na(Population), !is.na(BodyRegion))
@@ -146,7 +165,11 @@ Courtship$sc_SVL <- with(Courtship, scale(SVL, scale=FALSE))
     ConspicCourtshipCC2 <- lmer(dS ~ -1 + sc_SVL + PopBRInt + (1|ID), data=Courtship)
     
     # Contrasts hypothesis tests, but use RVE 
-                 result4 <- Wald_test(ConspicCourtshipCC2, constraints = constrain_pairwise(c(2:9)), vcov="CR2", tidy = TRUE)
+            result4 <- Wald_test(ConspicCourtshipCC2, 
+                                 constraints = constrain_pairwise(c(2:9)), 
+                                 vcov="CR2", tidy = TRUE)
+      string <- c("PopBRIntKenya.gular - PopBRIntHawaii.gular|PopBRIntKenya.midflank - PopBRIntHawaii.midflank|PopBRIntKenya.tailbase - PopBRIntHawaii.tailbase|PopBRIntKenya.topflank - PopBRIntHawaii.topflank")
+      result4 <- result4[grep(string, result4$hypothesis),]
     result4$p_val_bonfer <- sapply(p.adjust(result4$p_val, "bonferroni"), function(x) p_value(x))
     
 
