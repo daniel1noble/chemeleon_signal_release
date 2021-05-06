@@ -36,7 +36,7 @@ source("./R/func.R")
 
 
 ```{r display, results = "hide"}
-
+source("./R/func.R")
 #########################################################
 # Male-male Competition Displays
 #########################################################
@@ -188,9 +188,16 @@ Courtship$sc_SVL <- with(Courtship, scale(SVL, scale=FALSE))
 ##########
 
    # Fit model
-      PredatorAC <- lmer(dL ~ Predator + Population + BodyRegion + Predator:BodyRegion + Predator:Population + (1|ID), data=Predator)
+      PredatorAC <- lmer(dL ~ Predator + Population + BodyRegion + Predator:BodyRegion + Predator:Population + 
+                           (1|ID), data=Predator)
       summary(PredatorAC)
-      anova(PredatorAC)
+  
+  PredatorAC_main <- lmer(dL ~ Predator + Population + BodyRegion  + (1|ID), data=Predator)
+      
+  # Wald table RVE
+    
+    Wald_table_PredatorAC <- wald_table_p(PredatorAC_main, PredatorAC)
+  
 
    # Robust variance estimators (RVE). Mostly all consistent
              Predator_subset <- Predator %>% filter(!is.na(Population), !is.na(BodyRegion))
@@ -216,6 +223,12 @@ Courtship$sc_SVL <- with(Courtship, scale(SVL, scale=FALSE))
         PredatorCC <- lmer(dS ~ Predator + Population + BodyRegion + Predator:BodyRegion + Predator:Population + (1|ID), data=Predator)
         summary(PredatorCC)
           anova(PredatorAC)
+          
+    PredatorCC_main <- lmer(dS ~ Predator + Population + BodyRegion  + (1|ID), data=Predator)            
+  
+  # Wald table RVE
+    
+    Wald_table_PredatorCC <- wald_table_p(PredatorCC_main, PredatorCC)
   
   # Robust variance estimators (RVE). Mostly all consistent
              Predator_subset <- Predator %>% filter(!is.na(Population), !is.na(BodyRegion))
@@ -279,35 +292,6 @@ result5_snake <-  result5[grep("snake", result5$hypothesis), ] %>% mutate(Specie
               select(Species, hypothesis, Fstat, df_denom, p_val, p_val_bonfer)
 
 
-table_style <- function(table){
-    table <- table %>% width(j = 1, width = 1) %>% width(j = 2, width = 2.5) %>% 
-             align(align = "center", part = "header") %>% 
-              align(i = 1:8, j = 1:6, align = "center", part = "body") %>% 
-            compose(part = "header", j = 1, value = as_paragraph(as_b("Predator"))) %>% 
-             compose( part = "header", j = 2, value = as_paragraph(as_b("Contrast"))) %>% 
-            compose(part = "header", j = 3, value = as_paragraph(as_b("F"))) %>%
-            compose(part = "header", j = 4, value = as_paragraph(as_b("DF"))) %>% 
-            compose(part = "header", j = 5, value = as_paragraph(as_b("p"))) %>% 
-            compose(part = "header", j = 6, value = as_paragraph(as_b("p"), as_sub(as_b("Bonferroni")))) %>%
-            compose(part = "body", i = 1, j = 2, 
-                    value = as_paragraph("Kenya", as_sub("gular"), " - ", "Hawaii", as_sub("gular")))  %>% 
-            compose(part = "body", i = 2, j = 2, 
-                    value = as_paragraph("Kenya", as_sub("midflank"), " - ", "Hawaii", as_sub("midflank"))) %>% 
-            compose(part = "body", i = 3, j = 2, 
-                    value = as_paragraph("Kenya", as_sub("tailbase"), " - ", "Hawaii", as_sub("tailbase"))) %>% 
-            compose(part = "body", i = 4, j = 2, 
-                    value = as_paragraph("Kenya", as_sub("topflank"), " - ", "Hawaii", as_sub("topflank"))) %>% 
-            compose(part = "body", i = 5, j = 2, 
-                    value = as_paragraph("Kenya", as_sub("gular"), " - ", "Hawaii", as_sub("gular")))  %>% 
-            compose(part = "body", i = 6, j = 2, 
-                    value = as_paragraph("Kenya", as_sub("midflank"), " - ", "Hawaii", as_sub("midflank"))) %>% 
-            compose(part = "body", i = 7, j = 2, 
-                    value = as_paragraph("Kenya", as_sub("tailbase"), " - ", "Hawaii", as_sub("tailbase"))) %>% 
-            compose(part = "body", i = 8, j = 2, 
-                    value = as_paragraph("Kenya", as_sub("topflank"), " - ", "Hawaii", as_sub("topflank")))
- return(table)
-}
-
 ft5 <- flextable(final_r5) %>%
         table_style(.) %>% 
         add_header_row(values = "Achromatic Contrast", colwidths = 6)  
@@ -343,6 +327,35 @@ result6_snake <- result6[grep("snake", result6$hypothesis), ] %>% mutate(Species
  ft6
 ```
 
+```{r tableS3, tab.cap = "Wald Tests comparing significance of model parameters. Wald tests computed using robust variance estimators with a Saitterwaite correction to the degrees of freedom. Interactions were first tested and models refit to test the signifiacnce of main effects"}
+fullTable <- rbind(wald_table_ConspicDisplayAC, 
+                   wald_table_ConspicDisplayCC, 
+                   wald_table_ConspicCourtshipAC,
+                   wald_table_ConspicCourtshipCC)
+
+fullTable <- fullTable %>% 
+              mutate(Context = c("Male-Male Display", rep("", 7), "Courtship Display", rep("", 7)),
+                     JND = c("Achromatic Contrast", rep("", 3), "Chromatic Contrast", rep("", 3), "Achromatic Contrast", rep("", 3), "Chromatic Contrast", rep("", 3)),
+                     p_val = sapply(p_val, function(x) p_value(x))) %>% select(Context, JND, Variable, Fstat, df_num, df_denom, p_val)
+
+S3 <- flextable(fullTable) %>%
+        table_style2(.)
+S3
+```
+
+```{r table4, tab.cap = "Wald Tests comparing significance of model parameters for predators. Wald tests computed using robust variance estimators with a Saitterwaite correction to the degrees of freedom. Interactions were first tested and models refit to test the signifiacnce of main effects"}
+
+fulltableP <- rbind(Wald_table_PredatorAC,
+                    Wald_table_PredatorCC)
+
+fulltableP <- fulltableP %>% mutate(JND = c("Achromatic Contrast", rep("",4), "Chromatc Contrast", rep("",4)),
+                                            p_val = sapply(p_val, function(x) p_value(x))) %>% 
+                                      select(JND, Variable, Fstat, df_num, df_denom, p_val)
+
+S4 <- flextable(fulltableP) %>%
+        table_style3(.)
+S4
+```
 
 ```{r FigS1, fig.width = 13, fig.height = 12, fig.cap = "Chormatic (A, C) and Achromatic (B, D) contrast in just noticible differences (JND) for Hawaiian and Kenyan lizards relative to their environments. All four body regions (gular, mid-flank, tailbase and topflank) are shown averaged across stems and leaves found in their habitat. Mean JNDs are provided along with 95% confidence intervals. A & B represent male-male contest displays whereas C & D represent courtship displays"}
 

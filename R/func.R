@@ -104,7 +104,7 @@ p_value <- function(x){
 
 
 table_style2 <- function(table){
-  table <- table %>% width(j = 1, width = 1) %>% width(j = 2, width = 2.5) %>% 
+  table <- table %>% width(j = 1, width = 1) %>% width(j = 1, width = 1) %>% width(j = 2, width = 2.5) %>% 
     align(align = "center", part = "header") %>% 
     align(i = 1:8, j = 1:6, align = "center", part = "body") %>% 
     compose(part = "header", j = 1, value = as_paragraph(as_b("Social Context"))) %>% 
