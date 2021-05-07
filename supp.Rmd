@@ -301,11 +301,11 @@ We quantified the background against which chameleons signal by measuring the sp
 # Supplemental Results
 
 ## Assessing changes in sexual signals across different body regions
-We took measurements of spectral reflectance for different body regions of each chamaleon. In our primary analysis, we averaged across different body regions because we were interested only in whether visual signals overall were different between Kenya and Hawaii. This was justified given that, across the different body regions, effects were largely in a similar direction, and often of similar magnitude (Figures \@ref(fig:FigS2), \@ref(fig:FigS3), \@ref(fig:FigS4) and Tables \@ref(tab:tableS1), \@ref(tab:tableS2), \@ref(tab:tableS3), \@ref(tab:tableS4). \@ref(tab:tableS5)).
+We took measurements of spectral reflectance for different body regions of each chamaleon. In our primary analysis, we averaged across different body regions because we were interested only in whether visual signals overall were different between Kenya and Hawaii. This was justified given that, across the different body regions, effects were largely in a similar direction, and often of similar magnitude (Figures \@ref(fig:FigS2) - \@ref(fig:FigS4) and Tables \@ref(tab:tableS1)- \@ref(tab:tableS5)).
 
 #### Body regions in social contexts (Male-male and Courtship Display) show different magnitude of responses, but similar directionality
  
-
+Overall, different body regions explained significant variation in achromatic and chromatic contrast in both social contexts, whereas differences between Kenya and Hawaii only existed in achormatic contrast (Figure \@ref(fig:FigS2) & Table \@ref(tab:tableS1)). A significant interaction between body region and population was found for achormatic contrast when males were displaying to each other (Table \@ref(tab:tableS1)). However, in all cases Kenya showed a string reduction in in acromatic contrast relative to Hawaii lizards, despite some variation in the magnitude of effect (Figure \@ref(fig:FigS2)B & D; Table \@ref(tab:tableS2)).
 
 ```{r FigS2, fig.width = 13, fig.height = 12, fig.cap = "Chormatic (A, C) and Achromatic (B, D) contrast in just noticible differences (JND) for Hawaiian and Kenyan lizards relative to their environments. All four body regions (gular, mid-flank, tailbase and topflank) are shown averaged across stems and leaves found in their habitat. Mean JNDs are provided along with 95% confidence intervals. A & B represent male-male contest displays whereas C & D represent courtship displays"}
 
@@ -457,6 +457,10 @@ tableS5 <- flextable(robust_sc_table) %>%  table_style4()
 tableS5
 ```
 
+#### Body regions are perceived differently by predators but exhibited similar effect sizes
+
+Chromatic contrast of colour signals against the background varied by predator type, population and body region (Figure \@ref(fig:FigS3)B; Table \@ref(tab:tableS3)). Whereas all body regions in Kenyan chameleons showed a reduced contrast against the background for birds there were small diferences among populations in how snakes perceived colour signals (Figure \@ref(fig:FigS3)A). There were no significant interactions between predator type ('bird' vs 'snake') and either body region or population in achromatic contrast against the background, but a significant population and body region effect (Figure \@ref(fig:FigS3)B; Table \@ref(tab:tableS3)). Effects did not vary by predator type (Table \@ref(tab:tableS3)). Nonetheless, effect sizes across body regions were in the same direction (Figure \@ref(fig:FigS3)B & Table \@ref(tab:tableS4)). Overall, there were significant differences between Kenya and Hawaii in achormatic contrast of the gular and tailbase regions, but not for mid- and top-flank (Table \@ref(tab:tableS5)). In contrast, no sigificant differences between Kenya and Hawaii existed across any body region, whereas significant differences existed between gular, midflank and tailbase (Table \@ref(tab:tableS6)).
+
 ```{r FigS3, fig.width = 12, fig.height = 12, fig.cap = "Predators All four body regions (gular, mid-flank, tailbase and topflank) are shown averaged across stems and leaves found in their habitat. Mean JNDs are provided along with 95% confidence intervals. A & B represent male-male contest displays whereas C & D represent courtship displays"}
 
 # Load the data
@@ -583,6 +587,11 @@ ft5 <- flextable(final_r5) %>%
 
  
 ```
+
+
+#### All body regions exibit similar contrasts between Kenyan and Hawaiian backgrounds suggesting local adaptation of entire visual signal
+
+
 
 ```{r tableS6, tab.cap = "Pairwise comparisons of achormatic contrast between Kenyan and Hawaiian chameleon displays to a snake and bird visual system. Four different body regions ('gular', 'midflank', 'tailbase', topflank') are provided along with pairwise Wald test for contrast significance. Wald test uses a robust variance correction on the standard errors."}
 
