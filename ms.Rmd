@@ -294,17 +294,10 @@ DisplayBgrd$BodyRegion <- factor(DisplayBgrd$BodyRegion) #updates levels for the
 
   # Here, we want to test if the conspicuousness of lizard signals is locally adapted to the specific background of the Kenyan and Hawaiian population. The predcition is simply that, if we were to place a Hawaiian animal against the Kenyan background that it would be far more conspicuous compared to if we place a Kenyan animal in a Hawaiian background. 
 
-  # Fit the interaction model
-  DispBgrdAC_inter <- lmer(dL ~ Population  + Background_pop + Population:Background_pop + (1|ID), data=DisplayBgrd)
-  summary(DispBgrdAC_inter)
-  
   # Fit the main effect model
   DispBgrdAC <- lmer(dL ~ Population  + Background_pop  + (1|ID), data=DisplayBgrd)
   summary(DispBgrdAC)
   
-  # Doesn't look like an interaction, so test.
-  inter_AC_Disp <- Wald_test(DispBgrdAC_inter, constraints = constrain_zero(4), 
-                                  cluster = DisplayBgrd$ID, vcov = "CR2")
 
   # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
   robust_localAdapt <- clubSandwich::conf_int(DispBgrdAC, cluster = DisplayBgrd$ID, vcov =  "CR2")
@@ -339,20 +332,11 @@ DisplayBgrd$BodyRegion <- factor(DisplayBgrd$BodyRegion) #updates levels for the
 ##########
 
  # Here, we want to test if the conspicuousness of lizard signals is locally adapted to the specific background of the Kenyan and Hawaiian population. The predcition is simply that, if we were to place a Hawaiian animal against the Kenyan background that it would be far more conspicuous compared to if we place a Kenyan animal in a Hawaiian background. 
-
-   # Fit the interaction model
-    DispBgrdCC_inter <- lmer(dS ~ Population  + Background_pop + 
-                                  Population:Background_pop + (1|ID), data=DisplayBgrd)
-    summary(DispBgrdCC_inter)
    
     # Fit the main effect model
           DispBgrdCC <- lmer(dS ~ Population  + Background_pop  + (1|ID), data=DisplayBgrd)
           summary(DispBgrdCC)
-          
-    # Doesn't look like an interaction, so test.
-          inter_CC_Disp <- Wald_test(DispBgrdCC_inter, constraints = constrain_zero(4), 
-                                     cluster = DisplayBgrd$ID, vcov = "CR2")
-
+ 
     # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
       robust_DispBgrdCC <- clubSandwich::coef_test(DispBgrdCC, cluster = DisplayBgrd$ID, vcov =  "CR2")
       robust_DispBgrdCC_inter <- clubSandwich::coef_test(DispBgrdCC_inter, cluster = DisplayBgrd$ID, vcov =  "CR2")
@@ -399,16 +383,9 @@ CourtshipBgrd$BodyRegion <- factor(CourtshipBgrd$BodyRegion)
 
  # Here, we want to test if the conspicuousness of lizard signals is locally adapted to the specific background of the Kenyan and Hawaiian population. The predcition is simply that, if we were to place a Hawaiian animal against the Kenyan background that it would be far more conspicuous compared to if we place a Kenyan animal in a Hawaiian background. 
 
-  # Fit the interaction model
-    CourtshipAC_inter <- lmer(dL ~ Population  + Background_pop + Population:Background_pop + (1|ID), data=CourtshipBgrd)
-
   # Fit main effects model
     CourtshipAC <- lmer(dL ~ Population  + Background_pop  + (1|ID), data=CourtshipBgrd)
     summary(CourtshipAC)
-
-  # Wald test of interaction
-    background_AC_Court <- Wald_test(CourtshipAC_inter, constraints = constrain_zero(4), 
-                                  cluster = CourtshipBgrd$ID, vcov = "CR2")
 
    # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
    robust_CourtshipAC <- clubSandwich::coef_test(CourtshipAC, cluster = CourtshipBgrd$ID, vcov =  "CR2")
@@ -442,17 +419,10 @@ CourtshipBgrd$BodyRegion <- factor(CourtshipBgrd$BodyRegion)
 ##########
  # Here, we want to test if the conspicuousness of lizard signals is locally adapted to the specific background of the Kenyan and Hawaiian population. The predcition is simply that, if we were to place a Hawaiian animal against the Kenyan background that it would be far more conspicuous compared to if we place a Kenyan animal in a Hawaiian background. 
 
-  # Fit interaction model
-    CourtshipCC_inter <- lmer(dS ~ Population  + Background_pop + Population:Background_pop + 
-                                (1|ID), data=CourtshipBgrd)
 
   # Fit main effect model
       CourtshipCC <- lmer(dS ~ Population  + Background_pop  + (1|ID), data=CourtshipBgrd)
       summary(CourtshipCC)
-
-    # Wald test of interaction
-    inter_AC_Court <- Wald_test(CourtshipCC_inter, constraints = constrain_zero(4), 
-                                  cluster = CourtshipBgrd$ID, vcov = "CR2")
 
   # Robust variance esatimation to correct SE's for fixed effects given spectral curves are used multiple times for generating JNDs for each individuals data. 
   robust_CourtshipCC <- clubSandwich::coef_test(CourtshipCC, cluster = CourtshipBgrd$ID, vcov =  "CR2")
