@@ -31,7 +31,7 @@ knitr::opts_chunk$set(echo = FALSE, cache = TRUE, message = FALSE, warning = FAL
 ```{r getlibrary, echo = FALSE, results = "hide"}
 # load libraries
 devtools::install_github("karthik/wesanderson")
-pacman::p_load(lme4, lmerTest, ggplot2, lsmeans, emmeans, multcomp, dplyr, wesanderson, patchwork, latex2exp, png, cowplot, magick, jpeg, clubSandwich)
+pacman::p_load(lme4, lmerTest, ggplot2, lsmeans, emmeans, multcomp, dplyr, wesanderson, patchwork, latex2exp, png, cowplot, magick, jpeg, clubSandwich, flextable)
 source("./R/func.R")
 
 ```
@@ -157,21 +157,13 @@ Predator$BodyRegion <- factor(Predator$BodyRegion) #updates levels for the varia
 # First, if predator type varies across populations then we would predcit that whether snake and bird actually are different would depend on the population. For example, if, say, in Hawaii and Kenya birds were equally likely as predators then dL would not vary for birds across populations, but would so for snakes. This is an interaction.
 
   # Fit model testing this idea above
-  PredatorAC_inter <- lmer(dL ~ Predator + Population + Predator:Population + (1|ID), 
-                           data = Predator) 
-  summary(PredatorAC_inter)
-  
-  # Get ANOVA stats for reporting in the paper of interaction
-  anova_predators_inter <- anova(PredatorAC_inter)
-
-# No support for an interaction. Drop interaction and fit the main effects model. Tells us that predation, regardless of whether we are talking about snakes or birds is just low in Hawaii, otherwise, we would predict that signals would evolve to match the predatory system 
-  
+    PredatorAC_inter <- lmer(dL ~ Predator + Population + Predator:Population + (1|ID), 
+                             data = Predator) 
+    summary(PredatorAC_inter)
+    
   #Refit main effects so we can test main effects on own.
-    PredatorAC <- lmer(dL ~ Predator + Population + (1|ID), data = Predator) 
-    summary(PredatorAC)
-  
-  # Grab the ANOVA summary stats
-    anova_predators <- anova(PredatorAC)
+         PredatorAC <- lmer(dL ~ Predator + Population + (1|ID), data = Predator) 
+        summary(PredatorAC)
   
      # Wald tests
             back_pred_AC_Pred <- Wald_test(PredatorAC_inter, constraints = constrain_zero(4), 
@@ -185,8 +177,8 @@ Predator$BodyRegion <- factor(Predator$BodyRegion) #updates levels for the varia
      
   # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
     Predator_IDs <- Predator %>% filter(!is.na(Predator), !is.na(Population)) # filter out misssing data
-       robust_PredatorAC <- coef_test(PredatorAC, cluster = Predator_IDs$ID, vcov = "CR2")
-    robust_PredatorAC_CI <-  conf_int(PredatorAC, cluster = Predator_IDs$ID, vcov = "CR2")
+              robust_PredatorAC <- coef_test(PredatorAC, cluster = Predator_IDs$ID, vcov = "CR2")
+           robust_PredatorAC_CI <-  conf_int(PredatorAC, cluster = Predator_IDs$ID, vcov = "CR2")
      robust_PredatorAC_CI_inter <-  conf_int(PredatorAC_inter, cluster = Predator_IDs$ID, vcov = "CR2")
      
   # Model allows us to get bird in Hwaii compared to bird in Kenya (contrast 3)
@@ -202,7 +194,10 @@ Predator$BodyRegion <- factor(Predator$BodyRegion) #updates levels for the varia
       robust_PredatorAC_pred_pop2 <- conf_int(PredatorAC_pred_pop2, cluster = Predator$ID, vcov="CR2")
       
      # Contrasts hypothesis tests, but use RVE 
-    result_pred <- Wald_test(PredatorAC_pred_pop, constraints = constrain_pairwise(c(1:4)), vcov="CR2", tidy = TRUE)
+      
+      PredatorAC_pred_pop <- lmer(dL ~  0+ pred_pop + (1|ID), data = Predator) 
+    result_pred <- Wald_test(PredatorAC_pred_pop, constraints = constrain_pairwise(c(1:4)), 
+                             vcov="CR2", tidy = TRUE)
     result_pred$p_val_bonfer <- sapply(p.adjust(result_pred$p_val, "bonferroni"), function(x) p_value(x))
     
     
@@ -308,12 +303,14 @@ DisplayBgrd$BodyRegion <- factor(DisplayBgrd$BodyRegion) #updates levels for the
   summary(DispBgrdAC)
   
   # Doesn't look like an interaction, so test.
-  anova(DispBgrdAC_inter, DispBgrdAC)
+  inter_AC_Disp <- Wald_test(DispBgrdAC_inter, constraints = constrain_zero(4), 
+                                  cluster = DisplayBgrd$ID, vcov = "CR2")
 
   # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
   robust_localAdapt <- clubSandwich::conf_int(DispBgrdAC, cluster = DisplayBgrd$ID, vcov =  "CR2")
 
   # Add Wald test to test signifiacnce of each factor, background and population using roust variance
+  
   background_AC_Disp <- Wald_test(DispBgrdAC, constraints = constrain_zero(3), 
                                   cluster = DisplayBgrd$ID, vcov = "CR2")
   
@@ -344,15 +341,17 @@ DisplayBgrd$BodyRegion <- factor(DisplayBgrd$BodyRegion) #updates levels for the
  # Here, we want to test if the conspicuousness of lizard signals is locally adapted to the specific background of the Kenyan and Hawaiian population. The predcition is simply that, if we were to place a Hawaiian animal against the Kenyan background that it would be far more conspicuous compared to if we place a Kenyan animal in a Hawaiian background. 
 
    # Fit the interaction model
-    DispBgrdCC_inter <- lmer(dS ~ Population  + Background_pop + Population:Background_pop + (1|ID), data=DisplayBgrd)
+    DispBgrdCC_inter <- lmer(dS ~ Population  + Background_pop + 
+                                  Population:Background_pop + (1|ID), data=DisplayBgrd)
     summary(DispBgrdCC_inter)
    
     # Fit the main effect model
           DispBgrdCC <- lmer(dS ~ Population  + Background_pop  + (1|ID), data=DisplayBgrd)
           summary(DispBgrdCC)
           
-    # Looks like weak evidence for interaction    
-        anova(DispBgrdCC_inter, DispBgrdCC)
+    # Doesn't look like an interaction, so test.
+          inter_CC_Disp <- Wald_test(DispBgrdCC_inter, constraints = constrain_zero(4), 
+                                  cluster = DisplayBgrd$ID, vcov = "CR2")
 
     # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
       robust_DispBgrdCC <- clubSandwich::coef_test(DispBgrdCC, cluster = DisplayBgrd$ID, vcov =  "CR2")
@@ -813,7 +812,7 @@ Chromatic and achromatic contrast from visual models, measured in just noticable
 
 ### Supplementary Tables - Add to Supplement. Easier to generate here given all code is here.
 
-```{r table1, tab.cap = "Model estimates, standard errors (SE), Saitterwaite degrees of freedom (df) and 95% confidence internals (95% CI) comparing acromatic and chromatic mean differences between Kenyan and Hawaiian lizards in two social contexts (Male-Male Competition and Courtship). Standard errors are corrected by using robust variance estimators. "}
+```{r table1, fig.width = 8, fig.height = 1, fig.asp = 0.1136364, tab.cap = "Model estimates, standard errors (SE), Saitterwaite degrees of freedom (df) and 95% confidence internals (95% CI) comparing acromatic and chromatic mean differences between Kenyan and Hawaiian lizards in two social contexts (Male-Male Competition and Courtship). Standard errors are corrected by using robust variance estimators. "}
 
 table1 <- as.data.frame(rbind(robust_ConspicDisplayAC_CI,
                 robust_ConspicDisplayCC_CI,
@@ -828,14 +827,13 @@ rownames(table1) <- NULL
               select(SocialContext, VisualRealm, Parameter, beta, SE, df, CI_L, CI_U)
  
  # Table
-table1 <- flextable(final_T1) %>%
-        table_style6()
+table1 <- flextable(final_T1) %>% table_style6()
  
 table1
 ```
 
 
-```{r table2, tab.cap = ""Model estimates, standard errors (SE), Saitterwaite degrees of freedom (df) and 95% confidence internals (95% CI) comparing acromatic and chromatic mean differences between Kenyan and Hawaiian lizards for snakes and lizards. Full models are provided and standard errors are corrected by using robust variance estimators."}
+```{r table2, fig.width = 8, fig.height = 1, fig.asp = 0.1136364, tab.cap = "Model estimates, standard errors (SE), Saitterwaite degrees of freedom (df) and 95% confidence internals (95% CI) comparing acromatic and chromatic mean differences between Kenyan and Hawaiian lizards for snakes and lizards. Full models are provided and standard errors are corrected by using robust variance estimators."}
 
 table2 <- as.data.frame(rbind(robust_PredatorAC_CI_inter,
                               robust_PredatorCC_CI_inter))
@@ -854,7 +852,17 @@ table2 <- flextable(final_T2) %>%
 table2
 ```
 
-CI_hyp_test
+```{r table3, fig.width = 9, fig.height = 1, fig.asp = 0.1136364, tab.cap = "Mean differences between Hawaiian and Kenyan visual signals for snake and bird predators."}
 
+contrast <- rbind(CI_hyp_test,
+                 CI_hyp_testAC)
+
+contrast <- contrast %>% mutate(VisualSpec = c("Achromatic Contrast", "", "Chromatic Contrast", ""),
+                                p_val = sapply(p_val, function(x) p_value(x))) %>% 
+            select(VisualSpec, comparison, Estimate, lwr, upr, Fstat, df, p_val, p_bonf)
+
+table3 <- flextable(contrast) %>% table_style8()
+table3
+```
 
 # References
