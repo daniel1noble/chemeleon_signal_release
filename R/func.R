@@ -239,3 +239,21 @@ table_style8 <- function(table){
     compose(part = "header", j = 9, value = as_paragraph(as_b("p"), as_sub(as_b("Bonferroni")))) %>% 
   return(table)
 }
+
+table_style9 <- function(table){
+  table <- table  %>% 
+    align(align = "center", part = "header") %>% 
+    align(align = "center", part = "body") %>% 
+    compose(part = "header", j = 1, value = as_paragraph(as_b("Social Context"))) %>% 
+    compose(part = "header", j = 2, value = as_paragraph(as_b("Visual Spectrum"))) %>% 
+    compose(part = "header", j = 3, value = as_paragraph(as_b("Parameter"))) %>% 
+    compose( part = "header", j = 4, value = as_paragraph(as_b("Estimate"))) %>% 
+    compose(part = "header", j = 5, value = as_paragraph(as_b("SE"))) %>%
+    compose(part = "header", j = 6, value = as_paragraph(as_b("df"))) %>% 
+    compose(part = "header", j = 7, value = as_paragraph(as_b("95% CI"), as_sub(as_b("lower")))) %>% 
+    compose(part = "header", j = 8, value = as_paragraph(as_b("95% CI"), as_sub(as_b("upper")))) %>% 
+    compose(part = "body", j = 3, i = c(1,4,7,10), value = as_paragraph("Intercept")) %>%
+    compose(part = "body", j = 3, i = c(1,4,7,10)+1, value = as_paragraph("Population", as_sub("Kenya"))) %>%
+    compose(part = "body", j = 3, i = c(1,4,7,10)+2, value = as_paragraph("Background", as_sub("Kenya")))
+  return(table)
+}
