@@ -30,7 +30,7 @@ knitr::opts_chunk$set(echo = FALSE, cache = TRUE, message = FALSE, warning = FAL
 ```{r getlibrary, echo = FALSE, results = "hide"}
 # load libraries
 devtools::install_github("karthik/wesanderson")
-pacman::p_load(lme4, lmerTest, ggplot2, lsmeans, emmeans, multcomp, dplyr, wesanderson, patchwork, latex2exp, png, cowplot, magick, jpeg, clubSandwich)
+pacman::p_load(lme4, lmerTest, ggplot2, lsmeans, emmeans, multcomp, dplyr, wesanderson, patchwork, latex2exp, png, cowplot, magick, jpeg, clubSandwich, flextable)
 source("./R/func.R")
 ```
 
@@ -274,113 +274,7 @@ We quantified the background against which chameleons signal by measuring the sp
 # Supplemental Results
 
 ### Changes in visual signals across body regions show similar patterns
-We took measurements of spectral reflectance for different body regions of each chamaleon. In our primary analysis, we averaged across different body regions because we were interested only in whether visual signals were different in Kenya and Hawaii overall. This was justified given that, across the different body regions, effects were largely in a similar direction, and often of similar magnitude (Figures \@ref(fig:FigS1), \@ref(fig:FigS2), \@ref(fig:FigS3)) and Tables \@ref(tab:tableS1), \@ref(tab:tableS2)). 
-
-```{r tableS1, tab.cap = "Pairwise comparisons of achormatic contrast between Kenyan and Hawaiian chameleon displays to a snake and bird visual system. Four different body regions ('gular', 'midflank', 'tailbase', topflank') are provided along with pairwise Wald test for contrast significance. Wald test uses a robust variance correction on the standard errors."}
-
-# Split snakes and birds
-result5_snake <-  result5[grep("snake", result5$hypothesis), ] %>% mutate(Species = c("Snake", rep("",3)))
- result5_bird <- result5[grep("bird", result5$hypothesis), ] %>% mutate(Species = c("Bird", rep("",3)))
-
- # Bind together in order
-  final_r5 <- rbind(result5_snake,result5_bird)
-  
-  
-  # Clean
-  final_r5 <- final_r5 %>% 
-              select(-test, -delta, -df_num) %>%
-              mutate(hypothesis = gsub("PopBRInt", "", hypothesis),
-                     p_val = sapply(p_val, function(x) p_value(x))) %>%
-              select(Species, hypothesis, Fstat, df_denom, p_val, p_val_bonfer)
-
-
-ft5 <- flextable(final_r5) %>%
-        table_style(.) %>% 
-        add_header_row(values = "Achromatic Contrast", colwidths = 6)  
-  
- ft5
-
- 
-```
-
-```{r tableS2, tab.cap = "Pairwise comparisons of achormatic contrast between Kenyan and Hawaiian chameleon displays to a snake and bird visual system. Four different body regions ('gular', 'midflank', 'tailbase', topflank') are provided along with pairwise Wald test for contrast significance. Wald test uses a robust variance correction on the standard errors."}
-
-# Split snakes and birds
-
-result6_snake <- result6[grep("snake", result6$hypothesis), ] %>% mutate(Species = c("Snake", rep("",3)))
- result6_bird <- result6[grep("bird", result6$hypothesis), ] %>% mutate(Species = c("Bird", rep("",3)))
-
-# Bind together in order
- final_r6 <- rbind(result6_snake,result6_bird)
-
- 
-# Clean
- final_r6 <- final_r6 %>% 
-              select(-test, -delta, -df_num) %>%
-              mutate(hypothesis = gsub("PopBRInt", "", hypothesis),
-                     p_val = sapply(p_val, function(x) p_value(x))) %>%
-              select(Species, hypothesis, Fstat, df_denom, p_val, p_val_bonfer)
- 
- # Table
- ft6 <- flextable(final_r6) %>%
-        table_style(.) %>% 
-        add_header_row(values = "Chromatic Contrast", colwidths = 6) 
- 
- ft6
-```
-
-```{r tableS3, tab.cap = "Wald Tests comparing significance of model parameters. Wald tests computed using robust variance estimators with a Saitterwaite correction to the degrees of freedom. Interactions were first tested and models refit to test the signifiacnce of main effects"}
-fullTable <- rbind(wald_table_ConspicDisplayAC, 
-                   wald_table_ConspicDisplayCC, 
-                   wald_table_ConspicCourtshipAC,
-                   wald_table_ConspicCourtshipCC)
-
-fullTable <- fullTable %>% 
-              mutate(Context = c("Male-Male Display", rep("", 7), "Courtship Display", rep("", 7)),
-                     JND = c("Achromatic Contrast", rep("", 3), "Chromatic Contrast", rep("", 3), "Achromatic Contrast", rep("", 3), "Chromatic Contrast", rep("", 3)),
-                     p_val = sapply(p_val, function(x) p_value(x))) %>% select(Context, JND, Variable, Fstat, df_num, df_denom, p_val)
-
-S3 <- flextable(fullTable) %>%
-        table_style2(.)
-S3
-```
-
-```{r table4, tab.cap = "Wald Tests comparing significance of model parameters for predators. Wald tests computed using robust variance estimators with a Saitterwaite correction to the degrees of freedom. Interactions were first tested and models refit to test the signifiacnce of main effects"}
-
-fulltableP <- rbind(Wald_table_PredatorAC,
-                    Wald_table_PredatorCC)
-
-fulltableP <- fulltableP %>% mutate(JND = c("Achromatic Contrast", rep("",4), "Chromatc Contrast", rep("",4)),
-                                            p_val = sapply(p_val, function(x) p_value(x))) %>% 
-                                      select(JND, Variable, Fstat, df_num, df_denom, p_val)
-
-S4 <- flextable(fulltableP) %>%
-        table_style3(.)
-S4
-```
-
-
-```{r tableS5, tab.cap = "Linear mixed effects model results using sandwich estimators and Saitterwaite degrees of freedom correction."}
-robust_sc_table <- rbind(robust_ConspicDisplayAC,
-                          robust_ConspicDisplayCC,
-                          robust_ConspicCourtshipAC,
-                          robust_ConspicCourtshipCC) %>% 
-                    mutate(p_Satt = sapply(p_Satt, function(x) p_value(x)),
-                           SocialContext = c("Male-Male Display", rep("", 17), 
-                                             "Courtship Display", rep("", 17)),
-                           JND = c("Achromatic Contrast", rep("", 8), 
-                                   "Chromatic Contrast", rep("", 8), 
-                                   "Achromatic Contrast", rep("", 8), 
-                                   "Chromatic Contrast", rep("", 8)))
-
-robust_sc_table$parameter <- rownames(robust_sc_table)
-
-robust_sc_table <- robust_sc_table %>% select(SocialContext, JND, parameter, beta, SE, tstat, df, p_Satt)
-
-
-tableS5 <- flextable(robust_sc_table) %>%  table_style4()
-tableS5
-```
+We took measurements of spectral reflectance for different body regions of each chamaleon. In our primary analysis, we averaged across different body regions because we were interested only in whether visual signals were different in Kenya and Hawaii overall. This was justified given that, across the different body regions, effects were largely in a similar direction, and often of similar magnitude (Figures \@ref(fig:FigS1), \@ref(fig:FigS2), \@ref(fig:FigS3)) and Tables \@ref(tab:tableS1), \@ref(tab:tableS2), \@ref(tab:tableS3), \@ref(tab:tableS4). \@ref(tab:tableS5)). 
 
 ```{r FigS1, fig.width = 13, fig.height = 12, fig.cap = "Chormatic (A, C) and Achromatic (B, D) contrast in just noticible differences (JND) for Hawaiian and Kenyan lizards relative to their environments. All four body regions (gular, mid-flank, tailbase and topflank) are shown averaged across stems and leaves found in their habitat. Mean JNDs are provided along with 95% confidence intervals. A & B represent male-male contest displays whereas C & D represent courtship displays"}
 
@@ -494,6 +388,44 @@ p1 + p2 + p3 + p4 + plot_annotation(tag_levels = c('A', 'B', 'C', 'D')) & theme(
 
 ```
 
+```{r tableS2, tab.cap = "Wald Tests comparing significance of model parameters. Wald tests computed using robust variance estimators with a Saitterwaite correction to the degrees of freedom. Interactions were first tested and models refit to test the signifiacnce of main effects"}
+fullTable <- rbind(wald_table_ConspicDisplayAC, 
+                   wald_table_ConspicDisplayCC, 
+                   wald_table_ConspicCourtshipAC,
+                   wald_table_ConspicCourtshipCC)
+
+fullTable <- fullTable %>% 
+              mutate(Context = c("Male-Male Display", rep("", 7), "Courtship Display", rep("", 7)),
+                     JND = c("Achromatic Contrast", rep("", 3), "Chromatic Contrast", rep("", 3), "Achromatic Contrast", rep("", 3), "Chromatic Contrast", rep("", 3)),
+                     p_val = sapply(p_val, function(x) p_value(x))) %>% select(Context, JND, Variable, Fstat, df_num, df_denom, p_val)
+
+S3 <- flextable(fullTable) %>%
+        table_style2(.)
+S3
+```
+
+```{r tableS3, tab.cap = "Linear mixed effects model results using sandwich estimators and Saitterwaite degrees of freedom correction.Social Context"}
+robust_sc_table <- rbind(robust_ConspicDisplayAC,
+                          robust_ConspicDisplayCC,
+                          robust_ConspicCourtshipAC,
+                          robust_ConspicCourtshipCC) %>% 
+                    mutate(p_Satt = sapply(p_Satt, function(x) p_value(x)),
+                           SocialContext = c("Male-Male Display", rep("", 17), 
+                                             "Courtship Display", rep("", 17)),
+                           JND = c("Achromatic Contrast", rep("", 8), 
+                                   "Chromatic Contrast", rep("", 8), 
+                                   "Achromatic Contrast", rep("", 8), 
+                                   "Chromatic Contrast", rep("", 8)))
+
+robust_sc_table$parameter <- rownames(robust_sc_table)
+
+robust_sc_table <- robust_sc_table %>% select(SocialContext, JND, parameter, beta, SE, tstat, df, p_Satt)
+
+
+tableS5 <- flextable(robust_sc_table) %>%  table_style4()
+tableS5
+```
+
 ```{r FigS2, fig.width = 12, fig.height = 12, fig.cap = "Predators All four body regions (gular, mid-flank, tailbase and topflank) are shown averaged across stems and leaves found in their habitat. Mean JNDs are provided along with 95% confidence intervals. A & B represent male-male contest displays whereas C & D represent courtship displays"}
 
 # Load the data
@@ -562,6 +494,89 @@ p4 <- ggplot(summary_data_pred, aes(x = Population, y = Mean_dS, group = BodyReg
 plot_grid(p4, p3, nrow = 2, ncol = 1, labels = c("A", "B"), label_size = 30,
   label_fontface = "bold", rel_widths=c(1,1))
 
+```
+
+```{r tableS4, tab.cap = "Wald Tests comparing significance of model parameters for predators. Wald tests computed using robust variance estimators with a Saitterwaite correction to the degrees of freedom. Interactions were first tested and models refit to test the signifiacnce of main effects"}
+
+fulltableP <- rbind(Wald_table_PredatorAC,
+                    Wald_table_PredatorCC)
+
+fulltableP <- fulltableP %>% mutate(JND = c("Achromatic Contrast", rep("",4), "Chromatc Contrast", rep("",4)),
+                                            p_val = sapply(p_val, function(x) p_value(x))) %>% 
+                                      select(JND, Variable, Fstat, df_num, df_denom, p_val)
+
+S4 <- flextable(fulltableP) %>%
+        table_style3(.)
+S4
+```
+
+```{r tableS5, tab.cap = "Linear mixed effects model results using sandwich estimators and Saitterwaite degrees of freedom correction.Predators"}
+robust_sc_pred_table <- rbind(robust_PredatorAC,
+                         robust_PredatorCC) %>% 
+                    mutate(p_Satt = sapply(p_Satt, function(x) p_value(x)),
+                           JND = c("Achromatic Contrast", rep("", 9), 
+                                   "Chromatic Contrast", rep("", 9)))
+
+robust_sc_pred_table$parameter <- rownames(robust_sc_pred_table)
+
+robust_sc_pred_table <- robust_sc_pred_table %>% select(JND, parameter, beta, SE, tstat, df, p_Satt)
+
+
+tableS6 <- flextable(robust_sc_pred_table) %>%  table_style5()
+tableS6
+```
+
+```{r tableS6, tab.cap = "Pairwise comparisons of achormatic contrast between Kenyan and Hawaiian chameleon displays to a snake and bird visual system. Four different body regions ('gular', 'midflank', 'tailbase', topflank') are provided along with pairwise Wald test for contrast significance. Wald test uses a robust variance correction on the standard errors."}
+
+# Split snakes and birds
+result5_snake <-  result5[grep("snake", result5$hypothesis), ] %>% mutate(Species = c("Snake", rep("",3)))
+ result5_bird <- result5[grep("bird", result5$hypothesis), ] %>% mutate(Species = c("Bird", rep("",3)))
+
+ # Bind together in order
+  final_r5 <- rbind(result5_snake,result5_bird)
+  
+  
+  # Clean
+  final_r5 <- final_r5 %>% 
+              select(-test, -delta, -df_num) %>%
+              mutate(hypothesis = gsub("PopBRInt", "", hypothesis),
+                     p_val = sapply(p_val, function(x) p_value(x))) %>%
+              select(Species, hypothesis, Fstat, df_denom, p_val, p_val_bonfer)
+
+
+ft5 <- flextable(final_r5) %>%
+        table_style(.) %>% 
+        add_header_row(values = "Achromatic Contrast", colwidths = 6)  
+  
+ ft5
+
+ 
+```
+
+```{r tableS7, tab.cap = "Pairwise comparisons of achormatic contrast between Kenyan and Hawaiian chameleon displays to a snake and bird visual system. Four different body regions ('gular', 'midflank', 'tailbase', topflank') are provided along with pairwise Wald test for contrast significance. Wald test uses a robust variance correction on the standard errors."}
+
+# Split snakes and birds
+
+result6_snake <- result6[grep("snake", result6$hypothesis), ] %>% mutate(Species = c("Snake", rep("",3)))
+ result6_bird <- result6[grep("bird", result6$hypothesis), ] %>% mutate(Species = c("Bird", rep("",3)))
+
+# Bind together in order
+ final_r6 <- rbind(result6_snake,result6_bird)
+
+ 
+# Clean
+ final_r6 <- final_r6 %>% 
+              select(-test, -delta, -df_num) %>%
+              mutate(hypothesis = gsub("PopBRInt", "", hypothesis),
+                     p_val = sapply(p_val, function(x) p_value(x))) %>%
+              select(Species, hypothesis, Fstat, df_denom, p_val, p_val_bonfer)
+ 
+ # Table
+ ft6 <- flextable(final_r6) %>%
+        table_style(.) %>% 
+        add_header_row(values = "Chromatic Contrast", colwidths = 6) 
+ 
+ ft6
 ```
 
 ```{r FigS3, fig.width = 13, fig.height = 7.5, fig.cap = "Local adaptation. All four body regions (gular, mid-flank, tailbase and topflank) are shown averaged across stems and leaves found in their habitat. Mean JNDs are provided along with 95% confidence intervals. A & B represent male-male contest displays whereas C & D represent courtship displays"}
