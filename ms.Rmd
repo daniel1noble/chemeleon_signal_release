@@ -300,7 +300,7 @@ DisplayBgrd$BodyRegion <- factor(DisplayBgrd$BodyRegion) #updates levels for the
   
 
   # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
-  robust_localAdapt <- clubSandwich::conf_int(DispBgrdAC, cluster = DisplayBgrd$ID, vcov =  "CR2")
+  robust_localAdapt_DispBgrdAC <- clubSandwich::conf_int(DispBgrdAC, cluster = DisplayBgrd$ID, vcov =  "CR2")
 
   # Add Wald test to test signifiacnce of each factor, background and population using roust variance
   
@@ -338,14 +338,13 @@ DisplayBgrd$BodyRegion <- factor(DisplayBgrd$BodyRegion) #updates levels for the
           summary(DispBgrdCC)
  
     # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
-      robust_DispBgrdCC <- clubSandwich::coef_test(DispBgrdCC, cluster = DisplayBgrd$ID, vcov =  "CR2")
-      robust_DispBgrdCC_inter <- clubSandwich::coef_test(DispBgrdCC_inter, cluster = DisplayBgrd$ID, vcov =  "CR2")
-
+      robust_DispBgrdCC <- clubSandwich::conf_int(DispBgrdCC, cluster = DisplayBgrd$ID, vcov =  "CR2")
+      
     # Check significance of each factor
         background_CC_Disp <- Wald_test(DispBgrdCC, constraints = constrain_zero(3), 
                                   cluster = DisplayBgrd$ID, vcov = "CR2")
   
-  Population_CC_Disp <- Wald_test(DispBgrdCC, constraints = constrain_zero(2), 
+        Population_CC_Disp <- Wald_test(DispBgrdCC, constraints = constrain_zero(2), 
                                   cluster = DisplayBgrd$ID, vcov = "CR2")
       
     # Planned contrasts. Refit model in slight different form
@@ -353,7 +352,8 @@ DisplayBgrd$BodyRegion <- factor(DisplayBgrd$BodyRegion) #updates levels for the
     DisplayBgrd_pop_backCC <- lmer(dS ~ pop_back + (1|ID), data = DisplayBgrd) 
 
     # Fit Robust model
-    robust_DisplayBgrd_pop_backCC <- clubSandwich::conf_int(DisplayBgrd_pop_backCC, cluster = DisplayBgrd$ID, vcov =  "CR2")
+    robust_DisplayBgrd_pop_backCC <- clubSandwich::conf_int(DisplayBgrd_pop_backCC, 
+                                                            cluster = DisplayBgrd$ID, vcov =  "CR2")
    
     # Contrasts hypothesis tests, but use RVE 
       result_DisplayBgrd_pop_backCC <- Wald_test(DisplayBgrd_pop_backCC, constraints = constrain_pairwise(c(1:4)), vcov="CR2", tidy = TRUE)
@@ -388,7 +388,7 @@ CourtshipBgrd$BodyRegion <- factor(CourtshipBgrd$BodyRegion)
     summary(CourtshipAC)
 
    # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
-   robust_CourtshipAC <- clubSandwich::coef_test(CourtshipAC, cluster = CourtshipBgrd$ID, vcov =  "CR2")
+   robust_CourtshipAC <- clubSandwich::conf_int(CourtshipAC, cluster = CourtshipBgrd$ID, vcov =  "CR2")
    
    # Wald tests
            background_AC_Court <- Wald_test(CourtshipAC, constraints = constrain_zero(3), 
@@ -425,7 +425,7 @@ CourtshipBgrd$BodyRegion <- factor(CourtshipBgrd$BodyRegion)
       summary(CourtshipCC)
 
   # Robust variance esatimation to correct SE's for fixed effects given spectral curves are used multiple times for generating JNDs for each individuals data. 
-  robust_CourtshipCC <- clubSandwich::coef_test(CourtshipCC, cluster = CourtshipBgrd$ID, vcov =  "CR2")
+  robust_CourtshipCC <- clubSandwich::conf_int(CourtshipCC, cluster = CourtshipBgrd$ID, vcov =  "CR2")
   
   
    # Wald tests
@@ -785,6 +785,8 @@ Chromatic and achromatic contrast from visual models, measured in just noticable
 
 ### Supplementary Tables - Add to Supplement. Easier to generate here given all code is here.
 
+# Social context. We only need models because contarsts are already there
+
 ```{r table1, fig.width = 8, fig.height = 1, fig.asp = 0.1136364, tab.cap = "Model estimates, standard errors (SE), Saitterwaite degrees of freedom (df) and 95% confidence internals (95% CI) comparing acromatic and chromatic mean differences between Kenyan and Hawaiian lizards in two social contexts (Male-Male Competition and Courtship). Standard errors are corrected by using robust variance estimators. "}
 
 table1 <- as.data.frame(rbind(robust_ConspicDisplayAC_CI,
@@ -805,7 +807,7 @@ table1 <- flextable(final_T1) %>% table_style6()
 table1
 ```
 
-
+# Predators - Models AND contrasts. We don't get all contrasts because we have two factors in model
 ```{r table2, fig.width = 8, fig.height = 1, fig.asp = 0.1136364, tab.cap = "Model estimates, standard errors (SE), Saitterwaite degrees of freedom (df) and 95% confidence internals (95% CI) comparing acromatic and chromatic mean differences between Kenyan and Hawaiian lizards for snakes and lizards. Full models are provided and standard errors are corrected by using robust variance estimators."}
 
 table2 <- as.data.frame(rbind(robust_PredatorAC_CI_inter,
@@ -836,6 +838,29 @@ contrast <- contrast %>% mutate(VisualSpec = c("Achromatic Contrast", "", "Chrom
 
 table3 <- flextable(contrast) %>% table_style8()
 table3
+```
+
+
+# Local Adaptation. We have all the contrasts we need from the model because we are only comparing Hawaii-Hawaii(background) to Hawaii-Kenya(background). These are therefore in the table output already.
+
+```{r table4, fig.width = 9, fig.height = 1, fig.asp = 0.1136364, tab.cap = "Mean differences between Hawaiian lizards on introduced Hawaiian background and native Kenyan background."}
+
+tb4 <- data.frame(rbind(robust_localAdapt_DispBgrdAC,
+             robust_DispBgrdCC,
+             robust_CourtshipAC,
+             robust_CourtshipCC))
+tb4$parameter <- rownames(tb4)
+rownames(tb4) <- NULL
+
+tb4 <- tb4 %>% mutate(SocialContext = c("Male-Male Display", rep("", 5), 
+                                        "Courtship Display", rep("", 5)),
+                    VisualRealm = c("Acromatic Contrast", rep("", 2), "Chromatic Contrast", 
+                                    rep("", 2), "Acromatic Contrast", rep("", 2), 
+                                    "Chromatic Contrast", rep("", 2))) %>%
+              select(SocialContext, VisualRealm, parameter, beta, SE, df, CI_L, CI_U)
+
+table4 <- flextable(tb4) %>% table_style9()
+
 ```
 
 # References
