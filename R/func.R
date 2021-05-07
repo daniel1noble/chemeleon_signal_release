@@ -1,3 +1,5 @@
+
+# Cleans up look of p_values
 p_value <- function(x){
   if(x <= 0.0001) {tmp = "< 0.0001"}
   if(x <= 0.001 & x >= 0.0001) {tmp ="< 0.001"}
@@ -6,8 +8,8 @@ p_value <- function(x){
   return(tmp)
 }
 
-
-  wald_table <- function(model_main, model_inter){
+# Create wald tables. Functions using RVE's to look at overall significance of interactions and main effects in models
+wald_table   <- function(model_main, model_inter){
   
        inter <- Wald_test(model_inter, 
                                         constraints = constrain_zero(7:9),
@@ -36,8 +38,7 @@ p_value <- function(x){
   return(WaldTab)
   }
   
-  
-  wald_table_p <- function(model_main, model_inter){
+wald_table_p <- function(model_main, model_inter){
     
     inter_BR_Pred <- Wald_test(model_inter, 
                        constraints = constrain_zero(7:9),
@@ -73,10 +74,12 @@ p_value <- function(x){
     return(WaldTab)
   }
 
- table_style <- function(table){
+# Table styling functions
+
+table_style  <- function(table){
   table <- table %>% width(j = 1, width = 1) %>% width(j = 2, width = 2.5) %>% 
     align(align = "center", part = "header") %>% 
-    align(i = 1:8, j = 1:6, align = "center", part = "body") %>% 
+    align(align = "center", part = "body") %>% 
     compose(part = "header", j = 1, value = as_paragraph(as_b("Predator"))) %>% 
     compose( part = "header", j = 2, value = as_paragraph(as_b("Contrast"))) %>% 
     compose(part = "header", j = 3, value = as_paragraph(as_b("F"))) %>%
@@ -102,11 +105,10 @@ p_value <- function(x){
   return(table)
 }
 
-
 table_style2 <- function(table){
-  table <- table %>% width(j = 1, width = 1) %>% width(j = 2, width = 1) %>% width(j = 2, width = 2.5) %>% 
+  table <- table %>%  width(j = 3, width = 3) %>% 
     align(align = "center", part = "header") %>% 
-    align(i = 1:16, j = 1:7, align = "center", part = "body") %>% 
+    align( align = "center", part = "body") %>% 
     compose(part = "header", j = 1, value = as_paragraph(as_b("Social Context"))) %>% 
     compose(part = "header", j = 2, value = as_paragraph(as_b("Visual Spectrum"))) %>% 
     compose(part = "header", j = 3, value = as_paragraph(as_b("Variable"))) %>% 
@@ -118,9 +120,9 @@ table_style2 <- function(table){
 }
 
 table_style3 <- function(table){
-  table <- table %>% width(j = 1, width = 1) %>% width(j = 2, width = 2.5) %>% 
+  table <- table %>% width(j = 1, width = 1) %>% width(j = 3, width = 3.5) %>% 
     align(align = "center", part = "header") %>% 
-    align(i = 1:10, j = 1:6, align = "center", part = "body") %>% 
+    align(align = "center", part = "body") %>% 
     compose(part = "header", j = 1, value = as_paragraph(as_b("Visual Spectrum"))) %>% 
     compose(part = "header", j = 2, value = as_paragraph(as_b("Variable"))) %>% 
     compose( part = "header", j = 3, value = as_paragraph(as_b("F"))) %>% 
@@ -130,13 +132,11 @@ table_style3 <- function(table){
   return(table)
 }
 
-
 table_style4 <- function(table){
-  table <- table %>% width(j = 1, width = 1) %>% 
-                    width(j = 2, width = 1) %>% 
-                    width(j = 3, width = 3) %>% 
+  table <- table %>%
+    width(j = 3, width = 6) %>% 
     align(align = "center", part = "header") %>% 
-    align(i = 1:36, j = 1:7, align = "center", part = "body") %>% 
+    align(align = "center", part = "body") %>% 
     compose(part = "header", j = 1, value = as_paragraph(as_b("Social Context"))) %>% 
     compose(part = "header", j = 2, value = as_paragraph(as_b("Visual Spectrum"))) %>% 
     compose(part = "header", j = 3, value = as_paragraph(as_b("Parameter"))) %>% 
@@ -153,7 +153,37 @@ table_style4 <- function(table){
     compose(part = "body", j = 3, i = c(1, 10, 19, 28)+5, value = as_paragraph("Body Region", as_sub("topflank"))) %>%
     compose(part = "body", j = 3, i = c(1, 10, 19, 28)+6, value = as_paragraph("Population", as_sub("Kenya"), "*BodyRegion", as_sub("midflank"))) %>%
     compose(part = "body", j = 3, i = c(1, 10, 19, 28)+7, value = as_paragraph("Population", as_sub("Kenya"), "*BodyRegion", as_sub("tailbase"))) %>%
-    compose(part = "body", j = 3, i = c(1, 10, 19, 28)+8, value = as_paragraph("Population", as_sub("Kenya"), "*BodyRegion", as_sub("topflank")))
+    compose(part = "body", j = 3, i = c(1, 10, 19, 28)+8, value = as_paragraph("Population", as_sub("Kenya"), "*BodyRegion", as_sub("topflank"))) %>% 
+    font(i = c(1:36), j = c(1:7), fontname="Times", part = "body") %>% 
+    font(j = c(1:7), fontname="Times", part = "header")
+  
+  return(table)
+}
+
+table_style5 <- function(table){
+  table <- table %>% width(j = 1, width = 1) %>% 
+    width(j = 2, width = 3) %>% 
+    align(align = "center", part = "header") %>% 
+    align(align = "center", part = "body") %>% 
+    compose(part = "header", j = 1, value = as_paragraph(as_b("Visual Spectrum"))) %>% 
+    compose(part = "header", j = 2, value = as_paragraph(as_b("Parameter"))) %>% 
+    compose(part = "header", j = 3, value = as_paragraph(as_b("Estimate"))) %>% 
+    compose(part = "header", j = 4, value = as_paragraph(as_b("SE"))) %>%
+    compose(part = "header", j = 5, value = as_paragraph(as_b("T"), as_sub(as_b("statistic")))) %>% 
+    compose(part = "header", j = 6, value = as_paragraph(as_b("df"))) %>% 
+    compose(part = "header", j = 7, value = as_paragraph(as_b("p"))) %>% 
+    compose(part = "body", j = 2, i = c(1, 11), value = as_paragraph("Intercept")) %>%
+    compose(part = "body", j = 2, i = c(1, 11)+1, value = as_paragraph("Predator", as_sub("Snake"))) %>%
+    compose(part = "body", j = 2, i = c(1, 11)+2, value = as_paragraph("Population", as_sub("Kenya"))) %>%
+    compose(part = "body", j = 2, i = c(1, 11)+3, value = as_paragraph("Body Region", as_sub("midflank"))) %>%
+    compose(part = "body", j = 2, i = c(1, 11)+4, value = as_paragraph("Body Region", as_sub("tailbase"))) %>%
+    compose(part = "body", j = 2, i = c(1, 11)+5, value = as_paragraph("Body Region", as_sub("topflank"))) %>%
+    compose(part = "body", j = 2, i = c(1, 11)+6, value = as_paragraph("Predator", as_sub("Snake"), "* BodyRegion", as_sub("midflank"))) %>%
+    compose(part = "body", j = 2, i = c(1, 11)+7, value = as_paragraph("Predator", as_sub("Snake"), "* BodyRegion", as_sub("tailbase"))) %>%
+    compose(part = "body", j = 2, i = c(1, 11)+8, value = as_paragraph("Predator", as_sub("Snake"), "* BodyRegion", as_sub("topflank"))) %>% 
+    compose(part = "body", j = 2, i = c(1, 11)+9, value = as_paragraph("Predator", as_sub("Snake"), "* Population", as_sub("Kenya"))) %>% 
+    font(i = c(1:20), j = c(1:7), fontname="Times New Roman", part = "body") %>% 
+    font(j = c(1:7), fontname="Times New Roman", part = "header")
   
   return(table)
 }
