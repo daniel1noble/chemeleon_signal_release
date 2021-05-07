@@ -263,6 +263,33 @@ In order to quantify display colouration we staged encounters between conspecifi
 
 We staged trials between males to elicit dominant and subordinate displays and between males and females to elicit courtship displays. This consisted of placing two chameleons at a comfortable distance at which point they typically responded to the conspecific’s presence by rapidly changing colour and behaviour. In male-male trials both individuals would adopt a lemon-yellow display coloration (Fig. x) and advance towards each other. This would be accompanied by head shakes and would lead to horn-locking if males were not obviously asymmetric. Once dominance was settled, the subordinate would turn brown and flee. In male-female (courtship) trials, males would turn the same lemon-yellow and approach the female while head shaking and rocking. The day following social trials we presented each chameleon with a snake and bird model predator (separately). Lizards were drawn at random and the order of presentation (snake or bird first) was random. Both trials were conducted on the same day but were separated by at least three hours. A trial began when a chameleon was removed from its cloth bag and placed on the triangular stand. At this point the lizard was in a neutral colour state. In the case of the snake model, one of us slowly moved the model snake towards the chameleon from both above and below it, without ever contacting the chameleon. In the case of the bird trials, the bird was attached to a x cm wooden pole and was ‘flown’ past the chameleon from above and below it. Trials lasted no more than 2-min and we scored whether the chameleon flipped to the opposite side of the branch, which is a classic anti-predator behaviour by chameleons. Once chameleons changed colour, we quantified their spectral reflectance following the same procedure described for social trials. We also conducted seven trials with a just a branch with no predator attached, as a control for the model predator. The snake model was moulded from a dead boomslang (Dispholidus typus) and painted by a professional artist to resemble a typical green form of this species (previously used in Stuart-Fox…). The bird was ….
 
+```{r FigS1, fig.cap = "Examples of chameleon colour signal change in response to different social and predatory contexts"}
+
+files <- list.files("./photos/ESM/")
+img1 <- readJPEG(paste0("./photos/ESM/", files[1]))
+img2 <- readJPEG(paste0("./photos/ESM/", files[2]))
+img3 <- readJPEG(paste0("./photos/ESM/", files[3]))
+img4 <- readJPEG(paste0("./photos/ESM/", files[4]))
+img5 <- readJPEG(paste0("./photos/ESM/", files[5]))
+img6 <- readJPEG(paste0("./photos/ESM/", files[6]))
+
+p1 <- cowplot::ggdraw()+
+        cowplot::draw_image(img1)
+p2 <- cowplot::ggdraw()+
+        cowplot::draw_image(img2)
+p3 <- cowplot::ggdraw()+
+        cowplot::draw_image(img3)
+p4 <- cowplot::ggdraw()+
+        cowplot::draw_image(img4)
+p5 <- cowplot::ggdraw()+
+        cowplot::draw_image(img5)
+p6 <- cowplot::ggdraw()+
+        cowplot::draw_image(img6)
+
+(p1 + p3 + p6) / (p2 + p5 + p4) + plot_annotation(tag_levels = c("A", "B", "C", "D", "E", "F"))
+  
+```
+
 ## Colour measurements, habitat background and irradiance
 
 During all behaviour trials, we measured the colour of each body region (Fig. x) once only, because chameleons change colour rapidly and we had to reduce the handling stress to the animal. Patches were measured in random sequence to avoid any bias of order. When a chameleon had completely changed colour (to a human observer) and was also performing typical behaviour associated with their display (e.g., head shakes, swaying, gaping, rapid approach or flee) we lightly restrained it with one hand, without removing it from its perch, and measured spectral reflectance using a 1.2 m bifurcated probe connected to an Ocean Optics USB-2000 optic spectrophotometer and a PX2 light source. We used a custom-made probe-holder which we placed in contact with the animal at a standard angle (45; @RN2) and distance (5 mm), thereby excluding ambient light. All measurements were relative to a dark, and a certified 99% white reflectance standard. When chameleons started to change colour in response to our handling we stopped measuring colour and allowed them to continue a social trial before continuing to measure spectral reflectance. In the case of a predator trial we would once again present them with the predator model until they returned to their anti-predator display. This system worked effectively because chameleons readily responded to social and anti-predator stimuli and quickly returned to natural behaviour following handling.
@@ -273,10 +300,14 @@ We quantified the background against which chameleons signal by measuring the sp
 
 # Supplemental Results
 
-### Changes in visual signals across body regions show similar patterns
-We took measurements of spectral reflectance for different body regions of each chamaleon. In our primary analysis, we averaged across different body regions because we were interested only in whether visual signals were different in Kenya and Hawaii overall. This was justified given that, across the different body regions, effects were largely in a similar direction, and often of similar magnitude (Figures \@ref(fig:FigS1), \@ref(fig:FigS2), \@ref(fig:FigS3)) and Tables \@ref(tab:tableS1), \@ref(tab:tableS2), \@ref(tab:tableS3), \@ref(tab:tableS4). \@ref(tab:tableS5)). 
+## Assessing changes in sexual signals across different body regions
+We took measurements of spectral reflectance for different body regions of each chamaleon. In our primary analysis, we averaged across different body regions because we were interested only in whether visual signals overall were different between Kenya and Hawaii. This was justified given that, across the different body regions, effects were largely in a similar direction, and often of similar magnitude (Figures \@ref(fig:FigS2), \@ref(fig:FigS3), \@ref(fig:FigS4) and Tables \@ref(tab:tableS1), \@ref(tab:tableS2), \@ref(tab:tableS3), \@ref(tab:tableS4). \@ref(tab:tableS5)).
 
-```{r FigS1, fig.width = 13, fig.height = 12, fig.cap = "Chormatic (A, C) and Achromatic (B, D) contrast in just noticible differences (JND) for Hawaiian and Kenyan lizards relative to their environments. All four body regions (gular, mid-flank, tailbase and topflank) are shown averaged across stems and leaves found in their habitat. Mean JNDs are provided along with 95% confidence intervals. A & B represent male-male contest displays whereas C & D represent courtship displays"}
+#### Body regions in social contexts (Male-male and Courtship Display) show different magnitude of responses, but similar directionality
+ 
+
+
+```{r FigS2, fig.width = 13, fig.height = 12, fig.cap = "Chormatic (A, C) and Achromatic (B, D) contrast in just noticible differences (JND) for Hawaiian and Kenyan lizards relative to their environments. All four body regions (gular, mid-flank, tailbase and topflank) are shown averaged across stems and leaves found in their habitat. Mean JNDs are provided along with 95% confidence intervals. A & B represent male-male contest displays whereas C & D represent courtship displays"}
 
 #Making a point plot with error bars split by body size and population 
 #Compute raw means and standard errors for body part and population for dS and assigned this data into Display_plot_dS_dat
@@ -388,7 +419,7 @@ p1 + p2 + p3 + p4 + plot_annotation(tag_levels = c('A', 'B', 'C', 'D')) & theme(
 
 ```
 
-```{r tableS2, tab.cap = "Wald Tests comparing significance of model parameters. Wald tests computed using robust variance estimators with a Saitterwaite correction to the degrees of freedom. Interactions were first tested and models refit to test the signifiacnce of main effects"}
+```{r tableS1, tab.cap = "Wald Tests comparing significance of model parameters. Wald tests computed using robust variance estimators with a Saitterwaite correction to the degrees of freedom. Interactions were first tested and models refit to test the signifiacnce of main effects"}
 fullTable <- rbind(wald_table_ConspicDisplayAC, 
                    wald_table_ConspicDisplayCC, 
                    wald_table_ConspicCourtshipAC,
@@ -404,7 +435,7 @@ S3 <- flextable(fullTable) %>%
 S3
 ```
 
-```{r tableS3, tab.cap = "Linear mixed effects model results using sandwich estimators and Saitterwaite degrees of freedom correction.Social Context"}
+```{r tableS2, tab.cap = "Linear mixed effects model results using sandwich estimators and Saitterwaite degrees of freedom correction.Social Context"}
 robust_sc_table <- rbind(robust_ConspicDisplayAC,
                           robust_ConspicDisplayCC,
                           robust_ConspicCourtshipAC,
@@ -426,7 +457,7 @@ tableS5 <- flextable(robust_sc_table) %>%  table_style4()
 tableS5
 ```
 
-```{r FigS2, fig.width = 12, fig.height = 12, fig.cap = "Predators All four body regions (gular, mid-flank, tailbase and topflank) are shown averaged across stems and leaves found in their habitat. Mean JNDs are provided along with 95% confidence intervals. A & B represent male-male contest displays whereas C & D represent courtship displays"}
+```{r FigS3, fig.width = 12, fig.height = 12, fig.cap = "Predators All four body regions (gular, mid-flank, tailbase and topflank) are shown averaged across stems and leaves found in their habitat. Mean JNDs are provided along with 95% confidence intervals. A & B represent male-male contest displays whereas C & D represent courtship displays"}
 
 # Load the data
 Predator <- read.table("./data/Predator_2_3.csv", 
@@ -496,7 +527,7 @@ plot_grid(p4, p3, nrow = 2, ncol = 1, labels = c("A", "B"), label_size = 30,
 
 ```
 
-```{r tableS4, tab.cap = "Wald Tests comparing significance of model parameters for predators. Wald tests computed using robust variance estimators with a Saitterwaite correction to the degrees of freedom. Interactions were first tested and models refit to test the signifiacnce of main effects"}
+```{r tableS3, tab.cap = "Wald Tests comparing significance of model parameters for predators. Wald tests computed using robust variance estimators with a Saitterwaite correction to the degrees of freedom. Interactions were first tested and models refit to test the signifiacnce of main effects"}
 
 fulltableP <- rbind(Wald_table_PredatorAC,
                     Wald_table_PredatorCC)
@@ -510,7 +541,7 @@ S4 <- flextable(fulltableP) %>%
 S4
 ```
 
-```{r tableS5, tab.cap = "Linear mixed effects model results using sandwich estimators and Saitterwaite degrees of freedom correction.Predators"}
+```{r tableS4, tab.cap = "Linear mixed effects model results using sandwich estimators and Saitterwaite degrees of freedom correction.Predators"}
 robust_sc_pred_table <- rbind(robust_PredatorAC,
                          robust_PredatorCC) %>% 
                     mutate(p_Satt = sapply(p_Satt, function(x) p_value(x)),
@@ -526,7 +557,7 @@ tableS6 <- flextable(robust_sc_pred_table) %>%  table_style5()
 tableS6
 ```
 
-```{r tableS6, tab.cap = "Pairwise comparisons of achormatic contrast between Kenyan and Hawaiian chameleon displays to a snake and bird visual system. Four different body regions ('gular', 'midflank', 'tailbase', topflank') are provided along with pairwise Wald test for contrast significance. Wald test uses a robust variance correction on the standard errors."}
+```{r tableS5, tab.cap = "Pairwise comparisons of achormatic contrast between Kenyan and Hawaiian chameleon displays to a snake and bird visual system. Four different body regions ('gular', 'midflank', 'tailbase', topflank') are provided along with pairwise Wald test for contrast significance. Wald test uses a robust variance correction on the standard errors."}
 
 # Split snakes and birds
 result5_snake <-  result5[grep("snake", result5$hypothesis), ] %>% mutate(Species = c("Snake", rep("",3)))
@@ -553,7 +584,7 @@ ft5 <- flextable(final_r5) %>%
  
 ```
 
-```{r tableS7, tab.cap = "Pairwise comparisons of achormatic contrast between Kenyan and Hawaiian chameleon displays to a snake and bird visual system. Four different body regions ('gular', 'midflank', 'tailbase', topflank') are provided along with pairwise Wald test for contrast significance. Wald test uses a robust variance correction on the standard errors."}
+```{r tableS6, tab.cap = "Pairwise comparisons of achormatic contrast between Kenyan and Hawaiian chameleon displays to a snake and bird visual system. Four different body regions ('gular', 'midflank', 'tailbase', topflank') are provided along with pairwise Wald test for contrast significance. Wald test uses a robust variance correction on the standard errors."}
 
 # Split snakes and birds
 
@@ -579,7 +610,7 @@ result6_snake <- result6[grep("snake", result6$hypothesis), ] %>% mutate(Species
  ft6
 ```
 
-```{r FigS3, fig.width = 13, fig.height = 7.5, fig.cap = "Local adaptation. All four body regions (gular, mid-flank, tailbase and topflank) are shown averaged across stems and leaves found in their habitat. Mean JNDs are provided along with 95% confidence intervals. A & B represent male-male contest displays whereas C & D represent courtship displays"}
+```{r FigS4, fig.width = 13, fig.height = 7.5, fig.cap = "Local adaptation. All four body regions (gular, mid-flank, tailbase and topflank) are shown averaged across stems and leaves found in their habitat. Mean JNDs are provided along with 95% confidence intervals. A & B represent male-male contest displays whereas C & D represent courtship displays"}
 # Courship data
 
 CourtshipBgrd <- read.table("./data/Courtship_5.csv", 
@@ -677,31 +708,6 @@ plot_grid(p1.2, p2.2, labels = c("A", "B"), label_size = 30,
 
 ```
 
-```{r FigS4, fig.cap = "Examples of chameleon colour signal change in response to different social and predatory contexts"}
 
-files <- list.files("./photos/ESM/")
-img1 <- readJPEG(paste0("./photos/ESM/", files[1]))
-img2 <- readJPEG(paste0("./photos/ESM/", files[2]))
-img3 <- readJPEG(paste0("./photos/ESM/", files[3]))
-img4 <- readJPEG(paste0("./photos/ESM/", files[4]))
-img5 <- readJPEG(paste0("./photos/ESM/", files[5]))
-img6 <- readJPEG(paste0("./photos/ESM/", files[6]))
-
-p1 <- cowplot::ggdraw()+
-        cowplot::draw_image(img1)
-p2 <- cowplot::ggdraw()+
-        cowplot::draw_image(img2)
-p3 <- cowplot::ggdraw()+
-        cowplot::draw_image(img3)
-p4 <- cowplot::ggdraw()+
-        cowplot::draw_image(img4)
-p5 <- cowplot::ggdraw()+
-        cowplot::draw_image(img5)
-p6 <- cowplot::ggdraw()+
-        cowplot::draw_image(img6)
-
-(p1 + p3 + p6) / (p2 + p5 + p4) + plot_annotation(tag_levels = c("A", "B", "C", "D", "E", "F"))
-  
-```
 
 # References
