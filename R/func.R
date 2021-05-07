@@ -187,3 +187,39 @@ table_style5 <- function(table){
   
   return(table)
 }
+
+table_style6 <- function(table){
+  table <- table %>% width(j = 1, width = 1) %>% width(j = 3, width = 3.5) %>% 
+    align(align = "center", part = "header") %>% 
+    align(align = "center", part = "body") %>% 
+    compose(part = "header", j = 1, value = as_paragraph(as_b("Social Context"))) %>% 
+    compose(part = "header", j = 2, value = as_paragraph(as_b("Visual Spectrum"))) %>% 
+    compose(part = "header", j = 3, value = as_paragraph(as_b("Parameter"))) %>% 
+    compose( part = "header", j = 4, value = as_paragraph(as_b("Estimate"))) %>% 
+    compose(part = "header", j = 5, value = as_paragraph(as_b("SE"))) %>%
+    compose(part = "header", j = 6, value = as_paragraph(as_b("df"))) %>% 
+    compose(part = "header", j = 7, value = as_paragraph(as_b("95% CI"), as_sub(as_b("lower")))) %>% 
+    compose(part = "header", j = 8, value = as_paragraph(as_b("95% CI"), as_sub(as_b("upper")))) %>% 
+    compose(part = "body", j = 3, i = c(1,4,7,10), value = as_paragraph("Intercept")) %>%
+    compose(part = "body", j = 3, i = c(1,4,7,10)+1, value = as_paragraph("SVL", as_sub("z-transformed"))) %>%
+    compose(part = "body", j = 3, i = c(1,4,7,10)+2, value = as_paragraph("Population", as_sub("Kenya"))) %>%
+  return(table)
+}
+
+table_style7 <- function(table){
+  table <- table %>% width(j = 1, width = 1) %>% width(j = 2, width = 3.5) %>% 
+    align(align = "center", part = "header") %>% 
+    align(align = "center", part = "body") %>% 
+    compose(part = "header", j = 1, value = as_paragraph(as_b("Visual Spectrum"))) %>% 
+    compose(part = "header", j = 2, value = as_paragraph(as_b("Parameter"))) %>% 
+    compose( part = "header", j = 3, value = as_paragraph(as_b("Estimate"))) %>% 
+    compose(part = "header", j = 4, value = as_paragraph(as_b("SE"))) %>%
+    compose(part = "header", j = 5, value = as_paragraph(as_b("df"))) %>% 
+    compose(part = "header", j = 6, value = as_paragraph(as_b("95% CI"), as_sub(as_b("lower")))) %>% 
+    compose(part = "header", j = 7, value = as_paragraph(as_b("95% CI"), as_sub(as_b("upper")))) %>% 
+    compose(part = "body", j = 2, i = c(1,5), value = as_paragraph("Intercept")) %>%
+    compose(part = "body", j = 2, i = c(1,5)+1, value = as_paragraph("Predator", as_sub("Snake"))) %>%
+    compose(part = "body", j = 2, i = c(1,5)+2, value = as_paragraph("Population", as_sub("Kenya"))) %>%
+    compose(part = "body", j = 2, i = c(1,5)+3, value = as_paragraph("Predator", as_sub("Snake"), "* Population", as_sub("Kenya")))
+    return(table)
+}

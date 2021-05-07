@@ -182,11 +182,40 @@ Predator$BodyRegion <- factor(Predator$BodyRegion) #updates levels for the varia
   
            Population_AC_Pred <- Wald_test(PredatorAC, constraints = constrain_zero(3), 
                                   cluster = Predator$ID, vcov = "CR2")
-
+     
   # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
     Predator_IDs <- Predator %>% filter(!is.na(Predator), !is.na(Population)) # filter out misssing data
        robust_PredatorAC <- coef_test(PredatorAC, cluster = Predator_IDs$ID, vcov = "CR2")
     robust_PredatorAC_CI <-  conf_int(PredatorAC, cluster = Predator_IDs$ID, vcov = "CR2")
+     robust_PredatorAC_CI_inter <-  conf_int(PredatorAC_inter, cluster = Predator_IDs$ID, vcov = "CR2")
+     
+  # Model allows us to get bird in Hwaii compared to bird in Kenya (contrast 3)
+      Predator$pred_pop <- with(Predator, interaction(Predator, Population))
+    
+      PredatorAC_pred_pop1 <- lmer(dL ~  pred_pop + (1|ID), data = Predator) 
+      summary(PredatorAC_pred_pop1)
+      PredatorAC_pred_pop2 <- lmer(dL ~  relevel(pred_pop, ref = "snake.Hawaii") + (1|ID), data = Predator) 
+      summary(PredatorAC_pred_pop2)
+      
+      # Fit the models so we get the estimate and corrected robust standard error for the contrasts we want to make
+      robust_PredatorAC_pred_pop1 <- conf_int(PredatorAC_pred_pop1, cluster = Predator$ID, vcov="CR2")
+      robust_PredatorAC_pred_pop2 <- conf_int(PredatorAC_pred_pop2, cluster = Predator$ID, vcov="CR2")
+      
+     # Contrasts hypothesis tests, but use RVE 
+    result_pred <- Wald_test(PredatorAC_pred_pop, constraints = constrain_pairwise(c(1:4)), vcov="CR2", tidy = TRUE)
+    result_pred$p_val_bonfer <- sapply(p.adjust(result_pred$p_val, "bonferroni"), function(x) p_value(x))
+    
+    
+    # Get the contrasts and Wald stats for comparions
+     CI_hyp_testAC <- data.frame(
+              comparison = c("Snake (Hawaii-Kenya)", "Birds (Hawaii-Kenya)"), 
+                Estimate = c(robust_PredatorAC_pred_pop2[4,1], robust_PredatorAC_pred_pop1[3, 1]),
+                lwr = c(robust_PredatorAC_pred_pop2[4,4], robust_PredatorAC_pred_pop1[3, 4]),
+                upr = c(robust_PredatorAC_pred_pop2[4,5], robust_PredatorAC_pred_pop1[3, 5]),
+              Fstat = c(result_pred[5,3], result_pred[2,3]),
+              df = c(result_pred[5,5], result_pred[2,5]),
+              p_val = c(result_pred[5,7], result_pred[2,7]),
+              p_bonf = c(result_pred[5,8], result_pred[2,8]))
 
 ##########
 # Chromatic contrast - dS
@@ -216,6 +245,9 @@ Predator$BodyRegion <- factor(Predator$BodyRegion) #updates levels for the varia
       Predator$pred_pop <- with(Predator, interaction(Predator, Population))
     PredatorCC_pred_pop <- lmer(dS ~ -1 + pred_pop + (1|ID), data = Predator) 
     summary(PredatorCC_pred_pop)
+    
+    # Present full model
+         robust_PredatorCC_CI_inter <-  conf_int(PredatorCC, cluster = Predator_IDs$ID, vcov = "CR2")
     
     # Fit RVE, we want contrast effects because annoyingly RVE doesn't provide them so will relevel to get them in the context of RVE
       
@@ -778,5 +810,51 @@ plot_grid(p1.2, p2.2, labels = c("A", "B"), label_size = 16,
 ### *Statistical Analysis*
 
 Chromatic and achromatic contrast from visual models, measured in just noticable differences (JNDs), were analysed using linear mixed effects models in R using the `lme4` package (@Bateslme4) in combination with the package `clubSandwich` (@Pustejovsky21). For all individuals, we measured signals for multiple body regions, each of which were contrasted between multiple background measurements (i.e., top and bottoms of two leaves and two stems).Deriving multiple contrast for each individual body region and background resulted in a substantial number of comparisons, each of which were not completely independent of each other. To ensure that non-indpendence of data did not impact our inferences we used a Robust Variance Estimator (RVE) (using our final models to correct standard errors) and a Saitterwaite degrees of freedom correction. Across the different contexts (i.e., social contexts, predation and background environments), chromatic and acromatic contrasts were analysed in seperate models as response variables. For analyses involving social context, we included z-transformed snout-vent length (SVL), population of origin, and their interaction as fixed effects. For models involving predatory contexts and visual systems, we included the predator type (i.e, snake or bird), population of origin and their interaction as fixed effects. Finally, to test local adaptation, we used only chameleons from Hawaii and tested the extent to which chromatic and achromatic contrast varied depending on whether Hawaiian signals were obersved on a native Kenyan background or their current introduced habitat background in Hawaii. Relevant model interactions were first tested using Wald tests. If found to be non-significant (p > 0.1) we dropped the interaction and fit a main effects model. We then tested the significance of the main effect of 'Population', 'Predator' or 'Background' (depending on the model) using Wald tests with robust variance estimators and a Saitterwaite degrees of freedom correction.  For our main analyses we averaged estimates (marginalised) across these body regions and background environments given that in many cases body regions showed remarkably similar effects (see Supplementary Results). In all cases, our results and conclusions were not impacted (see supplmentary code).
+
+### Supplementary Tables - Add to Supplement. Easier to generate here given all code is here.
+
+```{r table1, tab.cap = "Model estimates, standard errors (SE), Saitterwaite degrees of freedom (df) and 95% confidence internals (95% CI) comparing acromatic and chromatic mean differences between Kenyan and Hawaiian lizards in two social contexts (Male-Male Competition and Courtship). Standard errors are corrected by using robust variance estimators. "}
+
+table1 <- as.data.frame(rbind(robust_ConspicDisplayAC_CI,
+                robust_ConspicDisplayCC_CI,
+                robust_ConspicCourtshipAC_CI,
+                robust_ConspicCourtshipCC_CI))
+table1$Parameter <- rownames(table1)
+rownames(table1) <- NULL
+# Clean
+ final_T1 <- table1 %>% 
+             mutate(SocialContext = c("Male-Male Display", rep("", 5), "Courtship Display", rep("", 5)),
+                    VisualRealm = c("Acromatic Contrast", rep("", 2), "Chromatic Contrast", rep("", 2), "Acromatic Contrast", rep("", 2), "Chromatic Contrast", rep("", 2))) %>%
+              select(SocialContext, VisualRealm, Parameter, beta, SE, df, CI_L, CI_U)
+ 
+ # Table
+table1 <- flextable(final_T1) %>%
+        table_style6()
+ 
+table1
+```
+
+
+```{r table2, tab.cap = ""Model estimates, standard errors (SE), Saitterwaite degrees of freedom (df) and 95% confidence internals (95% CI) comparing acromatic and chromatic mean differences between Kenyan and Hawaiian lizards for snakes and lizards. Full models are provided and standard errors are corrected by using robust variance estimators."}
+
+table2 <- as.data.frame(rbind(robust_PredatorAC_CI_inter,
+                              robust_PredatorCC_CI_inter))
+table2$Parameter <- rownames(table2)
+rownames(table2) <- NULL
+
+# Clean
+ final_T2 <- table2 %>% 
+             mutate(JND = c("Acromatic Contrast", rep("", 3), "Chromatic Contrast", rep("", 3))) %>%
+              select(JND, Parameter, beta, SE, df, CI_L, CI_U)
+ 
+ # Table
+table2 <- flextable(final_T2) %>%
+           table_style7()
+ 
+table2
+```
+
+CI_hyp_test
+
 
 # References
