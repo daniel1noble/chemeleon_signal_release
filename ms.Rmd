@@ -798,7 +798,7 @@ rownames(table1) <- NULL
 # Clean
  final_T1 <- table1 %>% 
              mutate(SocialContext = c("Male-Male Display", rep("", 5), "Courtship Display", rep("", 5)),
-                    VisualRealm = c("Acromatic Contrast", rep("", 2), "Chromatic Contrast", rep("", 2), "Acromatic Contrast", rep("", 2), "Chromatic Contrast", rep("", 2))) %>%
+                    VisualRealm = c("Achromatic Contrast", rep("", 2), "Chromatic Contrast", rep("", 2), "Achromatic Contrast", rep("", 2), "Chromatic Contrast", rep("", 2))) %>%
               select(SocialContext, VisualRealm, Parameter, beta, SE, df, CI_L, CI_U)
  
  # Table
@@ -817,7 +817,7 @@ rownames(table2) <- NULL
 
 # Clean
  final_T2 <- table2 %>% 
-             mutate(JND = c("Acromatic Contrast", rep("", 3), "Chromatic Contrast", rep("", 3))) %>%
+             mutate(JND = c("Achromatic Contrast", rep("", 3), "Chromatic Contrast", rep("", 3))) %>%
               select(JND, Parameter, beta, SE, df, CI_L, CI_U)
  
  # Table
@@ -854,8 +854,8 @@ rownames(tb4) <- NULL
 
 tb4 <- tb4 %>% mutate(SocialContext = c("Male-Male Display", rep("", 5), 
                                         "Courtship Display", rep("", 5)),
-                    VisualRealm = c("Acromatic Contrast", rep("", 2), "Chromatic Contrast", 
-                                    rep("", 2), "Acromatic Contrast", rep("", 2), 
+                    VisualRealm = c("Achromatic Contrast", rep("", 2), "Chromatic Contrast", 
+                                    rep("", 2), "Achromatic Contrast", rep("", 2), 
                                     "Chromatic Contrast", rep("", 2))) %>%
               select(SocialContext, VisualRealm, parameter, beta, SE, df, CI_L, CI_U)
 
