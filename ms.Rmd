@@ -827,7 +827,7 @@ table2 <- flextable(final_T2) %>%
 table2
 ```
 
-```{r table3, fig.width = 9, fig.height = 1, fig.asp = 0.1136364, tab.cap = "Mean differences between Hawaiian and Kenyan visual signals for snake and bird predators."}
+```{r table3, fig.width = 9, fig.height = 1, fig.asp = 0.1136364, tab.cap = "Planned contrasts between mean acromatric and chormatic contrast in Hawaii and Kenya for both predators (snakes and birds). Estimates of the mean difference ebtween Hawaii and Kenya propulations are provided along with their 95% confidence intervals (95% CI lower and upper). Wald tests of contrast significance are provided (F, degrees of freedom (df) and associated p-value).  We also applied a Bonferroni correction to p-value to control for multiple comparisons."}
 
 contrast <- rbind(CI_hyp_test,
                  CI_hyp_testAC)
@@ -843,7 +843,7 @@ table3
 
 # Local Adaptation. We have all the contrasts we need from the model because we are only comparing Hawaii-Hawaii(background) to Hawaii-Kenya(background). These are therefore in the table output already.
 
-```{r table4, fig.width = 9, fig.height = 1, fig.asp = 0.1136364, tab.cap = "Mean differences between Hawaiian lizards on introduced Hawaiian background and native Kenyan background."}
+```{r table4, fig.width = 9, fig.height = 1, fig.asp = 0.1136364, tab.cap = "Model estimates (mean and contrasts), standard error (SE), degrees of freedom (df) and 95% confidence intervals (95% CI) for comparing acromatric and chromatic contrast of Hawaiian lizards against their introduced Hawaiian background (intercept) and Hawaiian lizards against their native Kenyan background (Background = Kenya) in both social contexts (Male-male competition and Courtship). Models were fit using robust variance estaimators to correct standard errors for non-independence, and we used a Saitterwaite degrees of freedom. Significance parameter estimates are those where 95% CI does not include zero."}
 
 tb4 <- data.frame(rbind(robust_localAdapt_DispBgrdAC,
              robust_DispBgrdCC,
@@ -860,7 +860,7 @@ tb4 <- tb4 %>% mutate(SocialContext = c("Male-Male Display", rep("", 5),
               select(SocialContext, VisualRealm, parameter, beta, SE, df, CI_L, CI_U)
 
 table4 <- flextable(tb4) %>% table_style9()
-
+table4
 ```
 
 # References
