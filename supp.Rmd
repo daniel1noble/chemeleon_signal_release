@@ -358,20 +358,12 @@ CourtshipBgrd$BodyRegion <- factor(CourtshipBgrd$BodyRegion)
 ## Achromatic Contrast - dL
 ##########
 
- # Here, we want to test if the conspicuousness of lizard signals is locally adapted to the specific background of the Kenyan and Hawaiian population. The predcition is simply that, if we were to place a Hawaiian animal against the Kenyan background that it would be far more conspicuous compared to if we place a Kenyan animal in a Hawaiian background. 
-
-  # Fit the interaction model
-    CourtshipAC_inter <- lmer(dL ~ Population  + Background_pop + Population:Background_pop + (1|ID), data=CourtshipBgrd)
-
   # Fit main effects model
-    CourtshipAC <- lmer(dL ~ Population  + Background_pop  + (1|ID), data=CourtshipBgrd)
+    CourtshipAC <- lmer(dL ~ Population  + Background_pop + BodyRegion + (1|ID), data=CourtshipBgrd)
     summary(CourtshipAC)
 
-  # Interaction needed? No
-    anova(CourtshipAC_inter, CourtshipAC)
-
    # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
-   robust_CourtshipAC <- clubSandwich::coef_test(CourtshipAC, cluster = CourtshipBgrd$ID, vcov =  "CR2")
+   robust_CourtshipAC <- clubSandwich::conf_int(CourtshipAC, cluster = CourtshipBgrd$ID, vcov =  "CR2")
    
    # Wald tests
            background_AC_Court <- Wald_test(CourtshipAC, constraints = constrain_zero(3), 
@@ -379,39 +371,35 @@ CourtshipBgrd$BodyRegion <- factor(CourtshipBgrd$BodyRegion)
   
            Population_AC_Court <- Wald_test(CourtshipAC, constraints = constrain_zero(2), 
                                   cluster = CourtshipBgrd$ID, vcov = "CR2")
+           
+           BodyRegion_AC_Court <- Wald_test(CourtshipAC, constraints = constrain_zero(4:6), 
+                                  cluster = CourtshipBgrd$ID, vcov = "CR2")
 
   # Planned contrasts / hypothesis tests. Need to fit model a little differently
-    CourtshipBgrd$pop_back <- with(CourtshipBgrd, interaction(Population, Background_pop))
-    CourtshipBgrd_pop_back <- lmer(dL ~ pop_back + (1|ID), data = CourtshipBgrd) 
+    CourtshipBgrd$pop_back_BR <- with(CourtshipBgrd, interaction(Population, Background_pop, BodyRegion))
+    CourtshipBgrd_Hawaii <-CourtshipBgrd %>% filter(Population == "Hawaii")
+    CourtshipBgrd_pop_back_BR <- lmer(dL ~ -1 + pop_back_BR + (1|ID), data = CourtshipBgrd_Hawaii) 
     
    # Fit Robust model
-    robust_CourtshipBgrd_pop_back <- clubSandwich::conf_int(CourtshipBgrd_pop_back, cluster = CourtshipBgrd$ID, vcov =  "CR2")
+    robust_CourtshipBgrd_pop_back_BR <- clubSandwich::conf_int(CourtshipBgrd_pop_back_BR, 
+                                                            cluster = CourtshipBgrd_Hawaii$ID, 
+                                                            vcov =  "CR2")
    
-    # Contrasts hypothesis tests, but use RVE 
-      result_CourtshipBgrd_pop_back <- Wald_test(CourtshipBgrd_pop_back, constraints = constrain_pairwise(c(1:4)), vcov="CR2", tidy = TRUE)
+    # Contrasts hypothesis tests, but use RVE ********** PROBLEM WITH CONVERGENCE NON-POSITIVE DEF MATRICES
+      result_CourtshipBgrd_pop_back_BR <- Wald_test(CourtshipBgrd_pop_back_BR, 
+                                                 constraints = constrain_pairwise(c(1:8)), 
+                                                 vcov="CR2", tidy = TRUE)
+      
       result_CourtshipBgrd_pop_back$p_val_bonfer <- sapply(p.adjust(result_CourtshipBgrd_pop_back$p_val, "bonferroni"), function(x) p_value(x))
     
-    # Grab contrasts that we need from the robust esatimtes
-      p_courtship_AC <- result_CourtshipBgrd_pop_back[2,8]
-       CI_AC_Courtship <- data.frame(Estimate=robust_CourtshipBgrd_pop_back$beta[3],
-                               lwr = robust_CourtshipBgrd_pop_back$CI_L[3],
-                               upr = robust_CourtshipBgrd_pop_back$CI_U[3])
-    
+
 ##########
 # Chromatic - dS
 ##########
- # Here, we want to test if the conspicuousness of lizard signals is locally adapted to the specific background of the Kenyan and Hawaiian population. The predcition is simply that, if we were to place a Hawaiian animal against the Kenyan background that it would be far more conspicuous compared to if we place a Kenyan animal in a Hawaiian background. 
-
-  # Fit interaction model
-    CourtshipCC_inter <- lmer(dS ~ Population  + Background_pop + Population:Background_pop + (1|ID), data=CourtshipBgrd)
-
+      
   # Fit main effect model
-      CourtshipCC <- lmer(dS ~ Population  + Background_pop  + (1|ID), data=CourtshipBgrd)
+      CourtshipCC <- lmer(dS ~ Population  + Background_pop + BodyRegion + (1|ID), data=CourtshipBgrd)
       summary(CourtshipCC)
-      anova(CourtshipCC)
-
-  # Test whether interaction is supported
-    anova(CourtshipCC_inter, CourtshipCC)
 
   # Robust variance esatimation to correct SE's for fixed effects given spectral curves are used multiple times for generating JNDs for each individuals data. 
   robust_CourtshipCC <- clubSandwich::coef_test(CourtshipCC, cluster = CourtshipBgrd$ID, vcov =  "CR2")
@@ -423,25 +411,31 @@ CourtshipBgrd$BodyRegion <- factor(CourtshipBgrd$BodyRegion)
   
            Population_CC_Court <- Wald_test(CourtshipCC, constraints = constrain_zero(2), 
                                   cluster = CourtshipBgrd$ID, vcov = "CR2")
+           
+           BodyRegion_CC_Court <- Wald_test(CourtshipCC, constraints = constrain_zero(4:6), 
+                                  cluster = CourtshipBgrd$ID, vcov = "CR2")
 
   # Planned comparions
-    CourtshipBgrd$pop_back <- with(CourtshipBgrd, interaction(Population, Background_pop))
-  CourtshipBgrd_pop_backCC <- lmer(dS ~ pop_back + (1|ID), data = CourtshipBgrd) 
 
-  
+  CourtshipBgrd_pop_back_BR_CC <- lmer(dS ~ -1 + pop_back_BR + (1|ID), data = CourtshipBgrd_Hawaii) 
+
      # Fit Robust model
-    robust_CourtshipBgrd_pop_backCC <- clubSandwich::conf_int(CourtshipBgrd_pop_backCC, cluster = CourtshipBgrd$ID, vcov =  "CR2")
+    robust_CourtshipBgrd_pop_back_BR_CC <- clubSandwich::conf_int(CourtshipBgrd_pop_back_BR_CC, 
+                                                              cluster = CourtshipBgrd_Hawaii$ID, vcov =  "CR2")
    
     # Contrasts hypothesis tests, but use RVE 
-      result_CourtshipBgrd_pop_backCC <- Wald_test(CourtshipBgrd_pop_backCC, constraints = constrain_pairwise(c(1:4)), vcov="CR2", tidy = TRUE)
+      result_CourtshipBgrd_pop_back_BR_CC <- Wald_test(CourtshipBgrd_pop_back_BR_CC, 
+                                                   constraints = constrain_pairwise(c(1:8)),
+                                                   cluster = CourtshipBgrd_Hawaii$ID,
+                                                   vcov="CR2", tidy = TRUE)
       result_CourtshipBgrd_pop_backCC$p_val_bonfer <- sapply(p.adjust(result_CourtshipBgrd_pop_backCC$p_val, "bonferroni"), function(x) p_value(x))
+      
+       # Grab contrasts that we need from the robust esatimtes
+      string <- c("pop_back_BRHawaii.Kenya.gular - pop_back_BRHawaii.Hawaii.gular|pop_back_BRHawaii.Kenya.midflank - pop_back_BRHawaii.Hawaii.midflank|pop_back_BRHawaii.Kenya.tailbase - pop_back_BRHawaii.Hawaii.tailbase|pop_back_BRHawaii.Kenya.topflank - pop_back_BRHawaii.Hawaii.topflank")
+      
+         result_CourtshipBgrd_pop_backCC <- result_CourtshipBgrd_pop_back_BR_CC[
+                                            grep(string, result_CourtshipBgrd_pop_back_BR_CC$hypothesis),]
     
-    # Grab contrasts that we need from the robust esatimtes
-      p_courtship_CC <- result_CourtshipBgrd_pop_backCC[2,8]
-       CI_CC_Courtship <- data.frame(Estimate=robust_CourtshipBgrd_pop_backCC$beta[3],
-                               lwr = robust_CourtshipBgrd_pop_backCC$CI_L[3],
-                               upr = robust_CourtshipBgrd_pop_backCC$CI_U[3])
-  
 
 ```
 
