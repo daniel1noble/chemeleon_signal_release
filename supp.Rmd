@@ -263,45 +263,36 @@ DisplayBgrd <- DisplayBgrd %>%
                 as.data.frame() #exclude bottom flank.
 DisplayBgrd$BodyRegion <- factor(DisplayBgrd$BodyRegion) #updates levels for the variable BodyRegion
 
+# We only really want to compar the Hawaiian population, so we can subset that data
+  DisplayBgrd$pop_back_region <- with(DisplayBgrd, interaction(Population, Background_pop, BodyRegion))
+           DisplayBgrd_Hawaii <- DisplayBgrd %>% filter(Population == "Hawaii")
 ##########
 # Achromatic Contrast - dL
 ##########
 
   # Fit the interaction model
-  DispBgrdAC <- lmer(dL ~ Population  + Background_pop + BodyRegion + (1|ID), data=DisplayBgrd)
-  summary(DispBgrdAC)
+  DispBgrdAC_inter <- lmer(dL ~  Background_pop + BodyRegion + Background_pop : BodyRegion + (1|ID), data=DisplayBgrd_Hawaii)
+  summary(DispBgrdAC_inter)
   
-  # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
-  robust_localAdapt_DispBgrdAC <- clubSandwich::conf_int(DispBgrdAC, cluster = DisplayBgrd$ID, vcov =  "CR2")
+  # Main effercts
+   DispBgrdAC_main <- lmer(dL ~  Background_pop + BodyRegion + (1|ID), data=DisplayBgrd_Hawaii)
+  summary(DispBgrdAC_main)
+  
+  # Wald test of interaction; Not important, so we'll simplify and assume just additive effects. This makes sense when we look at the raw data.
+  intearction_AC_Disp <- Wald_test(DispBgrdAC_inter, constraints = constrain_zero(6:8), 
+                                  cluster = DisplayBgrd_Hawaii$ID, vcov = "CR2")
+  
+  # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE). Given that there is no interaction, we can just present the main effects model with teh figure. Plus wald tests
+  robust_localAdapt_DispBgrdAC <- clubSandwich::conf_int(DispBgrdAC_main, cluster = DisplayBgrd_Hawaii$ID, vcov =  "CR2")
 
-  # Add Wald test to test signifiacnce of each factor, background and population using roust variance
-  background_AC_Disp <- Wald_test(DispBgrdAC, constraints = constrain_zero(3), 
+  # Add Wald test to test signifiacnce of each factor using roust variance 
+  background_AC_Disp <- Wald_test(DispBgrdAC_main, constraints = constrain_zero(2), 
                                   cluster = DisplayBgrd$ID, vcov = "CR2")
   
-  Population_AC_Disp <- Wald_test(DispBgrdAC, constraints = constrain_zero(2), 
+  BodyRegion_AC_Disp <- Wald_test(DispBgrdAC_main, constraints = constrain_zero(3:5), 
                                   cluster = DisplayBgrd$ID, vcov = "CR2")
-  
-  BodyRegion_AC_Disp <- Wald_test(DispBgrdAC, constraints = constrain_zero(4:6), 
-                                  cluster = DisplayBgrd$ID, vcov = "CR2")
-  
-  # Planned contrast. Fit the model in a slightly different way ********** PROBLEMS HERE TO WORK OUT WITH CS
-  DisplayBgrd$pop_back_region <- with(DisplayBgrd, interaction(Population, Background_pop, BodyRegion))
-  DisplayBgrd_Hawaii <- DisplayBgrd %>% filter(Population == "Hawaii")
-  DisplayBgrd_pop_back_region <- lmer(dL ~ pop_back_region + (1|ID), data = DisplayBgrd_Hawaii) 
-  summary(DisplayBgrd_pop_back_region)
-  
-  robust_DisplayBgrd_pop_back_region <- clubSandwich::conf_int(DisplayBgrd_pop_back_region, 
-                                                               cluster = DisplayBgrd_Hawaii$ID, 
-                                                               vcov =  "CR2")
+
    
-  # Contrasts hypothesis tests, but use RVE 
-    result_DisplayBgrd_pop_back_region <- Wald_test(DisplayBgrd_pop_back_region, 
-                                             constraints = constrain_pairwise(c(1:16)),
-                                             vcov="CR2", tidy = TRUE)
-    result_DisplayBgrd_pop_back$p_val_bonfer <- sapply(p.adjust(result_DisplayBgrd_pop_back$p_val, "bonferroni"),
-                                                       function(x) p_value(x))
-  
-     
 ##########
 # Chromatic Contrast - dS
 ##########
@@ -377,7 +368,7 @@ CourtshipBgrd$BodyRegion <- factor(CourtshipBgrd$BodyRegion)
 
   # Planned contrasts / hypothesis tests. Need to fit model a little differently
     CourtshipBgrd$pop_back_BR <- with(CourtshipBgrd, interaction(Population, Background_pop, BodyRegion))
-    CourtshipBgrd_Hawaii <-CourtshipBgrd %>% filter(Population == "Hawaii")
+         CourtshipBgrd_Hawaii <- CourtshipBgrd %>% filter(Population == "Hawaii")
     CourtshipBgrd_pop_back_BR <- lmer(dL ~ -1 + pop_back_BR + (1|ID), data = CourtshipBgrd_Hawaii) 
     
    # Fit Robust model
@@ -415,25 +406,26 @@ CourtshipBgrd$BodyRegion <- factor(CourtshipBgrd$BodyRegion)
            BodyRegion_CC_Court <- Wald_test(CourtshipCC, constraints = constrain_zero(4:6), 
                                   cluster = CourtshipBgrd$ID, vcov = "CR2")
 
-  # Planned comparions
+     # Planned comparions
 
-  CourtshipBgrd_pop_back_BR_CC <- lmer(dS ~ -1 + pop_back_BR + (1|ID), data = CourtshipBgrd_Hawaii) 
+          CourtshipBgrd_pop_back_BR_CC <- lmer(dS ~ -1 + pop_back_BR + (1|ID), data = CourtshipBgrd_Hawaii) 
 
      # Fit Robust model
-    robust_CourtshipBgrd_pop_back_BR_CC <- clubSandwich::conf_int(CourtshipBgrd_pop_back_BR_CC, 
+          robust_CourtshipBgrd_pop_back_BR_CC <- clubSandwich::conf_int(CourtshipBgrd_pop_back_BR_CC, 
                                                               cluster = CourtshipBgrd_Hawaii$ID, vcov =  "CR2")
-   
-    # Contrasts hypothesis tests, but use RVE 
-      result_CourtshipBgrd_pop_back_BR_CC <- Wald_test(CourtshipBgrd_pop_back_BR_CC, 
+  
+     # Contrasts hypothesis tests, but use RVE 
+          result_CourtshipBgrd_pop_back_BR_CC <- Wald_test(CourtshipBgrd_pop_back_BR_CC, 
                                                    constraints = constrain_pairwise(c(1:8)),
                                                    cluster = CourtshipBgrd_Hawaii$ID,
                                                    vcov="CR2", tidy = TRUE)
-      result_CourtshipBgrd_pop_backCC$p_val_bonfer <- sapply(p.adjust(result_CourtshipBgrd_pop_backCC$p_val, "bonferroni"), function(x) p_value(x))
+             result_CourtshipBgrd_pop_back_BR_CC$p_val_bonfer <- sapply(p.adjust(result_CourtshipBgrd_pop_back_BR_CC$p_val, "bonferroni"), 
+                                                                    function(x) p_value(x))
       
        # Grab contrasts that we need from the robust esatimtes
       string <- c("pop_back_BRHawaii.Kenya.gular - pop_back_BRHawaii.Hawaii.gular|pop_back_BRHawaii.Kenya.midflank - pop_back_BRHawaii.Hawaii.midflank|pop_back_BRHawaii.Kenya.tailbase - pop_back_BRHawaii.Hawaii.tailbase|pop_back_BRHawaii.Kenya.topflank - pop_back_BRHawaii.Hawaii.topflank")
       
-         result_CourtshipBgrd_pop_backCC <- result_CourtshipBgrd_pop_back_BR_CC[
+         result_CourtshipBgrd_pop_back_BR_CC <- result_CourtshipBgrd_pop_back_BR_CC[
                                             grep(string, result_CourtshipBgrd_pop_back_BR_CC$hypothesis),]
     
 
