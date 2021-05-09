@@ -267,21 +267,12 @@ DisplayBgrd$BodyRegion <- factor(DisplayBgrd$BodyRegion) #updates levels for the
 # Achromatic Contrast - dL
 ##########
 
-  # Here, we want to test if the conspicuousness of lizard signals is locally adapted to the specific background of the Kenyan and Hawaiian population. The predcition is simply that, if we were to place a Hawaiian animal against the Kenyan background that it would be far more conspicuous compared to if we place a Kenyan animal in a Hawaiian background. 
-
   # Fit the interaction model
-  DispBgrdAC_inter <- lmer(dL ~ Population  + Background_pop + Population:Background_pop + (1|ID), data=DisplayBgrd)
-  summary(DispBgrdAC_inter)
-  
-  # Fit the main effect model
-  DispBgrdAC <- lmer(dL ~ Population  + Background_pop  + (1|ID), data=DisplayBgrd)
+  DispBgrdAC <- lmer(dL ~ Population  + Background_pop + BodyRegion + (1|ID), data=DisplayBgrd)
   summary(DispBgrdAC)
   
-  # Doesn't look like an interaction, so test.
-  anova(DispBgrdAC_inter, DispBgrdAC)
-
   # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
-  robust_localAdapt <- clubSandwich::conf_int(DispBgrdAC, cluster = DisplayBgrd$ID, vcov =  "CR2")
+  robust_localAdapt_DispBgrdAC <- clubSandwich::conf_int(DispBgrdAC, cluster = DisplayBgrd$ID, vcov =  "CR2")
 
   # Add Wald test to test signifiacnce of each factor, background and population using roust variance
   background_AC_Disp <- Wald_test(DispBgrdAC, constraints = constrain_zero(3), 
@@ -290,12 +281,15 @@ DisplayBgrd$BodyRegion <- factor(DisplayBgrd$BodyRegion) #updates levels for the
   Population_AC_Disp <- Wald_test(DispBgrdAC, constraints = constrain_zero(2), 
                                   cluster = DisplayBgrd$ID, vcov = "CR2")
   
-  # Planned contrast. Fit the model in a slightly different way
-  DisplayBgrd$pop_back <- with(DisplayBgrd, interaction(Population, Background_pop))
-  DisplayBgrd_pop_back <- lmer(dL ~ pop_back + (1|ID), data = DisplayBgrd) 
-  summary(DisplayBgrd_pop_back)
+  BodyRegion_AC_Disp <- Wald_test(DispBgrdAC, constraints = constrain_zero(4:6), 
+                                  cluster = DisplayBgrd$ID, vcov = "CR2")
   
-  robust_DisplayBgrd_pop_back <- clubSandwich::conf_int(DisplayBgrd_pop_back, cluster = DisplayBgrd$ID, vcov =  "CR2")
+  # Planned contrast. Fit the model in a slightly different way ********************** UP TO HERE
+  DisplayBgrd$pop_back_region <- with(DisplayBgrd, interaction(Population, Background_pop, BodyRegion))
+  DisplayBgrd_pop_back_region <- lmer(dL ~ pop_back_region + (1|ID), data = DisplayBgrd) 
+  summary(DisplayBgrd_pop_back_region)
+  
+  robust_DisplayBgrd_pop_back_region <- clubSandwich::conf_int(DisplayBgrd_pop_back_region, cluster = DisplayBgrd$ID, vcov =  "CR2")
    
   # Contrasts hypothesis tests, but use RVE 
     result_DisplayBgrd_pop_back <- Wald_test(DisplayBgrd_pop_back, constraints = constrain_pairwise(c(1:4)), vcov="CR2", tidy = TRUE)
@@ -451,6 +445,7 @@ CourtshipBgrd$BodyRegion <- factor(CourtshipBgrd$BodyRegion)
                                lwr = robust_CourtshipBgrd_pop_backCC$CI_L[3],
                                upr = robust_CourtshipBgrd_pop_backCC$CI_U[3])
   
+
 ```
 
 # Materials and Methods
