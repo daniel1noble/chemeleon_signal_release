@@ -800,6 +800,7 @@ rownames(table1) <- NULL
              mutate(SocialContext = c("Male-Male Display", rep("", 5), "Courtship Display", rep("", 5)),
                     VisualRealm = c("Achromatic Contrast", rep("", 2), "Chromatic Contrast", rep("", 2), "Achromatic Contrast", rep("", 2), "Chromatic Contrast", rep("", 2))) %>%
               select(SocialContext, VisualRealm, Parameter, beta, SE, df, CI_L, CI_U)
+ write.csv(final_T1, file = "./output/tables/Table1_MS.csv", row.names = FALSE)
  
  # Table
 table1 <- flextable(final_T1) %>% table_style6()
@@ -819,7 +820,7 @@ rownames(table2) <- NULL
  final_T2 <- table2 %>% 
              mutate(JND = c("Achromatic Contrast", rep("", 3), "Chromatic Contrast", rep("", 3))) %>%
               select(JND, Parameter, beta, SE, df, CI_L, CI_U)
- 
+ write.csv(final_TT, file = "./output/tables/Table2_MS.csv", row.names = FALSE)
  # Table
 table2 <- flextable(final_T2) %>%
            table_style7()
@@ -835,6 +836,8 @@ contrast <- rbind(CI_hyp_test,
 contrast <- contrast %>% mutate(VisualSpec = c("Achromatic Contrast", "", "Chromatic Contrast", ""),
                                 p_val = sapply(p_val, function(x) p_value(x))) %>% 
             select(VisualSpec, comparison, Estimate, lwr, upr, Fstat, df, p_val, p_bonf)
+
+write.csv(contrast, file = "./output/tables/Table3_MS.csv", row.names = FALSE)
 
 table3 <- flextable(contrast) %>% table_style8()
 table3
@@ -859,6 +862,7 @@ tb4 <- tb4 %>% mutate(SocialContext = c("Male-Male Display", rep("", 5),
                                     "Chromatic Contrast", rep("", 2))) %>%
               select(SocialContext, VisualRealm, parameter, beta, SE, df, CI_L, CI_U)
 
+write.csv(tb4, file = "./output/tables/Table4_MS.csv", row.names = FALSE)
 table4 <- flextable(tb4) %>% table_style9()
 table4
 ```
