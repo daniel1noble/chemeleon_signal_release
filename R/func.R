@@ -81,7 +81,7 @@ table_style  <- function(table){
     align(align = "center", part = "header") %>% 
     align(align = "center", part = "body") %>% 
     compose(part = "header", j = 1, value = as_paragraph(as_b("Predator"))) %>% 
-    compose( part = "header", j = 2, value = as_paragraph(as_b("Contrast"))) %>% 
+    compose(part = "header", j = 2, value = as_paragraph(as_b("Contrast"))) %>% 
     compose(part = "header", j = 3, value = as_paragraph(as_b("F"))) %>%
     compose(part = "header", j = 4, value = as_paragraph(as_b("DF"))) %>% 
     compose(part = "header", j = 5, value = as_paragraph(as_b("p"))) %>% 
@@ -103,12 +103,12 @@ table_style  <- function(table){
     compose(part = "body", i = 8, j = 2, 
             value = as_paragraph("Kenya", as_sub(" topflank"), " - ", "Hawaii", as_sub(" topflank"))) %>% 
     font(fontname="Times", part = "body") %>% 
-    font(fontname="Times", part = "header")
+    font(fontname="Times", part = "header") 
   return(table)
 }
 
 table_style2 <- function(table){
-  table <- table %>%  width(j = 3, width = 3) %>% 
+  table <- table %>%  width(j = 2, width = 1.5) %>% 
     align(align = "center", part = "header") %>% 
     align( align = "center", part = "body") %>% 
     compose(part = "header", j = 1, value = as_paragraph(as_b("Social Context"))) %>% 
@@ -140,7 +140,6 @@ table_style3 <- function(table){
 
 table_style4 <- function(table){
   table <- table %>%
-    width(j = 3, width = 6) %>% 
     align(align = "center", part = "header") %>% 
     align(align = "center", part = "body") %>% 
     compose(part = "header", j = 1, value = as_paragraph(as_b("Social Context"))) %>% 
@@ -160,6 +159,7 @@ table_style4 <- function(table){
     compose(part = "body", j = 3, i = c(1, 10, 19, 28)+6, value = as_paragraph("Population", as_sub(" Kenya"), "* BodyRegion", as_sub(" midflank"))) %>%
     compose(part = "body", j = 3, i = c(1, 10, 19, 28)+7, value = as_paragraph("Population", as_sub(" Kenya"), "* BodyRegion", as_sub(" tailbase"))) %>%
     compose(part = "body", j = 3, i = c(1, 10, 19, 28)+8, value = as_paragraph("Population", as_sub(" Kenya"), "* BodyRegion", as_sub(" topflank"))) %>% 
+    width(j = 3, width = 2) %>% 
     font(fontname="Times", part = "body") %>% 
     font(fontname="Times", part = "header")
   
