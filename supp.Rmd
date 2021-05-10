@@ -302,7 +302,7 @@ DisplayBgrd$BodyRegion <- factor(DisplayBgrd$BodyRegion) #updates levels for the
                                   cluster = DisplayBgrd_Hawaii$ID, vcov = "CR2")
 
     # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
-      robust_DispBgrdCC <- clubSandwich::coef_test(DispBgrdCC_inter, cluster = DisplayBgrd_Hawaii$ID, vcov =  "CR2")
+      robust_DispBgrdCC <- clubSandwich::conf_int(DispBgrdCC_inter, cluster = DisplayBgrd_Hawaii$ID, vcov =  "CR2")
 
 
     # Get contrasts to understand the specific changes better. Refit model in slight different form. This is essentially an interaction model anyway because it's estimating the mean for Hawaiian and Kenyan background for each body region. The model above is just a contrast-based model.
@@ -321,7 +321,9 @@ DisplayBgrd$BodyRegion <- factor(DisplayBgrd$BodyRegion) #updates levels for the
       result_DisplayBgrd_pop_back_regionCC$p_val_bonfer <- 
                                   sapply(p.adjust(result_DisplayBgrd_pop_back_regionCC$p_val, "bonferroni"), 
                                                                   function(x) p_value(x))
-    
+     # Grab contrasts that we need from the robust esatimtes
+      string <- c("pop_back_regionHawaii.Kenya.gular - pop_back_regionHawaii.Hawaii.gular|pop_back_regionHawaii.Kenya.midflank - pop_back_regionHawaii.Hawaii.midflank|pop_back_regionHawaii.Kenya.tailbase - pop_back_regionHawaii.Hawaii.tailbase|pop_back_regionHawaii.Kenya.topflank - pop_back_regionHawaii.Hawaii.topflank")
+      result_DisplayBgrd_pop_back_regionCC <- result_DisplayBgrd_pop_back_regionCC[grep(string, result_DisplayBgrd_pop_back_regionCC$hypothesis),]
 
 ###################
 # Social Context: Courtship
@@ -348,7 +350,7 @@ CourtshipBgrd$BodyRegion <- factor(CourtshipBgrd$BodyRegion)
     
 
   # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
-   robust_CourtshipAC <- clubSandwich::conf_int(CourtshipAC_inter, cluster = CourtshipBgrd_Hawaii$ID, vcov =  "CR2")
+   robust_CourtshipAC <- clubSandwich::conf_int(CourtshipAC_main, cluster = CourtshipBgrd_Hawaii$ID, vcov =  "CR2")
    
    # Wald tests
            background_AC_Court <- Wald_test(CourtshipAC, constraints = constrain_zero(3), 
@@ -371,7 +373,7 @@ CourtshipBgrd$BodyRegion <- factor(CourtshipBgrd$BodyRegion)
       summary(CourtshipCC_main)
 
   # Robust variance esatimation to correct SE's for fixed effects given spectral curves are used multiple times for generating JNDs for each individuals data. 
-  robust_CourtshipCC <- clubSandwich::coef_test(CourtshipCC_inter, cluster = CourtshipBgrd_Hawaii$ID, vcov =  "CR2")
+  robust_CourtshipCC <- clubSandwich::conf_int(CourtshipCC_inter, cluster = CourtshipBgrd_Hawaii$ID, vcov =  "CR2")
   
   # Wald test of interaction; Not important, so we'll simplify and assume just additive effects. This makes sense when we look at the raw data.
   intearction_CC_Court <- Wald_test(CourtshipCC_inter, constraints = constrain_zero(6:8), 
@@ -776,6 +778,10 @@ result6_snake <- result6[grep("snake", result6$hypothesis), ] %>% mutate(Species
 
 We tested whether different body regions of Hawaiian chameleons exhibited different contrasts between Hawaiian habitat background compared to their ancestral, Kenyan background. We started off testing models comparing the interaction between background enviroment and body region for both chormatic and achromatic contrast. However, for achromatic contrast, these models had poor convergence. Based on the raw data (Figure \@ref(fig:figS4)B & D) there was also weak evidence that body regions differed in how they changed when viewed by conspecifics against the Hawaiian and Kenyan backgrounds. As such, we simplied models and only present the main effects of body region and background environment for achromatic contrast. However, inspection of the raw data (Figure \@ref(fig:figS4)A & C) suggested that body regions may differ in how chromatically contrasting they are against the background environment of Hawaii and Kenya. In addition, our main results suggested that predators may differentially drive chromatic signal conspicuousness, and given differet body regions maybe more exposed to bird compared to snake predators, we fit an interaction and main effects model for chromatic contrast. 
 
+The magnitude of chromatic contrast differences between Hawaiian chamaleons against their own environment and a Kenyan enviroment did depend on the body region (Male-male display: $F_{`r intearction_CC_Disp$df_num`, `r intearction_CC_Disp$df_denom`}$ = `r intearction_CC_Disp$Fstat`, p = `r p_value(intearction_CC_Disp$p_val)`; Courtship Display: $F_{`r intearction_CC_Court$df_num`, `r intearction_CC_Court$df_denom`}$ = `r intearction_CC_Court$Fstat`, p = `r p_value(intearction_CC_Court$p_val)`, Figure \@ref(fig:figS4)A & C & Table \@ref(tab:table7)). However, in all cases there was a tendeny for all body regions of Hawaiian populations to decrease in average contrast when viewed by a conspecific against a Hawaiian versus Kenyan background (Figure \@ref(fig:figS4)A & C), and only some body regions showed a significant decrease (Table \@ref(tab:table8)). 
+
+The magnitude of achromatic contrast, showed a significant overall decrease in achromatic contrast when viewed by conspevcifics against a Kenyan background (Overall Background Effect: Male-male display, $F_{`r background_AC_Disp$df_num`, `r background_AC_Disp$df_denom`}$ = `r background_AC_Disp$Fstat`, p = `r p_value(background_AC_Disp$p_val)`, Courtship Display, $F_{`r background_AC_Court$df_num`, `r background_AC_Court$df_denom`}$ = `r background_AC_Court$Fstat`, p = `r p_value(background_AC_Court$p_val)`, Figure \@ref(fig:figS4)B & D along with & Table \@ref(tab:table7)), and there were significant differences among body regions (Overall Body Region Effect: Male-male display, $F_{`r BodyRegion_AC_Disp$df_num`, `r BodyRegion_AC_Disp$df_denom`}$ = `r BodyRegion_AC_Disp$Fstat`, p = `r p_value(BodyRegion_AC_Disp$p_val)`, Courtship Display, $F_{`r BodyRegion_AC_Court$df_num`, `r BodyRegion_AC_Court$df_denom`}$ = `r BodyRegion_AC_Court$Fstat`, p = `r p_value(BodyRegion_AC_Court$p_val)`, Figure \@ref(fig:figS4)B & D along with & Table \@ref(tab:table7)). 
+
 ```{r FigS4, fig.width = 13, fig.height = 12, fig.cap = "Local adaptation. All four body regions (gular, mid-flank, tailbase and topflank) are shown averaged across stems and leaves found in their habitat. Mean JNDs are provided along with 95% confidence intervals. A & B represent male-male contest displays whereas C & D represent courtship displays"}
 # Courship data
 
@@ -901,6 +907,39 @@ pS4.4 <- ggplot(display_summary, aes(x = Background_pop, y = Mean_dS, group = Bo
 plot_grid(pS4.4, pS4.3, pS4.1, pS4.2 , labels = c("A", "B", "C", "D"), label_size = 30,
   label_fontface = "bold", rel_widths=c(1,1))
 
+```
+
+
+
+```{r table7, fig.cap = "Models"}
+table7 <- rbind(robust_localAdapt_DispBgrdAC,
+                robust_DispBgrdCC,
+                robust_CourtshipAC,
+                robust_CourtshipCC) %>% as.data.frame()
+
+table7$Paramater <- rownames(table7)
+rownames(table7) <- NULL
+
+table7 <- table7 %>% 
+              mutate(Context = c("Male-Male Display", rep("", 12), "Courtship Display", rep("", 12)),
+                     JND = c("Achromatic Contrast", rep("", 4), "Chromatic Contrast", rep("", 7), 
+                             "Achromatic Contrast", rep("", 4), "Chromatic Contrast", rep("", 7))) %>% 
+                      select(Context, JND, Paramater, beta, SE, df, CI_L, CI_U)
+
+Table7 <- flextable(table7) %>% table_style10()
+
+```
+
+```{r table8, fig.cap = "contarsts chromatic"}
+tab8 <- rbind(result_DisplayBgrd_pop_back_regionCC,
+              result_CourtshipBgrd_pop_back_BR_CC) %>%  as.data.frame()
+
+tab8 <- tab8 %>% mutate(Context = c("Male-Male Display", rep("",3), "Courtship Display", rep("",3)),
+                        p_val = sapply(p_val, function(x) p_value(x))) %>% 
+                        select(Context,c(1:8), -test, -delta, -df_num)
+
+Table8 <- flextable(tab8) %>% table_style11()
+Table8
 ```
 
 # References
