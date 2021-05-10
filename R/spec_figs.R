@@ -57,13 +57,21 @@
    
   
 # Merge all together, add some grouping variables
-    bird_spec_data <- cbind(leaves_hawaii, leaves_kenya, bodyregions_hawaii_bird, bodyregions_kenya_bird)[,-c(3,5,8)]
-    bird_spec_data <- pivot_longer(bird_spec_data, cols = c(2:7)) %>% arrange(name) %>% 
-                          mutate(bodyreg = gsub(".hawaii|.kenya", "", name),
-                                 pop = gsub("gular.|topflank.|leaf.", "", name))
+
+data_merge <- function(table1_background, table2_background, table3, table4){
+    spec_data <- cbind(table1_background, table2_background, table3, table4)[,-c(3,5,8)]
+    spec_data <- pivot_longer(spec_data, cols = c(2:7)) %>% 
+                 arrange(name) %>% 
+                 mutate(bodyreg = gsub(".hawaii|.kenya", "", name),
+                            pop = gsub("gular.|topflank.|leaf.", "", name))
+    return(spec_data)
+}
+bird_spec_data <- data_merge(leaves_hawaii, leaves_kenya, bodyregions_hawaii_bird, bodyregions_kenya_bird)
+
 # Plot!
   pdf(file = "./output/figures/spec_birds.pdf", width = 8.588235,  height = 6.955882)  
-      ggplot(bird_spec_data, aes(x = wl, y = value, group = name)) + 
+plot_spec <- function(data){
+        ggplot(data, aes(x = wl, y = value, group = name)) + 
       geom_line(aes(colour = bodyreg, linetype = pop), size = 1.2) + 
       theme_bw() +
       labs(x = "Wavelength (nm)", y = "Reflectance (%)", linetype = "Population", colour = "Body Region / Environment") + 
@@ -75,7 +83,54 @@
             axis.text = element_text(size = 16),
             axis.title = element_text(size = 24),
             legend.text = element_text(size = 16),
-            legend.title = element_text(size = 20))
+            legend.title = element_text(size = 20))}
+      plot_spec(bird_spec_data)
+
   dev.off()  
   
-  
+
+### Now, run through more simplified processing using all the functions, we already have the background, so now it's just getting the contexts
+
+  # Get snakes
+   bodyregions_hawaii_snake <- get_body_regions(dir = "./data/specs/processed/snake.dat_hawaii.csv", label = "hawaii")
+    bodyregions_kenya_snake <- get_body_regions(dir = "./data/specs/processed/snake.dat_kenya.csv", label = "kenya")
+
+      # Create composite data
+    snake_spec_data <- data_merge(leaves_hawaii, leaves_kenya, bodyregions_hawaii_snake, bodyregions_kenya_snake)
+
+    # Plot snakes
+    pdf(file = "./output/figures/spec_snake.pdf", width = 8.588235,  height = 6.955882)  
+      plot_spec(snake_spec_data)
+    
+    dev.off()
+
+  # Get Male-Male Displays
+
+     bodyregions_hawaii_maleDisp <- get_body_regions(dir = "./data/specs/processed/display.dat_hawaii.csv", label = "hawaii")
+    bodyregions_kenya_maleDisp <- get_body_regions(dir = "./data/specs/processed/display.dat_kenya.csv", label = "kenya")
+
+      # Create composite data
+    maleDisp_spec_data <- data_merge(leaves_hawaii, leaves_kenya, bodyregions_hawaii_maleDisp, bodyregions_kenya_maleDisp)
+
+    # Plot snakes
+    pdf(file = "./output/figures/spec_maleDisp.pdf", width = 8.588235,  height = 6.955882)  
+      
+      plot_spec(maleDisp_spec_data)
+    
+    dev.off()
+
+
+     # Get Courtship Displays
+
+     bodyregions_hawaii_CourtDisp <- get_body_regions(dir = "./data/specs/processed/court.dat_hawaii.csv", label = "hawaii")
+    bodyregions_kenya_CourtDisp <- get_body_regions(dir = "./data/specs/processed/court.dat_kenya.csv", label = "kenya")
+
+      # Create composite data
+    CourtDisp_spec_data <- data_merge(leaves_hawaii, leaves_kenya, bodyregions_hawaii_CourtDisp, bodyregions_kenya_CourtDisp)
+
+    # Plot snakes
+    pdf(file = "./output/figures/spec_CourtDisp.pdf", width = 8.588235,  height = 6.955882)  
+      
+      plot_spec(CourtDisp_spec_data)
+    
+    dev.off()
