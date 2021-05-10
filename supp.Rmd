@@ -270,17 +270,9 @@ DisplayBgrd$BodyRegion <- factor(DisplayBgrd$BodyRegion) #updates levels for the
 # Achromatic Contrast - dL
 ##########
 
-  # Fit the interaction model
-  DispBgrdAC_inter <- lmer(dL ~  Background_pop + BodyRegion + Background_pop : BodyRegion + (1|ID), data=DisplayBgrd_Hawaii)
-  summary(DispBgrdAC_inter)
-  
   # Main effercts
    DispBgrdAC_main <- lmer(dL ~  Background_pop + BodyRegion + (1|ID), data=DisplayBgrd_Hawaii)
-  summary(DispBgrdAC_main)
-  
-  # Wald test of interaction; Not important, so we'll simplify and assume just additive effects. This makes sense when we look at the raw data.
-  intearction_AC_Disp <- Wald_test(DispBgrdAC_inter, constraints = constrain_zero(6:8), 
-                                  cluster = DisplayBgrd_Hawaii$ID, vcov = "CR2")
+    summary(DispBgrdAC_main)
   
   # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE). Given that there is no interaction, we can just present the main effects model with teh figure. Plus wald tests
   robust_localAdapt_DispBgrdAC <- clubSandwich::conf_int(DispBgrdAC_main, cluster = DisplayBgrd_Hawaii$ID, vcov =  "CR2")
@@ -297,25 +289,23 @@ DisplayBgrd$BodyRegion <- factor(DisplayBgrd$BodyRegion) #updates levels for the
 # Chromatic Contrast - dS
 ##########
    
+     # Fit the inetarction model
+          DispBgrdCC_inter <- lmer(dS ~ Background_pop  + BodyRegion + Background_pop:BodyRegion + (1|ID), data=DisplayBgrd_Hawaii)
+          summary(DispBgrdCC_inter)
+  
     # Fit the main effect model
-          DispBgrdCC <- lmer(dS ~ Population  + Background_pop  + BodyRegion + (1|ID), data=DisplayBgrd)
-          summary(DispBgrdCC)
-          
+          DispBgrdCC_main <- lmer(dS ~ Background_pop  + BodyRegion + (1|ID), data=DisplayBgrd_Hawaii)
+          summary(DispBgrdCC_main)
+    
+    # Wald test to see if interaction is important. Yes, body regions way in how they change from a Hawaiian and Kenyan population. Fig S4, this makes sense. 
+        intearction_CC_Disp <- Wald_test(DispBgrdCC_inter, constraints = constrain_zero(6:8), 
+                                  cluster = DisplayBgrd_Hawaii$ID, vcov = "CR2")
 
     # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
-      robust_DispBgrdCC <- clubSandwich::coef_test(DispBgrdCC, cluster = DisplayBgrd$ID, vcov =  "CR2")
+      robust_DispBgrdCC <- clubSandwich::coef_test(DispBgrdCC_inter, cluster = DisplayBgrd_Hawaii$ID, vcov =  "CR2")
 
-    # Check significance of each factor
-        background_CC_Disp <- Wald_test(DispBgrdCC, constraints = constrain_zero(3), 
-                                  cluster = DisplayBgrd$ID, vcov = "CR2")
-  
-        Population_CC_Disp <- Wald_test(DispBgrdCC, constraints = constrain_zero(2), 
-                                  cluster = DisplayBgrd$ID, vcov = "CR2")
-        
-        BodyRegion_CC_Disp <- Wald_test(DispBgrdCC, constraints = constrain_zero(4:6), 
-                                  cluster = DisplayBgrd$ID, vcov = "CR2")
-      
-    # Planned contrasts. Refit model in slight different form
+
+    # Get contrasts to understand the specific changes better. Refit model in slight different form. This is essentially an interaction model anyway because it's estimating the mean for Hawaiian and Kenyan background for each body region. The model above is just a contrast-based model.
     DisplayBgrd_pop_back_regionCC <- lmer(dS ~ -1 + pop_back_region + (1|ID), data = DisplayBgrd_Hawaii) 
 
     # Fit Robust model
@@ -345,16 +335,24 @@ CourtshipBgrd <- CourtshipBgrd %>%
                 as.data.frame() #exclude bottom flank.
 CourtshipBgrd$BodyRegion <- factor(CourtshipBgrd$BodyRegion)
 
+# Just subset out the Hawaiian data as we are only intersted in Hawaii on different backgrounds
+  CourtshipBgrd$pop_back_BR <- with(CourtshipBgrd, interaction(Population, Background_pop, BodyRegion))
+         CourtshipBgrd_Hawaii <- CourtshipBgrd %>% filter(Population == "Hawaii")
 ##########
 ## Achromatic Contrast - dL
 ##########
 
   # Fit main effects model
-    CourtshipAC <- lmer(dL ~ Population  + Background_pop + BodyRegion + (1|ID), data=CourtshipBgrd)
-    summary(CourtshipAC)
+    CourtshipAC_main <- lmer(dL ~ Background_pop + BodyRegion + (1|ID), data=CourtshipBgrd_Hawaii)
+    summary(CourtshipAC_main)
+    
+  # Wald test of interaction; Not important, so we'll simplify and assume just additive effects. This makes sense when we look at the raw data.
+  intearction_AC_Court <- Wald_test(CourtshipAC_inter, constraints = constrain_zero(6:8), 
+                                  cluster = CourtshipBgrd_Hawaii$ID, vcov = "CR2")
+    
 
-   # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
-   robust_CourtshipAC <- clubSandwich::conf_int(CourtshipAC, cluster = CourtshipBgrd$ID, vcov =  "CR2")
+  # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
+   robust_CourtshipAC <- clubSandwich::conf_int(CourtshipAC_inter, cluster = CourtshipBgrd_Hawaii$ID, vcov =  "CR2")
    
    # Wald tests
            background_AC_Court <- Wald_test(CourtshipAC, constraints = constrain_zero(3), 
@@ -367,8 +365,6 @@ CourtshipBgrd$BodyRegion <- factor(CourtshipBgrd$BodyRegion)
                                   cluster = CourtshipBgrd$ID, vcov = "CR2")
 
   # Planned contrasts / hypothesis tests. Need to fit model a little differently
-    CourtshipBgrd$pop_back_BR <- with(CourtshipBgrd, interaction(Population, Background_pop, BodyRegion))
-         CourtshipBgrd_Hawaii <- CourtshipBgrd %>% filter(Population == "Hawaii")
     CourtshipBgrd_pop_back_BR <- lmer(dL ~ -1 + pop_back_BR + (1|ID), data = CourtshipBgrd_Hawaii) 
     
    # Fit Robust model
@@ -771,6 +767,10 @@ ft5 <- flextable(final_r5) %>%
 
 #### All body regions exibit similar contrasts between Kenyan and Hawaiian backgrounds suggesting local adaptation of entire visual signal
 
+We tested whether different body regions of Hawaiian chameleons exhibited different contrasts between Hawaiian habitat background compared to their ancestral, Kenyan background. We started off testing models comparing the interaction between background enviroment and body region for both chormatic and achromatic contrast. However, for achromatic contrast, these models had poor convergence. Based on the raw data (Figure \@ref(fig:figS4)B & D) there was also weak evidence that body regions differed in how they changed when viewed by conspecifics against the Hawaiian and Kenyan backgrounds. As such, we simplied models and only present the main effects of body region and background environment for achromatic contrast. However, inspection of the raw data (Figure \@ref(fig:figS4)A & C) suggested that body regions may differ in how chromatically contrasting they are against the background environment of Hawaii and Kenya. In addition, our main results suggested that predators may differentially drive chromatic signal conspicuousness, and given differet body regions maybe more exposed to bird compared to snake predators, we fit an interaction and main effects model for chromatic contrast. 
+
+
+
 
 
 ```{r tableS6, tab.cap = "Pairwise comparisons of achormatic contrast between Kenyan and Hawaiian chameleon displays to a snake and bird visual system. Four different body regions ('gular', 'midflank', 'tailbase', topflank') are provided along with pairwise Wald test for contrast significance. Wald test uses a robust variance correction on the standard errors."}
@@ -851,20 +851,15 @@ display_summary <- DisplayBgrd %>%
 ##########
 # Plots
 ##########
-#Grab photos
 
 #plots
-p1.2 <- ggplot(courtship_summary, aes(x = Background_pop, y = Mean_dS, color = BodyRegion, group = BodyRegion)) +
+pS4.1 <- ggplot(courtship_summary, aes(x = Background_pop, y = Mean_dS, color = BodyRegion, group = BodyRegion)) +
   geom_point(size = 3, position = position_dodge(width=0.5)) +
   geom_errorbar(aes(ymin = Lower_dS, ymax = Upper_dS), position = position_dodge(width=0.5), width = 0) + 
   geom_line(position = position_dodge(width=0.5)) + 
   scale_color_manual(values = wes_palette("Cavalcanti1")) + #Change color palette here see: https://github.com/karthik/wesanderson
   xlab("Background Environment") + 
   ylab("Chromatic contrast (JND)") +
-  # annotate("segment", x = 0.85, xend = 1.85, y = 6.1, yend = 6.1, colour = "black") +
-  # annotate("segment", x = 1.12, xend = 2.12, y = 5.7, yend = 5.7, colour = "black") + 
-  # annotate("text", x = 0.85+(1.85-0.85)/2,  y = 6.2, label = "NS",  size = 6) + 
-  # annotate("text", x = 1.12+(2.12-1.12)/2, y = 5.8, label = "NS", size = 6) + 
   theme_bw() +
   labs(colour = "Body Region") +
   theme(legend.position = "none",
@@ -875,7 +870,25 @@ p1.2 <- ggplot(courtship_summary, aes(x = Background_pop, y = Mean_dS, color = B
     legend.text =element_text(size = 12),
     legend.title =element_text(size = 12, face = "bold")) 
 
-p2.2 <- ggplot(display_summary, aes(x = Background_pop, y = Mean_dL, group = BodyRegion, color = BodyRegion)) +
+
+pS4.2 <- ggplot(courtship_summary, aes(x = Background_pop, y = Mean_dL, color = BodyRegion, group = BodyRegion)) +
+  geom_point(size = 3, position = position_dodge(width=0.5)) +
+  geom_errorbar(aes(ymin = Lower_dL, ymax = Upper_dL), position = position_dodge(width=0.5), width = 0) + 
+  geom_line(position = position_dodge(width=0.5)) + 
+  scale_color_manual(values = wes_palette("Cavalcanti1")) + #Change color palette here see: https://github.com/karthik/wesanderson
+  xlab("Background Environment") + 
+  ylab("Achromatic contrast (JND)") +
+  theme_bw() +
+  labs(colour = "Body Region") +
+  theme(legend.position = "none",
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(size=18),
+    axis.title=element_text(size=20,face="bold"),
+    legend.text =element_text(size = 12),
+    legend.title =element_text(size = 12, face = "bold")) 
+
+pS4.3 <- ggplot(display_summary, aes(x = Background_pop, y = Mean_dL, group = BodyRegion, color = BodyRegion)) +
   geom_point(size = 3, position = position_dodge(width=0.5)) +
   geom_errorbar(aes(ymin = Lower_dL, ymax = Upper_dL), position = position_dodge(width=0.5), width = 0) + 
   geom_line(position = position_dodge(width=0.5)) + 
@@ -891,8 +904,24 @@ p2.2 <- ggplot(display_summary, aes(x = Background_pop, y = Mean_dL, group = Bod
     legend.text =element_text(size = 12),
     legend.title =element_text(size = 12, face = "bold")) 
 
+pS4.4 <- ggplot(display_summary, aes(x = Background_pop, y = Mean_dS, group = BodyRegion, color = BodyRegion)) +
+  geom_point(size = 3, position = position_dodge(width=0.5)) +
+  geom_errorbar(aes(ymin = Lower_dS, ymax = Upper_dS), position = position_dodge(width=0.5), width = 0) + 
+  geom_line(position = position_dodge(width=0.5)) + 
+  scale_color_manual(values = wes_palette("Cavalcanti1")) + #Change color palette here see: https://github.com/karthik/wesanderson
+  xlab("Background Environment") + 
+  ylab("Chromatic contrast (JND)") +
+  theme_bw() +
+  theme(legend.position = "none",
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(size=18),
+    axis.title=element_text(size=20,face="bold"),
+    legend.text =element_text(size = 12),
+    legend.title =element_text(size = 12, face = "bold")) 
+
 #pdf(file="./output/figures/Figure2.pdf", height = 10, width = 18)
-plot_grid(p1.2, p2.2, labels = c("A", "B"), label_size = 30,
+plot_grid(pS4.4, pS4.3, pS4.1, pS4.2 , labels = c("A", "B", "C", "D"), label_size = 30,
   label_fontface = "bold", rel_widths=c(1,1))
 
 ```
