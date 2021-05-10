@@ -820,7 +820,7 @@ rownames(table2) <- NULL
  final_T2 <- table2 %>% 
              mutate(JND = c("Achromatic Contrast", rep("", 3), "Chromatic Contrast", rep("", 3))) %>%
               select(JND, Parameter, beta, SE, df, CI_L, CI_U)
- write.csv(final_TT, file = "./output/tables/Table2_MS.csv", row.names = FALSE)
+ write.csv(final_T2, file = "./output/tables/Table2_MS.csv", row.names = FALSE)
  # Table
 table2 <- flextable(final_T2) %>%
            table_style7()

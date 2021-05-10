@@ -279,10 +279,10 @@ DisplayBgrd$BodyRegion <- factor(DisplayBgrd$BodyRegion) #updates levels for the
 
   # Add Wald test to test signifiacnce of each factor using roust variance 
   background_AC_Disp <- Wald_test(DispBgrdAC_main, constraints = constrain_zero(2), 
-                                  cluster = DisplayBgrd$ID, vcov = "CR2")
+                                  cluster = DisplayBgrd_Hawaii$ID, vcov = "CR2")
   
   BodyRegion_AC_Disp <- Wald_test(DispBgrdAC_main, constraints = constrain_zero(3:5), 
-                                  cluster = DisplayBgrd$ID, vcov = "CR2")
+                                  cluster = DisplayBgrd_Hawaii$ID, vcov = "CR2")
 
    
 ##########
@@ -353,11 +353,11 @@ CourtshipBgrd$BodyRegion <- factor(CourtshipBgrd$BodyRegion)
    robust_CourtshipAC <- clubSandwich::conf_int(CourtshipAC_main, cluster = CourtshipBgrd_Hawaii$ID, vcov =  "CR2")
    
    # Wald tests
-           background_AC_Court <- Wald_test(CourtshipAC, constraints = constrain_zero(3), 
-                                  cluster = CourtshipBgrd$ID, vcov = "CR2")
+           background_AC_Court <- Wald_test(CourtshipAC_main, constraints = constrain_zero(3), 
+                                  cluster = CourtshipBgrd_Hawaii$ID, vcov = "CR2")
            
-           BodyRegion_AC_Court <- Wald_test(CourtshipAC, constraints = constrain_zero(4:6), 
-                                  cluster = CourtshipBgrd$ID, vcov = "CR2")
+           BodyRegion_AC_Court <- Wald_test(CourtshipAC_main, constraints = constrain_zero(3:5), 
+                                  cluster = CourtshipBgrd_Hawaii$ID, vcov = "CR2")
 
 
 ##########
@@ -460,12 +460,51 @@ We quantified the background against which chameleons signal by measuring the sp
 
 # Supplemental Results
 
+## Supporting Supplementay Tables
+
+```{r table1, fig.width = 8, fig.height = 1, fig.asp = 0.1136364, tab.cap = "Model estimates, standard errors (SE), Saitterwaite degrees of freedom (df) and 95% confidence internals (95% CI) comparing acromatic and chromatic mean differences between Kenyan and Hawaiian lizards in two social contexts (Male-Male Competition and Courtship). Standard errors are corrected by using robust variance estimators. "}
+
+final_T1 <-  read.csv(file = "./output/tables/Table1_MS.csv")
+ 
+ # Table
+table1 <- flextable(final_T1) %>% table_style6()
+ 
+table1
+```
+
+```{r table2, fig.width = 8, fig.height = 1, fig.asp = 0.1136364, tab.cap = "Model estimates, standard errors (SE), Saitterwaite degrees of freedom (df) and 95% confidence internals (95% CI) comparing acromatic and chromatic mean differences between Kenyan and Hawaiian lizards for snakes and lizards. Full models are provided and standard errors are corrected by using robust variance estimators."}
+
+ final_T2 <- read.csv(file = "./output/tables/Table2_MS.csv")
+ # Table
+table2 <- flextable(final_T2) %>%
+           table_style7()
+ 
+table2
+```
+
+```{r table3, fig.width = 9, fig.height = 1, fig.asp = 0.1136364, tab.cap = "Planned contrasts between mean acromatric and chormatic contrast in Hawaii and Kenya for both predators (snakes and birds). Estimates of the mean difference ebtween Hawaii and Kenya propulations are provided along with their 95% confidence intervals (95% CI lower and upper). Wald tests of contrast significance are provided (F, degrees of freedom (df) and associated p-value).  We also applied a Bonferroni correction to p-value to control for multiple comparisons."}
+
+contrast <- read.csv(file = "./output/tables/Table3_MS.csv")
+
+table3 <- flextable(contrast) %>% table_style8()
+table3
+```
+
+
+```{r table4, fig.width = 9, fig.height = 1, fig.asp = 0.1136364, tab.cap = "Model estimates (mean and contrasts), standard error (SE), degrees of freedom (df) and 95% confidence intervals (95% CI) for comparing acromatric and chromatic contrast of Hawaiian lizards against their introduced Hawaiian background (intercept) and Hawaiian lizards against their native Kenyan background (Background = Kenya) in both social contexts (Male-male competition and Courtship). Models were fit using robust variance estaimators to correct standard errors for non-independence, and we used a Saitterwaite degrees of freedom. Significance parameter estimates are those where 95% CI does not include zero."}
+
+
+tb4 <- read.csv(file = "./output/tables/Table4_MS.csv")
+table4 <- flextable(tb4) %>% table_style9()
+table4
+```
+
 ## Assessing changes in sexual signals across different body regions
 We took measurements of spectral reflectance for different body regions of each chamaleon. In our primary analysis, we averaged across different body regions because we were interested only in whether visual signals overall were different between Kenya and Hawaii. This was justified given that, across the different body regions, effects were largely in a similar direction, and often of similar magnitude (Figures \@ref(fig:FigS2) - \@ref(fig:FigS4) and Tables \@ref(tab:tableS1)- \@ref(tab:tableS5)).
 
 #### Body regions in social contexts (Male-male and Courtship Display) show different magnitude of responses, but similar directionality
  
-Overall, different body regions explained significant variation in achromatic and chromatic contrast in both social contexts, whereas differences between Kenya and Hawaii only existed in achormatic contrast (Figure \@ref(fig:FigS2) & Table \@ref(tab:tableS1)). A significant interaction between body region and population was found for achormatic contrast when males were displaying to each other (Table \@ref(tab:tableS1)). However, in all cases Kenya showed a string reduction in in acromatic contrast relative to Hawaii lizards, despite some variation in the magnitude of effect (Figure \@ref(fig:FigS2)B & D; Table \@ref(tab:tableS2)).
+Overall, different body regions explained significant variation in achromatic and chromatic contrast in both social contexts, whereas differences between Kenya and Hawaii only existed in achormatic contrast (Figure \@ref(fig:FigS2) & Table \@ref(tab:tableS1)). A significant interaction between body region and population was found for achormatic contrast when males were displaying to each other (Table \@ref(tab:tableS1)). However, in all cases Kenya showed a strong reduction in acromatic contrast relative to Hawaii lizards, despite some variation in the magnitude of effect (Figure \@ref(fig:FigS2)B & D; Table \@ref(tab:tableS2)).
 
 ```{r FigS2, fig.width = 13, fig.height = 12, fig.cap = "Chormatic (A, C) and Achromatic (B, D) contrast in just noticible differences (JND) for Hawaiian and Kenyan lizards relative to their environments. All four body regions (gular, mid-flank, tailbase and topflank) are shown averaged across stems and leaves found in their habitat. Mean JNDs are provided along with 95% confidence intervals. A & B represent male-male contest displays whereas C & D represent courtship displays"}
 
@@ -579,7 +618,7 @@ p1 + p2 + p3 + p4 + plot_annotation(tag_levels = c('A', 'B', 'C', 'D')) & theme(
 
 ```
 
-```{r tableS1, tab.cap = "Wald Tests comparing significance of model parameters. Wald tests computed using robust variance estimators with a Saitterwaite correction to the degrees of freedom. Interactions were first tested and models refit to test the signifiacnce of main effects"}
+```{r tableS1, tab.cap = "Wald F tests comparing overall significance of model parameters. Wald F tests were computed using robust variance estimators with a Saitterwaite correction to the degrees of freedom. Interactions were first tested and models refit to test the signifiacnce of main effects"}
 fullTable <- rbind(wald_table_ConspicDisplayAC, 
                    wald_table_ConspicDisplayCC, 
                    wald_table_ConspicCourtshipAC,
@@ -595,7 +634,7 @@ S3 <- flextable(fullTable) %>%
 S3
 ```
 
-```{r tableS2, tab.cap = "Linear mixed effects model results using sandwich estimators and Saitterwaite degrees of freedom correction.Social Context"}
+```{r tableS2, tab.cap = "Linear mixed effects model results using robust variance estimators and Saitterwaite degrees of freedom correction.Social Context"}
 robust_sc_table <- rbind(robust_ConspicDisplayAC,
                           robust_ConspicDisplayCC,
                           robust_ConspicCourtshipAC,
@@ -621,7 +660,7 @@ tableS5
 
 Chromatic contrast of colour signals against the background varied by predator type, population and body region (Figure \@ref(fig:FigS3)B; Table \@ref(tab:tableS3)). Whereas all body regions in Kenyan chameleons showed a reduced contrast against the background for birds there were small diferences among populations in how snakes perceived colour signals (Figure \@ref(fig:FigS3)A). There were no significant interactions between predator type ('bird' vs 'snake') and either body region or population in achromatic contrast against the background, but a significant population and body region effect (Figure \@ref(fig:FigS3)B; Table \@ref(tab:tableS3)). Effects did not vary by predator type (Table \@ref(tab:tableS3)). Nonetheless, effect sizes across body regions were in the same direction (Figure \@ref(fig:FigS3)B & Table \@ref(tab:tableS4)). Overall, there were significant differences between Kenya and Hawaii in achormatic contrast of the gular and tailbase regions, but not for mid- and top-flank (Table \@ref(tab:tableS5)). In contrast, no sigificant differences between Kenya and Hawaii existed across any body region, whereas significant differences existed between gular, midflank and tailbase (Table \@ref(tab:tableS6)).
 
-```{r FigS3, fig.width = 12, fig.height = 12, fig.cap = "Predators All four body regions (gular, mid-flank, tailbase and topflank) are shown averaged across stems and leaves found in their habitat. Mean JNDs are provided along with 95% confidence intervals. A & B represent male-male contest displays whereas C & D represent courtship displays"}
+```{r FigS3, fig.width = 12, fig.height = 12, fig.cap = "All four body regions (gular, mid-flank, tailbase and topflank) and their achromatic (B) and chromatic contrast (A) to Hawaiian and Kenyan backgrounds (each population against their own background) are shown averaged across stems and leaves found in their habitat. Just noticable differences (JNDs) are calculated for both bird and snake predators. Mean JNDs are provided along with 95% confidence intervals."}
 
 # Load the data
 Predator <- read.table("./data/Predator_2_3.csv", 
@@ -691,7 +730,7 @@ plot_grid(p4, p3, nrow = 2, ncol = 1, labels = c("A", "B"), label_size = 30,
 
 ```
 
-```{r tableS3, tab.cap = "Wald Tests comparing significance of model parameters for predators. Wald tests computed using robust variance estimators with a Saitterwaite correction to the degrees of freedom. Interactions were first tested and models refit to test the signifiacnce of main effects"}
+```{r tableS3, tab.cap = "Wald F tests comparing the significance of model parameters for predator models. Wald F tests were computed using robust variance estimators with a Saitterwaite correction to the degrees of freedom. Interactions were first tested and models refit to test the signifiacnce of main effects"}
 
 fulltableP <- rbind(Wald_table_PredatorAC,
                     Wald_table_PredatorCC)
@@ -705,7 +744,7 @@ S4 <- flextable(fulltableP) %>%
 S4
 ```
 
-```{r tableS4, tab.cap = "Linear mixed effects model results using sandwich estimators and Saitterwaite degrees of freedom correction.Predators"}
+```{r tableS4, tab.cap = "Estimated model parameters, standard errors (SE), degrees of freedom (df) along with 95% confidence interval for each parameter from linear mixed effects models. Standard errors were corrected using robust variance estimators and Saitterwaite degrees of freedom correction was used for calculated significance"}
 robust_sc_pred_table <- rbind(robust_PredatorAC,
                          robust_PredatorCC) %>% 
                     mutate(p_Satt = sapply(p_Satt, function(x) p_value(x)),
@@ -740,8 +779,7 @@ result5_snake <-  result5[grep("snake", result5$hypothesis), ] %>% mutate(Specie
 
 
 ft5 <- flextable(final_r5) %>%
-        table_style(.) %>% 
-        add_header_row(values = "Achromatic Contrast", colwidths = 6)  
+        table_style(.)
   
  ft5
 
@@ -768,17 +806,16 @@ result6_snake <- result6[grep("snake", result6$hypothesis), ] %>% mutate(Species
  
  # Table
  ft6 <- flextable(final_r6) %>%
-        table_style(.) %>% 
-        add_header_row(values = "Chromatic Contrast", colwidths = 6) 
+        table_style(.)
  
  ft6
 ```
 
 #### All body regions exibit similar contrasts between Kenyan and Hawaiian backgrounds suggesting local adaptation of entire visual signal
 
-We tested whether different body regions of Hawaiian chameleons exhibited different contrasts between Hawaiian habitat background compared to their ancestral, Kenyan background. We started off testing models comparing the interaction between background enviroment and body region for both chormatic and achromatic contrast. However, for achromatic contrast, these models had poor convergence. Based on the raw data (Figure \@ref(fig:figS4)B & D) there was also weak evidence that body regions differed in how they changed when viewed by conspecifics against the Hawaiian and Kenyan backgrounds. As such, we simplied models and only present the main effects of body region and background environment for achromatic contrast. However, inspection of the raw data (Figure \@ref(fig:figS4)A & C) suggested that body regions may differ in how chromatically contrasting they are against the background environment of Hawaii and Kenya. In addition, our main results suggested that predators may differentially drive chromatic signal conspicuousness, and given differet body regions maybe more exposed to bird compared to snake predators, we fit an interaction and main effects model for chromatic contrast. 
+We tested whether different body regions of Hawaiian chameleons exhibited different contrasts between Hawaiian habitat background compared to their ancestral, Kenyan background. We started off testing models comparing the interaction between background enviroment and body region for both chormatic and achromatic contrast. However, for achromatic contrast, these models had poor convergence. Based on the raw data (Figure \@ref(fig:FigS4)B & D) there was also weak evidence that body regions differed in how they changed when viewed by conspecifics against the Hawaiian and Kenyan backgrounds. As such, we simplied models and only present the main effects of body region and background environment for achromatic contrast. However, inspection of the raw data (Figure \@ref(fig:FigS4)A & C) suggested that body regions may differ in how chromatically contrasting they are against the background environment of Hawaii and Kenya. In addition, our main results suggested that predators may differentially drive chromatic signal conspicuousness, and given differet body regions maybe more exposed to bird compared to snake predators, we fit an interaction and main effects model for chromatic contrast. 
 
-The magnitude of chromatic contrast differences between Hawaiian chamaleons against their own environment and a Kenyan enviroment did depend on the body region (Male-male display: $F_{`r intearction_CC_Disp$df_num`, `r intearction_CC_Disp$df_denom`}$ = `r intearction_CC_Disp$Fstat`, p = `r p_value(intearction_CC_Disp$p_val)`; Courtship Display: $F_{`r intearction_CC_Court$df_num`, `r intearction_CC_Court$df_denom`}$ = `r intearction_CC_Court$Fstat`, p = `r p_value(intearction_CC_Court$p_val)`, Figure \@ref(fig:figS4)A & C & Table \@ref(tab:table7)). However, in all cases there was a tendeny for all body regions of Hawaiian populations to decrease in average contrast when viewed by a conspecific against a Hawaiian versus Kenyan background (Figure \@ref(fig:figS4)A & C), and only some body regions showed a significant decrease (Table \@ref(tab:table8)). 
+The magnitude of chromatic contrast differences between Hawaiian chamaleons against their own environment and a Kenyan enviroment did depend on the body region (Male-male display: $F_{`r intearction_CC_Disp$df_num`, `r intearction_CC_Disp$df_denom`}$ = `r intearction_CC_Disp$Fstat`, p = `r p_value(intearction_CC_Disp$p_val)`; Courtship Display: $F_{`r intearction_CC_Court$df_num`, `r intearction_CC_Court$df_denom`}$ = `r intearction_CC_Court$Fstat`, p = `r p_value(intearction_CC_Court$p_val)`, Figure \@ref(fig:FigS4)A & C & Table \@ref(tab:table7)). However, in all cases there was a tendeny for all body regions of Hawaiian populations to decrease in average contrast when viewed by a conspecific against a Hawaiian versus Kenyan background (Figure \@ref(fig:FigS4)A & C), and only some body regions showed a significant decrease (Table \@ref(tab:table8)). 
 
 The magnitude of achromatic contrast, showed a significant overall decrease in achromatic contrast when viewed by conspevcifics against a Kenyan background (Overall Background Effect: Male-male display, $F_{`r background_AC_Disp$df_num`, `r background_AC_Disp$df_denom`}$ = `r background_AC_Disp$Fstat`, p = `r p_value(background_AC_Disp$p_val)`, Courtship Display, $F_{`r background_AC_Court$df_num`, `r background_AC_Court$df_denom`}$ = `r background_AC_Court$Fstat`, p = `r p_value(background_AC_Court$p_val)`, Figure \@ref(fig:figS4)B & D along with & Table \@ref(tab:table7)), and there were significant differences among body regions (Overall Body Region Effect: Male-male display, $F_{`r BodyRegion_AC_Disp$df_num`, `r BodyRegion_AC_Disp$df_denom`}$ = `r BodyRegion_AC_Disp$Fstat`, p = `r p_value(BodyRegion_AC_Disp$p_val)`, Courtship Display, $F_{`r BodyRegion_AC_Court$df_num`, `r BodyRegion_AC_Court$df_denom`}$ = `r BodyRegion_AC_Court$Fstat`, p = `r p_value(BodyRegion_AC_Court$p_val)`, Figure \@ref(fig:figS4)B & D along with & Table \@ref(tab:table7)). 
 
@@ -909,9 +946,7 @@ plot_grid(pS4.4, pS4.3, pS4.1, pS4.2 , labels = c("A", "B", "C", "D"), label_siz
 
 ```
 
-
-
-```{r table7, fig.cap = "Models"}
+```{r table7, tab.cap = "Estimated model parameters, standard errors (SE), degrees of freedom (df) along with 95% confidence interval for each parameter. Main effects and interaction models are presented. Only main effect models are presented for achromatic contrast (see text for details), whereas interaction models are presented for chromatic contrast. Pairwise contrasts are presented for chromatic contrast models (see Table 8) for ease of interpretation."}
 table7 <- rbind(robust_localAdapt_DispBgrdAC,
                 robust_DispBgrdCC,
                 robust_CourtshipAC,
@@ -930,7 +965,7 @@ Table7 <- flextable(table7) %>% table_style10()
 
 ```
 
-```{r table8, fig.cap = "contarsts chromatic"}
+```{r table8, tab.cap = "Pairwise Wald F tests comparing changes in chromatic contrast between different body regions for Hawaiian lizards against both Hawaiian and Kenyan backgrounds during male-male and courtship displats. F statistic, degrees of freedom (DF) and p-values are provided (p). A bonferroni correction to p-value is also provided to control for multiple testing. See Table 7 for model estimates."}
 tab8 <- rbind(result_DisplayBgrd_pop_back_regionCC,
               result_CourtshipBgrd_pop_back_BR_CC) %>%  as.data.frame()
 

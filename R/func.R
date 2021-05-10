@@ -77,7 +77,7 @@ wald_table_p <- function(model_main, model_inter){
 # Table styling functions
 
 table_style  <- function(table){
-  table <- table %>% width(j = 1, width = 1) %>% width(j = 2, width = 2.5) %>% 
+  table <- table  %>% 
     align(align = "center", part = "header") %>% 
     align(align = "center", part = "body") %>% 
     compose(part = "header", j = 1, value = as_paragraph(as_b("Predator"))) %>% 
@@ -101,7 +101,7 @@ table_style  <- function(table){
     compose(part = "body", i = 7, j = 2, 
             value = as_paragraph("Kenya", as_sub(" tailbase"), " - ", "Hawaii", as_sub(" tailbase"))) %>% 
     compose(part = "body", i = 8, j = 2, 
-            value = as_paragraph("Kenya", as_sub(" topflank"), " - ", "Hawaii", as_sub(" topflank")))%>% 
+            value = as_paragraph("Kenya", as_sub(" topflank"), " - ", "Hawaii", as_sub(" topflank"))) %>% 
     font(fontname="Times", part = "body") %>% 
     font(fontname="Times", part = "header")
   return(table)
