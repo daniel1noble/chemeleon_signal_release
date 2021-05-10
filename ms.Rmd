@@ -481,7 +481,7 @@ As a consequence of signal release, sexual signals are expected to be more easil
 Local adaptation of sexual signals would result in Hawaiian chameleons being more conspicous to conspecifics in the Hawaiian environment compared to their native Kenyan environment. While it was not possible to conduct common garden experiments to provide definitive tests of local adaptation, our results support the local adaptation hypothesis given that Hawaiian chameleons were more conspicous to other chameleons in the Hawaiian environment compared to the same chameleons in a Kenyan environment in both social contexts (figure 2; Contrast between Hawaiian lizard on Kenyan vs Hawaiian on Hawaiin background - Male-male contests: Achromatic ($dl$), $\beta$ = `r CI_dis_AC[1,1]`, 95% CI = `r CI_dis_AC[1,2]` to `r CI_dis_AC[1,3]`, p = `r p_displ_AC`, Chromatic ($dS$) $\beta$ = `r CI_Disp_CC[1,1]`, 95% CI = `r CI_Disp_CC[1,2]` to `r CI_Disp_CC[1,3]`, p = `r p_displ_CC`; Courtship: Achromatic ($dl$), $\beta$ = `r CI_AC_Courtship[1,1]`, 95% CI = `r CI_AC_Courtship[1,2]` to `r CI_AC_Courtship[1,3]`, p = `r p_courtship_AC`, Chromatic ($dS$) $\beta$ = `r CI_CC_Courtship[1,1]`, 95% CI = `r CI_CC_Courtship[1,2]` to `r CI_CC_Courtship[1,3]`, p = `r p_courtship_CC`).
 
 
-```{r Figure1, fig.width = 14, fig.height= 14, fig.cap= "Chromatic and achromatic contrast in Just Noticiable Differences (JND), of Hawaiian and Kenyan chameleons against their respective backgrounds (i.e., average environment of stems and leaves). A & B) Contrast of male chameleons during male-male contests and courtship. JNDs are calculated based on the chameleon visual system. NS denotes non-significant contasts, whereas astericks indicates significant differences is < 0.001."}
+```{r Figure1, fig.width = 14, fig.height= 14, fig.cap= "Chromatic and achromatic contrast in Just Noticiable Differences (JND), of Hawaiian and Kenyan chameleons against their respective backgrounds (i.e., average environment of stems and leaves). A & B) Contrast of male chameleons during male-male contests and courtship. JNDs are calculated based on the chameleon visual system. NS denotes non-significant contasts, whereas astericks indicates significant differences is < 0.001. Insets showing spectral reflectance curves of two representative body regions ('gular' and 'top-flank), along with average signalling background (averaged leaves) are provided for each social and predatory context. A) spectral curves of signals during male-male displays; B) spectral curves of signals during courtship displays; C) spectral curves of signals during bird encounters; and D) spectral curves of signals during snake encounters."}
 rerun = FALSE
 if(rerun){
 ## Make figures that average across body regions, but display Social Context
@@ -783,9 +783,6 @@ plot_grid(p1.2, p2.2, labels = c("A", "B"), label_size = 16,
 
 Chromatic and achromatic contrast from visual models, measured in just noticable differences (JNDs), were analysed using linear mixed effects models in R using the `lme4` package (@Bateslme4) in combination with the package `clubSandwich` (@Pustejovsky21). For all individuals, we measured signals for multiple body regions, each of which were contrasted between multiple background measurements (i.e., top and bottoms of two leaves and two stems).Deriving multiple contrast for each individual body region and background resulted in a substantial number of comparisons, each of which were not completely independent of each other. To ensure that non-indpendence of data did not impact our inferences we used a Robust Variance Estimator (RVE) (using our final models to correct standard errors) and a Saitterwaite degrees of freedom correction. Across the different contexts (i.e., social contexts, predation and background environments), chromatic and acromatic contrasts were analysed in seperate models as response variables. For analyses involving social context, we included z-transformed snout-vent length (SVL), population of origin, and their interaction as fixed effects. For models involving predatory contexts and visual systems, we included the predator type (i.e, snake or bird), population of origin and their interaction as fixed effects. Finally, to test local adaptation, we used only chameleons from Hawaii and tested the extent to which chromatic and achromatic contrast varied depending on whether Hawaiian signals were obersved on a native Kenyan background or their current introduced habitat background in Hawaii. Relevant model interactions were first tested using Wald tests. If found to be non-significant (p > 0.1) we dropped the interaction and fit a main effects model. We then tested the significance of the main effect of 'Population', 'Predator' or 'Background' (depending on the model) using Wald tests with robust variance estimators and a Saitterwaite degrees of freedom correction.  For our main analyses we averaged estimates (marginalised) across these body regions and background environments given that in many cases body regions showed remarkably similar effects (see Supplementary Results). In all cases, our results and conclusions were not impacted (see supplmentary code).
 
-### Supplementary Tables - Add to Supplement. Easier to generate here given all code is here.
-
-# Social context. We only need models because contarsts are already there
 
 ```{r table1, fig.width = 8, fig.height = 1, fig.asp = 0.1136364, tab.cap = "Model estimates, standard errors (SE), Saitterwaite degrees of freedom (df) and 95% confidence internals (95% CI) comparing acromatic and chromatic mean differences between Kenyan and Hawaiian lizards in two social contexts (Male-Male Competition and Courtship). Standard errors are corrected by using robust variance estimators. "}
 
@@ -801,14 +798,10 @@ rownames(table1) <- NULL
                     VisualRealm = c("Achromatic Contrast", rep("", 2), "Chromatic Contrast", rep("", 2), "Achromatic Contrast", rep("", 2), "Chromatic Contrast", rep("", 2))) %>%
               select(SocialContext, VisualRealm, Parameter, beta, SE, df, CI_L, CI_U)
  write.csv(final_T1, file = "./output/tables/Table1_MS.csv", row.names = FALSE)
- 
- # Table
-table1 <- flextable(final_T1) %>% table_style6()
- 
-table1
+
 ```
 
-# Predators - Models AND contrasts. We don't get all contrasts because we have two factors in model
+
 ```{r table2, fig.width = 8, fig.height = 1, fig.asp = 0.1136364, tab.cap = "Model estimates, standard errors (SE), Saitterwaite degrees of freedom (df) and 95% confidence internals (95% CI) comparing acromatic and chromatic mean differences between Kenyan and Hawaiian lizards for snakes and lizards. Full models are provided and standard errors are corrected by using robust variance estimators."}
 
 table2 <- as.data.frame(rbind(robust_PredatorAC_CI_inter,
@@ -821,11 +814,7 @@ rownames(table2) <- NULL
              mutate(JND = c("Achromatic Contrast", rep("", 3), "Chromatic Contrast", rep("", 3))) %>%
               select(JND, Parameter, beta, SE, df, CI_L, CI_U)
  write.csv(final_T2, file = "./output/tables/Table2_MS.csv", row.names = FALSE)
- # Table
-table2 <- flextable(final_T2) %>%
-           table_style7()
- 
-table2
+
 ```
 
 ```{r table3, fig.width = 9, fig.height = 1, fig.asp = 0.1136364, tab.cap = "Planned contrasts between mean acromatric and chormatic contrast in Hawaii and Kenya for both predators (snakes and birds). Estimates of the mean difference ebtween Hawaii and Kenya propulations are provided along with their 95% confidence intervals (95% CI lower and upper). Wald tests of contrast significance are provided (F, degrees of freedom (df) and associated p-value).  We also applied a Bonferroni correction to p-value to control for multiple comparisons."}
@@ -839,12 +828,7 @@ contrast <- contrast %>% mutate(VisualSpec = c("Achromatic Contrast", "", "Chrom
 
 write.csv(contrast, file = "./output/tables/Table3_MS.csv", row.names = FALSE)
 
-table3 <- flextable(contrast) %>% table_style8()
-table3
 ```
-
-
-# Local Adaptation. We have all the contrasts we need from the model because we are only comparing Hawaii-Hawaii(background) to Hawaii-Kenya(background). These are therefore in the table output already.
 
 ```{r table4, fig.width = 9, fig.height = 1, fig.asp = 0.1136364, tab.cap = "Model estimates (mean and contrasts), standard error (SE), degrees of freedom (df) and 95% confidence intervals (95% CI) for comparing acromatric and chromatic contrast of Hawaiian lizards against their introduced Hawaiian background (intercept) and Hawaiian lizards against their native Kenyan background (Background = Kenya) in both social contexts (Male-male competition and Courtship). Models were fit using robust variance estaimators to correct standard errors for non-independence, and we used a Saitterwaite degrees of freedom. Significance parameter estimates are those where 95% CI does not include zero."}
 
@@ -863,8 +847,7 @@ tb4 <- tb4 %>% mutate(SocialContext = c("Male-Male Display", rep("", 5),
               select(SocialContext, VisualRealm, parameter, beta, SE, df, CI_L, CI_U)
 
 write.csv(tb4, file = "./output/tables/Table4_MS.csv", row.names = FALSE)
-table4 <- flextable(tb4) %>% table_style9()
-table4
+
 ```
 
 # References
