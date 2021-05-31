@@ -322,3 +322,17 @@ table_style11  <- function(table){
   
   return(table)
 }
+
+
+table_style12 <- function(table){
+  table <- table %>%  width(j = 1, width = 1.5) %>% width(j = 2, width = 3) %>% 
+    align(align = "center", part = "header") %>% 
+    compose(part = "header", j = 1, value = as_paragraph(as_b("Hypothesis"))) %>% 
+    compose(part = "header", j = 2, value = as_paragraph(as_b("Prediction"))) %>% 
+    compose(part = "header", j = 3, value = as_paragraph(as_b("Population"))) %>% 
+    compose( part = "header", j = 4, value = as_paragraph(as_b("Visual System"))) %>% 
+    compose( part = "header", j = 5, value = as_paragraph(as_b("Background"))) %>% 
+    font(fontname="Times", part = "body") %>% 
+    font(fontname="Times", part = "header")
+  return(table)
+}
