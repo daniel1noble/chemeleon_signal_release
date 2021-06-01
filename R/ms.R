@@ -767,10 +767,10 @@ table2
 
 ## ----table3, fig.width = 9, fig.height = 1, fig.asp = 0.1136364, tab.cap = "Planned contrasts between mean acromatric and chormatic contrast in Hawaii and Kenya for both predators (snakes and birds). Estimates of the mean difference ebtween Hawaii and Kenya propulations are provided along with their 95% confidence intervals (95% CI lower and upper). Wald tests of contrast significance are provided (F, degrees of freedom (df) and associated p-value).  We also applied a Bonferroni correction to p-value to control for multiple comparisons."----
 
-contrast <- rbind(CI_hyp_test,
-                 CI_hyp_testAC)
+contrast <- rbind(CI_hyp_testAC,
+                  CI_hyp_test)
 
-contrast <- contrast %>% mutate(VisualSpec = c("Achromatic Contrast", "", "Chromatic Contrast", ""),
+contrast <- contrast %>% mutate(VisualSpec = c("Achromatic Contrast",  "", "Chromatic Contrast", ""),
                                 p_val = sapply(p_val, function(x) p_value(x))) %>% 
             select(VisualSpec, comparison, Estimate, lwr, upr, Fstat, df, p_val, p_bonf)
 
