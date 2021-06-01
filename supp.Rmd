@@ -409,51 +409,46 @@ CourtshipBgrd$BodyRegion <- factor(CourtshipBgrd$BodyRegion)
 
 ```
 
-
-<!-- \renewcommand{\thefigure}{S\arabic{figure}} -->
-<!-- \setcounter{figure}{0} -->
-<!-- \renewcommand{\thetable}{S\arabic{table}} -->
-<!-- \setcounter{table}{0} -->
-<!-- \renewcommand{\theequation}{S\arabic{equation}} -->
-<!-- \setcounter{equation}{0} -->
-
 # Expanded Hypotheses and Predictions
 
-<!-- ```{r tablehyp_prd, tab.align = 'center', tab.cap = "Hypotheses and associated predictions tested in this paper in relation to the population of interest, the receiver visual system used in visual modelling, and the background against which the contrast of the signal was calculated for chromatic and achromatic contrast "} -->
-<!--  hyp <-  read.csv(file = "./output/tables/Table_hyp_pred.csv") -->
+We provided an expanded table of hypotheses and associated predictions. We also identify the data needed to test these predictions.
 
-<!--   # Table -->
-<!--  hyp2 <- flextable(hyp) %>% table_style12() -->
+```{r tablehyp, tab.cap = "Hypotheses and associated predictions tested in this paper in relation to the population of interest, the receiver visual system used in visual modelling, and the background against which the contrast of the signal was calculated for chromatic and achromatic contrast."}
+  source("./R/func.R") 
+  hyp <-  read.csv(file = "./output/tables/Table_hyp_pred.csv")
 
-<!--  hyp2 -->
-<!-- ``` -->
+  # Table
+  hyp2 <- flextable(hyp) %>% table_style12()
+
+  hyp2
+```
 
 # Supplemental Materials and Methods
 ## Study area and collection of chameleons
 
 We collected most chameleons (Fig. \@ref(fig:Figcolsig)) at night by spotlighting, and a small proportion of individuals during the day. When chameleons were beyond reach, we used 4-m extensible poles that chameleons could be encouraged to step on to, before lowering them to the ground. We then placed them in cotton bags with vegetation to cling to, before returning them to the lab. Field work was conducted in Hawaii during January-February 2006 and in Kenya during 5-13 April 2006. In Hawaii, chameleons were collected from a single population in the Manoa Valley, Oahu, accessible along Tantalus and Roundtop Drives at an elevation of ca. 400-600m. The vegetation in this area consisted of closed-canopy, mid-elevation tropical rain forest, with extensive vines and undergrowth (Fig. \@ref(fig:Figcolsig2)A,B). Most of the plants in this area were nonnative, and chameleons also occurred in hedge-grows and stands of bamboo. The area experiences high annual rainfall (mean: ca. 1500 mm) @RN1 and the mean annual temperature is 22-24&deg;C @RN2. In Kenya, field work was conducted near the foothills of Mt. Kenya, close to the town of Runyenjes. The area is partially cleared for agriculture, leaving small stands of forest. The vegetation was a mix of native trees and shrubs interspersed with exotic species (Fig. \@ref(fig:Figcolsig2)C,D). Mean annual temperature is 20.2&deg;C (mean max: 24.8&deg;C) and the mean annual rainfall is 121 mm @RN3. 
 
-<!-- ```{r Figcolsig, fig.align = 'center', fig.cap = "Additional examples of chameleon color signals and behavior in response to different social contexts. (A) Two different males in conspicuous display color adopted at the start of a contest and retained by the dominant male. (B) Two examples of males engaged in horn locking. Males in the bottom plane are evenly matched at this stage and both are in full display colour. In the top image, the male on the left is starting to change to a subordinate color. (C) Conspicuous lemon-yellow male courtship color. In this case, the female is using a contrasting stress color consistent with rejection."} -->
-<!-- figs1 <- image_read("./output/figures/FigS1.png") -->
-<!-- figs1 -->
+```{r Figcolsig, fig.align = 'center', fig.cap = "Additional examples of chameleon color signals and behavior in response to different social contexts. (A) Two different males in conspicuous display color adopted at the start of a contest and retained by the dominant male. (B) Two examples of males engaged in horn locking. Males in the bottom plane are evenly matched at this stage and both are in full display colour. In the top image, the male on the left is starting to change to a subordinate color. (C) Conspicuous lemon-yellow male courtship color. In this case, the female is using a contrasting stress color consistent with rejection."}
+figs1 <- image_read("./output/figures/FigS1.png")
+figs1
 
-<!-- ``` -->
+```
 
-<!-- ```{r Figcolsig2, fig.align = 'center', fig.cap = "Representative photos of habitat in Hawaii (A, B) and Kenya (C, D). In both sites, chameleons favored well-vegetated trees and bushes, often with lots of vines."} -->
-<!-- figs2 <- image_read("./output/figures/FigS2.png") -->
-<!-- figs2 -->
+```{r Figcolsig2, fig.align = 'center', fig.cap = "Representative photos of habitat in Hawaii (A, C) and Kenya (B, D). In both sites, chameleons favored well-vegetated trees and bushes, often with lots of vines."}
+figs2 <- image_read("./output/figures/FigS2.png")
+figs2
 
-<!-- ``` -->
+```
 
 ## Behavioral trials
 
 In order to quantify display coloration we staged encounters between conspecifics (male-male and male-female) and model (bird and snake) predators and measured their subsequent display coloration (details below). All chameleons were used in both predator and social trials although in some cases we were unable to quantify all social signals for a particular individual. We conducted all conspecific-social trials first, in case anti-predator trials unduly influenced their social interactions. Behavioral trials were conducted during the chameleons’ natural activity period (09:00-16:00 h) beginning the day following capture and continuing over a 2-3 day period. We erected a frame consisting of branches from the chameleons’ environment that were tied together in a triangle and which sat atop three vertical branches that formed a stand. This structure was about 1.5 m high and each arm was approximately 60 cm. The triangular setup allowed chameleons to display at a comfortable distance and also to escape from aggressive interactions, particularly during male-male trials (Fig. \@ref(fig:Figcolsig4)). All trials were conducted outdoors, but in the shade under the cover of a roof, with vegetation nearby, to simulate their natural environment. The signalling environment was therefore the same for all animals.
 
-<!-- ```{r Figcolsig3, fig.align = 'center', fig.cap = "The experimental setup for behavioral trials. We constructed a platform of three connected horizontal perches in a triangle, thereby always allowing an individual to escape a rival or if a female, a courting male."} -->
-<!-- figs3 <- image_read("./output/figures/FigS3.png") -->
-<!-- figs3 -->
+```{r Figcolsig3, fig.align = 'center', fig.cap = "The experimental setup for behavioral trials. We constructed a platform of three connected horizontal perches in a triangle, thereby always allowing an individual to escape a rival or if a female, a courting male."}
+figs3 <- image_read("./output/figures/FigS3.jpg")
+figs3
 
-<!-- ``` -->
+```
 
 We staged trials between males to elicit dominant and subordinate displays and between males and females to elicit courtship displays. This consisted of placing two chameleons at a comfortable distance at which point they typically responded to the conspecific’s presence by rapidly changing colour and behaviour (Fig. \@ref(fig:Figcolsig)A,B). In male-male trials both individuals would adopt a lemon-yellow display coloration and advance towards each other. This would be accompanied by head shakes and would lead to horn-locking (Fig. \@ref(fig:Figcolsig)B) if males were not obviously asymmetric. Once dominance was settled, the subordinate would turn brown (Fig. \@ref(fig:Figcolsig)B) and flee. In male-female (courtship) trials, males would turn the same lemon-yellow and approach the female while head shaking and rocking (Fig. \@ref(fig:Figcolsig)C). The day following social trials we presented each chameleon with a snake (Fig. \@ref(fig:Figcolsig4)A) and bird (Fig. \@ref(fig:Figcolsig4)B) model predator (separately). Lizards were drawn at random and the order of presentation (snake or bird first) was random. Both trials were conducted on the same day but were separated by at least three hours. A trial began when a chameleon was removed from its cloth bag and placed on the triangular stand. At this point the lizard was in a neutral color state. In the case of the snake model, one of us slowly moved the model snake towards the chameleon from both above and below it, without ever contacting the chameleon, in a standardized fashion (Fig. \@ref(fig:Figcolsig4)A). In the case of the bird trials, the bird was attached to an ca. 2 m wooden pole and was ‘flown’ past the chameleon from above and below it (Fig. \@ref(fig:Figcolsig4)B). Trials lasted no more than 2-min and we scored whether the chameleon flipped to the opposite side of the branch, which is a classic anti-predator behavior by chameleons. Once chameleons changed color, we quantified their spectral reflectance following the same procedure described for social trials. We also conducted seven trials with a just a branch with no predator attached, as a control for the model predator. The snake model was molded from a dead boomslang (*Dispholidus typus*) and painted by a professional artist to resemble a typical green form of this species (previously used in [@RN6;@RN7]). The bird was a mounted African cuckoo-hawk (*Aviceda cuculoides*).
 
