@@ -230,7 +230,8 @@ table_style7 <- function(table){
     flextable::compose(part = "body", j = 2, i = c(1,5)+2, value = as_paragraph("Population", as_sub(" Kenya"))) %>%
     flextable::compose(part = "body", j = 2, i = c(1,5)+3, value = as_paragraph("Predator", as_sub(" Snake"), "* Population", as_sub(" Kenya"))) %>% 
     font(fontname="Times", part = "body") %>% 
-    font(fontname="Times", part = "header")
+    font(fontname="Times", part = "header") %>% 
+    width(j = 2, width = 4)
     return(table)
 }
 
@@ -300,7 +301,7 @@ table_style10 <- function(table){
 }
 
 table_style11  <- function(table){
-  table <- table %>% width(j = 1, width = 1) %>% width(j = 2, width = 4) %>% 
+  table <- table %>% 
     align(align = "center", part = "header") %>% 
     align(align = "center", part = "body") %>% 
     flextable::compose(part = "header", j = 1, value = as_paragraph(as_b("Context"))) %>% 
@@ -318,7 +319,8 @@ table_style11  <- function(table){
     flextable::compose(part = "body", i = c(4,8), j = 2, 
             value = as_paragraph("Kenyan Background", as_sub(" topflank"), " - ", "Hawaiian Background", as_sub(" topflank"))) %>% 
     font(fontname="Times", part = "body") %>% 
-    font(fontname="Times", part = "header")
+    font(fontname="Times", part = "header") %>% 
+    width(j = 1, width = 1) %>% width(j = 2, width = 8)
   
   return(table)
 }
