@@ -883,4 +883,65 @@ plot_grid(p1.2, p2.2, labels = c("A", "B"), label_size = 16,
 
 ```
 
+```{r table4, results='hide'}
+#Section will create and write Tables for Supplement. It is not spit out in the main MS. Exported then imported for the supp
+
+# Table S1
+    table1 <- as.data.frame(rbind(robust_ConspicDisplayAC_CI,
+                    robust_ConspicDisplayCC_CI,
+                    robust_ConspicCourtshipAC_CI,
+                    robust_ConspicCourtshipCC_CI))
+    table1$Parameter <- rownames(table1)
+    rownames(table1) <- NULL
+    # Clean
+     final_T1 <- table1 %>% 
+                 mutate(SocialContext = c("Male-Male Display", rep("", 5), "Courtship Display", rep("", 5)),
+                        VisualRealm = c("Luminance  Contrast", rep("", 2), "Chromatic Contrast", rep("", 2), 
+                                        "Luminance Contrast", rep("", 2), "Chromatic Contrast", rep("", 2))) %>%
+                  select(SocialContext, VisualRealm, Parameter, beta, SE, df, CI_L, CI_U)
+     write.csv(final_T1, file = "./output/tables/Table1_MS.csv", row.names = FALSE)
+ 
+# Table S2
+    table2 <- as.data.frame(rbind(robust_PredatorAC_CI_inter,
+                                  robust_PredatorCC_CI_inter))
+    table2$Parameter <- rownames(table2)
+    rownames(table2) <- NULL
+    
+    # Clean
+     final_T2 <- table2 %>% 
+                 mutate(JND = c("Luminance Contrast", rep("", 3), "Chromatic Contrast", rep("", 3))) %>%
+                  select(JND, Parameter, beta, SE, df, CI_L, CI_U)
+     write.csv(final_T2, file = "./output/tables/Table2_MS.csv", row.names = FALSE)
+
+ #Table S3
+    contrast <- rbind(CI_hyp_test,
+                     CI_hyp_testAC)
+    
+    contrast <- contrast %>% mutate(VisualSpec = c("Luminance Contrast", "", "Chromatic Contrast", ""),
+                                    p_val = sapply(p_val, function(x) p_value(x))) %>% 
+                select(VisualSpec, comparison, Estimate, lwr, upr, Fstat, df, p_val, p_bonf)
+    
+    write.csv(contrast, file = "./output/tables/Table3_MS.csv", row.names = FALSE)
+
+
+#TableS4
+    tb4 <- data.frame(rbind(robust_localAdapt_DispBgrdAC,
+                 robust_DispBgrdCC,
+                 robust_CourtshipAC,
+                 robust_CourtshipCC))
+    tb4$parameter <- rownames(tb4)
+    rownames(tb4) <- NULL
+    
+    tb4 <- tb4 %>% mutate(SocialContext = c("Male-Male Display", rep("", 5), 
+                                            "Courtship Display", rep("", 5)),
+                        VisualRealm = c("Luminance Contrast", rep("", 2), "Chromatic Contrast", 
+                                        rep("", 2), "Luminance Contrast", rep("", 2), 
+                                        "Chromatic Contrast", rep("", 2))) %>%
+                  select(SocialContext, VisualRealm, parameter, beta, SE, df, CI_L, CI_U)
+    
+    write.csv(tb4, file = "./output/tables/Table4_MS.csv", row.names = FALSE)
+
+```
+
+
 # References and Notes
