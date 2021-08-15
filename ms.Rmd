@@ -288,12 +288,20 @@ Predator$BodyRegion <- factor(Predator$BodyRegion) #updates levels for the varia
 ##################
 DisplayBgrd <- read.table("./data/Display_5.csv", 
                         header=TRUE, sep=",", dec=".", strip.white=TRUE)
+svl_dat <- read.csv("./data/SVL2.csv")
 
 DisplayBgrd <- DisplayBgrd %>% 
                 filter(!BodyRegion == "botflank") %>% 
                 mutate(Background_pop = ifelse(Background2 == "own", Population, if_else(Background2 == "other" & Population == "Hawaii", "Kenya", "Hawaii"))) %>% 
                 as.data.frame() #exclude bottom flank.
 DisplayBgrd$BodyRegion <- factor(DisplayBgrd$BodyRegion) #updates levels for the variable BodyRegion
+
+# Filter out only Hawaiian and add in SVL for IDs
+DisplayBgrd <- DisplayBgrd %>% 
+               filter(Population == "Hawaii") %>% 
+               left_join(select(svl_dat, ID, SVL), by = "ID", keep = FALSE) %>% 
+               mutate(sc_svl = scale(SVL, scale = FALSE)) %>% 
+                filter(!is.na(SVL))
 
 ##########
 # Achromatic Contrast - dL
@@ -302,7 +310,7 @@ DisplayBgrd$BodyRegion <- factor(DisplayBgrd$BodyRegion) #updates levels for the
   # Here, we want to test if the conspicuousness of lizard signals is locally adapted to the specific background of the Kenyan and Hawaiian population. The predcition is simply that, if we were to place a Hawaiian animal against the Kenyan background that it would be far more conspicuous compared to if we place a Kenyan animal in a Hawaiian background. 
 
   # Fit the main effect model
-  DispBgrdAC <- lmer(dL ~ Population  + Background_pop  + (1|ID), data=DisplayBgrd)
+  DispBgrdAC <- lmer(dL ~ sc_svl  + Background_pop  + (1|ID), data=DisplayBgrd)
   summary(DispBgrdAC)
   
 
@@ -314,7 +322,7 @@ DisplayBgrd$BodyRegion <- factor(DisplayBgrd$BodyRegion) #updates levels for the
   background_AC_Disp <- Wald_test(DispBgrdAC, constraints = constrain_zero(3), 
                                   cluster = DisplayBgrd$ID, vcov = "CR2")
   
-  Population_AC_Disp <- Wald_test(DispBgrdAC, constraints = constrain_zero(2), 
+  svl_AC_Disp <- Wald_test(DispBgrdAC, constraints = constrain_zero(2), 
                                   cluster = DisplayBgrd$ID, vcov = "CR2")
   
   # Planned contrast. Fit the model in a slightly different way
@@ -384,6 +392,13 @@ CourtshipBgrd <- CourtshipBgrd %>%
                 as.data.frame() #exclude bottom flank.
 CourtshipBgrd$BodyRegion <- factor(CourtshipBgrd$BodyRegion)
 
+# Filter out only Hawaiian and add in SVL for IDs
+CourtshipBgrd <- CourtshipBgrd %>% 
+               filter(Population == "Hawaii") %>% 
+               left_join(select(svl_dat, ID, SVL), by = "ID", keep = FALSE) %>% 
+               mutate(sc_svl = scale(SVL, scale = FALSE)) %>% 
+               filter(!is.na(SVL))
+
 ##########
 ## Achromatic Contrast - dL
 ##########
@@ -391,7 +406,7 @@ CourtshipBgrd$BodyRegion <- factor(CourtshipBgrd$BodyRegion)
  # Here, we want to test if the conspicuousness of lizard signals is locally adapted to the specific background of the Kenyan and Hawaiian population. The predcition is simply that, if we were to place a Hawaiian animal against the Kenyan background that it would be far more conspicuous compared to if we place a Kenyan animal in a Hawaiian background. 
 
   # Fit main effects model
-    CourtshipAC <- lmer(dL ~ Population  + Background_pop  + (1|ID), data=CourtshipBgrd)
+    CourtshipAC <- lmer(dL ~ sc_svl  + Background_pop  + (1|ID), data=CourtshipBgrd)
     summary(CourtshipAC)
 
    # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
@@ -401,7 +416,7 @@ CourtshipBgrd$BodyRegion <- factor(CourtshipBgrd$BodyRegion)
            background_AC_Court <- Wald_test(CourtshipAC, constraints = constrain_zero(3), 
                                   cluster = CourtshipBgrd$ID, vcov = "CR2")
   
-           Population_AC_Court <- Wald_test(CourtshipAC, constraints = constrain_zero(2), 
+           svl_AC_Court <- Wald_test(CourtshipAC, constraints = constrain_zero(2), 
                                   cluster = CourtshipBgrd$ID, vcov = "CR2")
 
   # Planned contrasts / hypothesis tests. Need to fit model a little differently
@@ -428,7 +443,7 @@ CourtshipBgrd$BodyRegion <- factor(CourtshipBgrd$BodyRegion)
 
 
   # Fit main effect model
-      CourtshipCC <- lmer(dS ~ Population  + Background_pop  + (1|ID), data=CourtshipBgrd)
+      CourtshipCC <- lmer(dS ~ sc_svl  + Background_pop  + (1|ID), data=CourtshipBgrd)
       summary(CourtshipCC)
 
   # Robust variance esatimation to correct SE's for fixed effects given spectral curves are used multiple times for generating JNDs for each individuals data. 
@@ -439,7 +454,7 @@ CourtshipBgrd$BodyRegion <- factor(CourtshipBgrd$BodyRegion)
            background_CC_Court <- Wald_test(CourtshipCC, constraints = constrain_zero(3), 
                                   cluster = CourtshipBgrd$ID, vcov = "CR2")
   
-           Population_CC_Court <- Wald_test(CourtshipCC, constraints = constrain_zero(2), 
+           svl_CC_Court <- Wald_test(CourtshipCC, constraints = constrain_zero(2), 
                                   cluster = CourtshipBgrd$ID, vcov = "CR2")
 
   # Planned comparions
