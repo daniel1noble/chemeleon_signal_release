@@ -349,7 +349,7 @@ DisplayBgrd <- DisplayBgrd %>%
  # Here, we want to test if the conspicuousness of lizard signals is locally adapted to the specific background of the Kenyan and Hawaiian population. The predcition is simply that, if we were to place a Hawaiian animal against the Kenyan background that it would be far more conspicuous compared to if we place a Kenyan animal in a Hawaiian background. 
    
     # Fit the main effect model
-          DispBgrdCC <- lmer(dS ~ Population  + Background_pop  + (1|ID), data=DisplayBgrd)
+          DispBgrdCC <- lmer(dS ~ sc_svl + Background_pop  + (1|ID), data=DisplayBgrd)
           summary(DispBgrdCC)
  
     # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
@@ -359,7 +359,7 @@ DisplayBgrd <- DisplayBgrd %>%
         background_CC_Disp <- Wald_test(DispBgrdCC, constraints = constrain_zero(3), 
                                   cluster = DisplayBgrd$ID, vcov = "CR2")
   
-        Population_CC_Disp <- Wald_test(DispBgrdCC, constraints = constrain_zero(2), 
+        svl_CC_Disp <- Wald_test(DispBgrdCC, constraints = constrain_zero(2), 
                                   cluster = DisplayBgrd$ID, vcov = "CR2")
       
     # Planned contrasts. Refit model in slight different form
