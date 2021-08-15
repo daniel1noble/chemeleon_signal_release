@@ -409,6 +409,18 @@ CourtshipBgrd$BodyRegion <- factor(CourtshipBgrd$BodyRegion)
 
 ```
 
+# Invasive chameleons released from predation display more conspicuous colors 
+Martin J. Whiting, Brenden S. Holland, J. Scott Keogh, Daniel W.A.Noble, Katrina J. Rankin and Devi M. Stuart-Fox
+
+Correspondance: Martin J. Whiting
+Email: Martin.Whiting@mq.edu.au
+
+The file includes:
+Supplementary text
+Figures S1 -- Sx
+Tables S1 -- Sx
+Supplementary References
+
 # Expanded Hypotheses and Predictions
 
 We provided an expanded table of hypotheses and associated predictions. We also identify the data needed to test these predictions.
@@ -423,12 +435,15 @@ We provided an expanded table of hypotheses and associated predictions. We also 
   hyp2
 ```
 
+# Potential bird predators of chameleons on Oahu
+We are not aware of any evidence of bird predation of chameleons on Oahu. We examined the checklist of the birds of Oahu to determine if any species were potential predators of chameleons @RN1. Among the larger, predatory birds, three are owls (*Asio flammeus*, *Bubo scandiacus*, *Tyto alba*) that are highly unlikely to feed on chameleons because they are either mostly or entirely nocturnal, extremely rare on Oahu, or feed mostly on rodents and/or birds @RN2. Smaller raptors include the Merlin (*Falco columbarius*), which is considered rare and feeds on small birds in more open habitats while the peregrine falcon (*Falco peregrinus*) is a predator of medium-sized birds and also considered rare @RN2. There are also seven species of egret and heron, which typically have generalist diets. Of these, six are considered rare or accidental @RN1, are associated with water bodies, and better known for eating fishes @RN3. The cattle egret (*Bubulcus ibis*) is a generalist predator that is mostly insectivorous but does eat lizards opportunistically [@RN4;@RN5]. However, it forages on the ground in more open habitats, often following domestic animals @RN5 and therefore, is highly unlikely to encounter chameleons. Among other potential predators, the Hawaiian Hawk or ʻio (*Buteo solitarius*) is restricted to the Big Island while the Hen Harrier (*Circus cyaneus*) is considered an accidental or rare visitor to the Hawaiian islands. Finally, among corvids, the Hawaiian crow (*Corvus hawaiiensis*) is extinct in the wild while the common raven (*Corvus corax*) is rare @RN1. In summary, we could not identify any bird species that could be regarded as a major predator of chameleons.
+
 # Supplemental Materials and Methods
 ## Study area and collection of chameleons
 
-We collected most chameleons (Fig. \@ref(fig:Figcolsig)) at night by spotlighting, and a small proportion of individuals during the day. When chameleons were beyond reach, we used 4-m extensible poles that chameleons could be encouraged to step on to, before lowering them to the ground. We then placed them in cotton bags with vegetation to cling to, before returning them to the lab. Field work was conducted in Hawaii during January-February 2006 and in Kenya during 5-13 April 2006. In Hawaii, chameleons were collected from a single population in the Manoa Valley, Oahu, accessible along Tantalus and Roundtop Drives at an elevation of ca. 400-600m. The vegetation in this area consisted of closed-canopy, mid-elevation tropical rain forest, with extensive vines and undergrowth (Fig. \@ref(fig:Figcolsig2)A,B). Most of the plants in this area were nonnative, and chameleons also occurred in hedge-grows and stands of bamboo. The area experiences high annual rainfall (mean: ca. 1500 mm) @RN1 and the mean annual temperature is 22-24&deg;C @RN2. In Kenya, field work was conducted near the foothills of Mt. Kenya, close to the town of Runyenjes. The area is partially cleared for agriculture, leaving small stands of forest. The vegetation was a mix of native trees and shrubs interspersed with exotic species (Fig. \@ref(fig:Figcolsig2)C,D). Mean annual temperature is 20.2&deg;C (mean max: 24.8&deg;C) and the mean annual rainfall is 121 mm @RN3. 
+We collected most chameleons at night by spotlighting, and a small proportion of individuals during the day. When chameleons were beyond reach, we used 4 m extensible poles that chameleons could be encouraged to step on to, before lowering them to the ground. We then placed them in cotton bags with vegetation to cling to, before returning them to the lab. We measured snout-vent length (SVL), a standard measure of body size in lizards, from the tip of the snout to the posterior edge of the vent using a plastic ruler to the nearest 1 mm. Field work was conducted in Hawaii during January-February 2006 and in Kenya during 5-13 April 2006. In Hawaii, chameleons were collected from a single population in the Manoa Valley, Oahu, accessible along Tantalus and Roundtop Drives at an elevation of ca. 400-600 m. The vegetation in this area consisted of closed-canopy, mid-elevation tropical rain forest, with extensive vines and undergrowth  (Fig. \@ref(fig:Figcolsig2)A,B). Most of the plants in this area were non-native, and chameleons also occurred in hedge-grows and stands of bamboo. The area experiences high annual rainfall (mean: ca. 1500 mm) @RN6 and the mean annual temperature is 22-24°C @RN7. In Kenya, field work was conducted near the foothills of Mt. Kenya, close to the town of Runyenjes. The area is partially cleared for agriculture, leaving small stands of forest. The vegetation was a mix of native trees and shrubs interspersed with exotic species (Fig. \@ref(fig:Figcolsig2)C,D). Mean annual temperature is 20.2°C (mean max: 24.8°C) and the mean annual rainfall is 121 mm @RN8.
 
-```{r Figcolsig, fig.align = 'center', fig.cap = "Additional examples of chameleon color signals and behavior in response to different social contexts. (A) Two different males in conspicuous display color adopted at the start of a contest and retained by the dominant male. (B) Two examples of males engaged in horn locking. Males in the bottom plane are evenly matched at this stage and both are in full display colour. In the top image, the male on the left is starting to change to a subordinate color. (C) Conspicuous lemon-yellow male courtship color. In this case, the female is in a neutral state. When females reject males they develop a heavily contrasting pattern."}
+```{r Figcolsig, fig.align = 'center', fig.cap = "**Additional examples of chameleon color signals and behavior in response to different social contexts**. **(A)** Two different males in conspicuous display color adopted at the start of a contest and retained by the dominant male. **(B)** Two examples of males engaged in horn locking. Males in the bottom plane are evenly matched at this stage and both are in full display color. In the top image, the male on the left is starting to change to a subordinate color. **(C)** Conspicuous yellow-green male courtship color. When females reject males, they develop a heavily contrasting pattern."}
 figs1 <- image_read("./output/figures/FigS1.png")
 figs1
 
@@ -441,28 +456,28 @@ figs2
 ```
 
 ## Behavioral trials
+In order to quantify display coloration, we staged encounters between conspecifics (male-male and male-female) and model predators (bird and snake) and measured their subsequent display coloration (details below). All chameleons were used in both predator and social trials although in some cases we were unable to quantify all social signals for a particular individual. We conducted all conspecific-social trials first, in case anti-predator trials unduly influenced their social interactions. Behavioral trials were conducted during the chameleons’ natural activity period (09:00-16:00 h) beginning the day following capture and continuing over a 2-3 day period. We erected a frame consisting of branches from the chameleons’ environment that were tied together in a triangle and which sat atop three vertical branches that formed a stand. This structure was about 1.5 m high and each arm was approximately 60 cm. The triangular setup allowed chameleons to display at a comfortable distance, and if necessary, to escape from aggressive interactions, particularly during male-male trials (Fig. \@ref(fig:Figcolsig4)). All trials were conducted outdoors, but in the shade under the cover of a roof, with vegetation nearby, to simulate their natural environment. The signaling environment was therefore the same for all animals.
 
-In order to quantify display coloration we staged encounters between conspecifics (male-male and male-female) and model (bird and snake) predators and measured their subsequent display coloration (details below). All chameleons were used in both predator and social trials although in some cases we were unable to quantify all social signals for a particular individual. We conducted all conspecific-social trials first, in case anti-predator trials unduly influenced their social interactions. Behavioral trials were conducted during the chameleons’ natural activity period (09:00-16:00 h) beginning the day following capture and continuing over a 2-3 day period. We erected a frame consisting of branches from the chameleons’ environment that were tied together in a triangle and which sat atop three vertical branches that formed a stand. This structure was about 1.5 m high and each arm was approximately 60 cm. The triangular setup allowed chameleons to display at a comfortable distance and also to escape from aggressive interactions, particularly during male-male trials (Fig. \@ref(fig:Figcolsig4)). All trials were conducted outdoors, but in the shade under the cover of a roof, with vegetation nearby, to simulate their natural environment. The signalling environment was therefore the same for all animals.
-
-```{r Figcolsig3, fig.align = 'center', fig.cap = "The experimental setup for behavioral trials. We constructed a platform of three connected horizontal perches in a triangle, thereby always allowing an individual to escape a rival or if a female, a courting male. The male on the left won this contest and is in full display color while the male on the right has lost this contest and turned brown (subordinate)."}
+```{r Figcolsig3, fig.align = 'center', fig.cap = "**The experimental setup for behavioral trials**. We constructed a platform of three connected horizontal perches in a triangle, thereby always allowing an individual to escape a rival or if a female, a courting male. The male on the left won this contest and is in full display color while the male on the right has lost this contest and turned brown (subordinate)."}
 figs3 <- image_read("./output/figures/FigS3.jpg")
 figs3
 
 ```
+We staged trials between males to elicit dominant and subordinate displays and between males and females to elicit courtship displays. This consisted of placing two chameleons at a comfortable distance at which point they typically responded to the conspecific’s presence by rapidly changing color and behavior (Fig. \@ref(fig:Figcolsig)A,B). In male-male trials both individuals would adopt a lemon-yellow display coloration and advance towards each other. This would be accompanied by head shakes and would lead to horn-locking (Fig. \@ref(fig:Figcolsig)B) if males were not obviously asymmetric. Once dominance was settled, the subordinate would turn brown (Fig. \@ref(fig:Figcolsig)B and Fig. 3) and flee. In male-female (courtship) trials, males would turn the same lemon-yellow and approach the female while head shaking and rocking (Fig. \@ref(fig:Figcolsig)C). The day following social trials we presented each chameleon with a snake (Fig. \@ref(fig:Figcolsig4)A) and bird (Fig. \@ref(fig:Figcolsig4)B) model predator (separately). Lizards were drawn at random and the order of presentation (snake or bird first) was random. Both trials were conducted on the same day but were separated by at least three hours. A trial began when a chameleon was removed from its cloth bag and placed on the triangular stand. In the case of the snake model, one of us slowly moved the model snake towards the chameleon from both above and below it, without ever contacting the chameleon, in a standardized fashion (Fig. \@ref(fig:Figcolsig4)A). In the case of the bird trials, the bird was attached to an ca. 2 m wooden pole and was ‘flown’ past the chameleon from above and below it (Fig. \@ref(fig:Figcolsig4)B). Trials lasted no more than 2-min and we scored whether the chameleon flipped to the opposite side of the branch, which is a classic anti-predator behavior by chameleons. Once chameleons changed color, we quantified their spectral reflectance (details below). We also conducted seven trials with a just a branch with no predator attached, as a control for the model predator. The snake model was molded from a dead boomslang (*Dispholidus typus*) and painted by a professional artist to resemble a typical green form of this species (previously used in [@RN9;@RN10]). The bird was a mounted African cuckoo-hawk (*Aviceda cuculoides*).
 
-We staged trials between males to elicit dominant and subordinate displays and between males and females to elicit courtship displays. This consisted of placing two chameleons at a comfortable distance at which point they typically responded to the conspecific’s presence by rapidly changing colour and behaviour (Fig. \@ref(fig:Figcolsig)A,B). In male-male trials both individuals would adopt a lemon-yellow display coloration and advance towards each other. This would be accompanied by head shakes and would lead to horn-locking (Fig. \@ref(fig:Figcolsig)B) if males were not obviously asymmetric. Once dominance was settled, the subordinate would turn brown (Fig. \@ref(fig:Figcolsig)B) and flee. In male-female (courtship) trials, males would turn the same lemon-yellow and approach the female while head shaking and rocking (Fig. \@ref(fig:Figcolsig)C). The day following social trials we presented each chameleon with a snake (Fig. \@ref(fig:Figcolsig4)A) and bird (Fig. \@ref(fig:Figcolsig4)B) model predator (separately). Lizards were drawn at random and the order of presentation (snake or bird first) was random. Both trials were conducted on the same day but were separated by at least three hours. A trial began when a chameleon was removed from its cloth bag and placed on the triangular stand. At this point the lizard was in a neutral color state. In the case of the snake model, one of us slowly moved the model snake towards the chameleon from both above and below it, without ever contacting the chameleon, in a standardized fashion (Fig. \@ref(fig:Figcolsig4)A). In the case of the bird trials, the bird was attached to an ca. 2 m wooden pole and was ‘flown’ past the chameleon from above and below it (Fig. \@ref(fig:Figcolsig4)B). Trials lasted no more than 2-min and we scored whether the chameleon flipped to the opposite side of the branch, which is a classic anti-predator behavior by chameleons. Once chameleons changed color, we quantified their spectral reflectance following the same procedure described for social trials. We also conducted seven trials with a just a branch with no predator attached, as a control for the model predator. The snake model was molded from a dead boomslang (*Dispholidus typus*) and painted by a professional artist to resemble a typical green form of this species (previously used in [@RN6;@RN7]). The bird was a mounted African cuckoo-hawk (*Aviceda cuculoides*).
-
-```{r Figcolsig4, fig.align = 'center', fig.width = 12, fig.height = 12, fig.cap = "We presented chameleons with model snake and bird predators to elicit an anti-predator response, particularly, color change, to test the hypothesis that character release in Hawaii would also result in a signal more conspicuous to a predator. (A) A model snake (Dispholidus typus) causing a characteristic contrasting color change and (B) a model bird (Aviceda cuculoides) which was flown over the top of the chameleon."}
+```{r Figcolsig4, fig.align = 'center', fig.width = 12, fig.height = 12, fig.cap = "**We presented chameleons with model snake and bird predators to elicit an anti-predator response, particularly, color change, to test the hypothesis that character release in Hawaii would also result in a signal more conspicuous to a predator**. **(A)** A model snake (*Dispholidus typus*) causing a characteristic contrasting color change and **(B)** a model bird (*Aviceda cuculoides*) which was flown over the top of the chameleon"}
 figs4 <- image_read("./output/figures/FigS4.jpg")
 figs4
 
 ```
 
-## Spectroradiometry, habitat background and irradiance
+## Color measurement
 
-During all behavior trials, we measured the color of each body region (Fig. \@ref(fig:Figcolsig5)) once only, because chameleons change color rapidly and we had to reduce the handling stress to the animal. Patches were measured in random sequence to avoid any bias of order. When a chameleon had completely changed color (to a human observer) and was also performing typical behavior associated with their display (e.g., head shakes, swaying, gaping, rapid approach or flee) we lightly restrained it with one hand, without removing it from its perch, and measured spectral reflectance using a 1.2 m bifurcated probe connected to an Ocean Optics USB-2000 optic spectrophotometer and a PX2 light source. We used an Ocean Optics RPH-1 probe-holder which we placed in contact with the animal at a standard angle (45&deg; @RN2) and distance (5 mm), thereby excluding ambient light. All measurements were relative to a dark, and a certified 99% white reflectance standard. When chameleons started to change color in response to our handling we stopped measuring color and allowed them to continue a social trial before continuing to measure spectral reflectance. In the case of a predator trial we would once again present them with the predator model until they returned to their anti-predator display. This system worked effectively because chameleons readily responded to social and anti-predator stimuli and quickly returned to natural behavior following handling.
+During all behavior trials, we measured the color of each of three body regions: top flank, mid flank, tail base and gular region (Fig. \@ref(fig:Figcolsig5)). We measured each body region once only, because chameleons change color rapidly and we had to reduce the handling stress to the animal. The four body regions were measured in random sequence to avoid any bias of order. When a chameleon had completely changed color (to a human observer) and was also performing typical behavior associated with their display (e.g., head shakes, swaying, gaping, rapid approach or flee) we lightly restrained it with one hand, without removing it from its perch, and measured spectral reflectance using a 1.2 m bifurcated probe connected to an Ocean Optics USB-2000 spectrophotometer and a PX2 light source. We used an Ocean Optics RPH-1 probe-holder which we placed in contact with the animal. The probe holder ensured that measurements were taken at a standard angle (45°) and distance (5 mm) for a 3 x 5 mm area and excluded all ambient light. All measurements were relative to a dark, and a certified 99% white reflectance standard (Labsphere, North Sutton, NH, U.S.A.). If chameleons started to change color in response to our handling, we returned them to the branch and allowed them to continue a social trial before measuring reflectance of remaining body regions. In the case of a predator trial, we would once again present them with the predator model until they returned to their anti-predator display. This system worked effectively because chameleons readily responded to social and anti-predator stimuli and quickly returned to natural behavior following handling.
 
-We quantified the background against which chameleons signal by measuring the spectral reflectance of vegetation in their signalling environment. This included 1.) the upper surface of leaves; 2.) the underside of leaves; and 3.) stems We also measured the habitat light environment by recording irradiance in the chameleons environment. Measurements were taken parallel to the ground (side-welling irradiance) to mimic signaling conditions for chameleons—light illuminating the chameleon’s flank is more likely to play a role in signaling @RN8. 
+We obtained spectral reflectance measurements of male dominant color state in male-male contests for 34 individuals from Hawaii and 35 from Kenya, courtship color state for 25 individuals from Hawaii and 32 from Kenya; color state in response to the bird for 56 individuals from Hawaii and 23 from Kenya and color state in response to the snake for 59 individuals from Hawaii and 38 from Kenya.
+
+We quantified the background against which chameleons signal by measuring the spectral reflectance of vegetation in their signaling environment. We took 120 reflectance measures of the background at each location (Hawaii and Kenya), comprising 40 measurements of the top surface of leaves, 40 of the bottom surface of leaves and 40 stems and branches of suitable width for chameleons. To reduce the number of backgrounds, we averaged the reflectance of the 20 darker measurements and 20 lighter measurements for each of the top leaf and bottom leaf measurements and averaged brown stems and green stems. This resulted in 6 average background spectra for each location, representing the range of background colors.
 
 ```{r Figcolsig5, fig.align = 'center', fig.width = 12, fig.height = 12, fig.cap = "Location of body regions we measured for spectral reflectance. See details in text."}
 figs5 <- image_read("./output/figures/FigS5.jpg")
@@ -472,18 +487,53 @@ figs5
 
 ## Visual modelling
 
-We first smoothed all spectral reflectance files by a factor of 0.16 using the plotsmooth function in Pavo (vers 1.0). We then lifted negative reflectance spectra by the factor they were negative by, thereby maintaining the shape of the curve. We also took the median reflectance for all leaves (top, bottom) and stems (2 measures/stem) for each population (Hawaii, Kenya), and for irradiance. 
+We visualized and quality-checked all spectra, adjusted very minor negative reflectance values caused by electrical noise by lifting the curves by the maximum negative value, then smoothed all spectra with LOESS smoothing of 0.16 using the plotsmooth function in Pavo 1.0 @RN29. We also took the median reflectance for all leaves (top, bottom) and stems (2 measures/stem) for each population (Hawaii, Kenya), and for irradiance. 
 
-We used visual modelling to determine how conspicuous a chameleon would appear to both a conspecific receiver and a predator (bird and snake) using the Vorobyev-Osario (V-O) receptor noise model @RN9. The V-O model calculates perceptual distance (∆S) between two color patches in units of just noticeable differences (JNDs). A difference of at least 1 JND is thought to enable a receiver to discriminate two colors @RN10. We calculated JNDs for chromatic- and achromatic contrast for all body regions combined (overall conspicuousness) and for individual body regions in order to compare conspicuousness as a function of population (Hawaii, Kenya) or predator (bird, snake) in relation to background (vegetation). The receptor noise model incorporates the median reflectance of background color, irradiance, chameleon spectral reflectance and visual pigment absorbance functions for the Jackson’s chameleon (Loew unpubl. data), birds, and the garter snake @RN11.   
+We modelled how conspicuous a chameleon would appear to both a conspecific receiver and a predator (bird and snake) using the using the receptor-noise limited (RNL) model [@RN27; @RN28] implemented in the R package ‘pavo’ @RN29. This model assumes that color discrimination is limited only by photoreceptor noise and does not account for potential effects of neural processing. Color contrasts are expressed in units of just-noticeable-differences (JND), where 1 JND is the theoretical threshold of color discrimination for stimuli viewed simultaneously under ideal viewing conditions @RN17. Under natural conditions, discrimination thresholds are likely to be >1 and vary depending on the species and conditions [@RN12;@RN13; @RN14]. Additionally, perceived conspicuousness may not scale linearly with color distance (JNDs) @RN15. Nevertheless, the models provide a reasonable approximation of relative conspicuousness that can be compared between populations and trial types (social and predator). 
+
+We calculated JNDs for chromatic and luminance contrast against each of the relevant backgrounds for each body region for each color state, based on the visual system of the relevant receiver (chameleon, bird, snake; see below). We first calculated the quantum catch of each photoreceptor under standard daylight illumination (D65; Commission internationale de l’éclairage – CIE) using the ‘vismodel’ function. We applied von Kries chromatic adaptation (vonkries = TRUE) and used the average background reflectance of the relevant background (Hawaii or Kenya) as the adapting background. The signal in each photoreceptor class was proportional to the natural logarithm of the quantum catch, in accordance with Fechner's law (“fi” in pavo). Next, we calculated the chromatic contrast between pairs of spectra using the function ‘coldist’. 
+
+The visual models require information on the spectral sensitivities and photoreceptor noise (Weber fraction), which is a function of the relative density of each photoreceptor type within the retina, for the relevant receiver. Chameleons have four spectral classes of single cone enabling tetrachromatic vision @RN16. We used spectral sensitivities for the congeneric flap-necked chameleon (*Chameleo dilepis*) @RN16 and a standard Weber fraction of 0.1 @RN17 to account for the receptor noise of the LWS photoreceptor. We calculated noise for the other photoreceptor classes using the relative photoreceptor ratio of 1: 1.6: 3.3: 3.2 for the four single cones (UVS, SWS, MWS, and LWS, respectively). *Chameleo dilepis* and other chameleons appear to have two populations of MWS cones ($\lambda_{max}$ 481 nm, 497 nm) and three populations of LWS cones ($\lambda_{max}$ 568 nm, 584 nm, 605 nm) so we used a combined sensitivity function for the MWS and LWS cones (Fig. \@ref(fig:Figcolsig6SPec)).
+
+```{r Figcolsig6SPec, fig.align = 'center', fig.width = 12, fig.height = 12, fig.cap = "**Spectral sensitivities of chameleons (A), snake (B) and bird (C) used for visual models (details in text)**."}
+figs5 <- image_read("./output/figures/FigS5.jpg")
+figs5
+```
+
+For birds, we used an ultraviolet sensitive (UVS) visual system @RN18 characteristic of raptors and other birds of prey @RN19. A Weber fraction of 0.06 was used for the LWS photoreceptor based on the most recent empirical measurement @RN20. We used a relative photoreceptor ratio of 1:2:3.4:3 for the UVS, SWS, MWS, and LWS photoreceptors respectively, which represent average values for UVS birds @RN21. 
+
+For snakes, we assumed a trichromatic visual system characteristic of active diurnal snake species, represented by the spectral sensitivities for the garter snake @RN22. We used a Weber fraction of 0.1 for the LWS photoreceptor and a relative photoreceptor ratio of 1:1.6:7.3 for the UVS, SWS, MWS, and LWS photoreceptors, respectively @RN22.
+
+In each case, visual pigment absorbance curves were multiplied by the transmission spectra of ocular media (lens and cornea) and oil droplets associated with the corresponding photoreceptor class and normalized to equal area under the curve to satisfy the assumption of equal stimulation by white light @RN18.  
+
+Luminance contrast was calculated using the sensitivity function for the LWS photoreceptor (with transmission of the oil droplet associated with the double cone in chameleons and birds) for each visual system, assuming a Weber fraction of 0.05 because double cones used for luminance perception in birds and chameleons are by far the most abundant photoreceptor type in the retina [@RN16; @RN23].
 
 ## Statistical Analysis
 
-Chromatic and achromatic contrast from visual models, measured in just noticeable differences (JNDs), were analyzed using linear mixed effects models in R using the `lme4` package @RN4 in combination with the package `clubSandwich` @RN5. For all individuals, we measured signals for multiple body regions, each of which were contrasted between multiple background measurements (i.e., top and bottoms of two leaves and two stems). While we present sensitivity analyses for all body regions (see below - *Additional Supplemental Results*), we were mainly interested in overall signal differences displayed by chameleons. As such, for our main analyses we averaged estimates (marginalized) across these body regions and background environments given that in many cases body regions showed remarkably similar effects (see *Additional Supplemental Results*). In all cases, our results and conclusions were not impacted (see supplementary code). Deriving multiple contrasts for each individual body region and background, however, resulted in a substantial number of comparisons, each of which were not completely independent of each other. To ensure that non-independence of data did not impact our inferences we used a Robust Variance Estimator (RVE) (using our final models to correct standard errors) and a Satterthwaite degrees of freedom correction. Across the different contexts (i.e., social contexts, predation, and background environments), chromatic and achromatic contrasts were analyzed in separate models as response variables. For analyses involving social context, we included z-transformed snout-vent length (SVL), population of origin, and their interaction as fixed effects. For models involving predatory contexts and visual systems, we included the predator type (i.e, snake or bird), population of origin and their interaction as fixed effects. Finally, to test local adaptation, we used only chameleons from Hawaii and tested the extent to which chromatic and achromatic contrast varied depending on whether Hawaiian signals were observed on a native Kenyan background or their current introduced habitat background in Hawaii. Relevant model interactions were first tested using Wald tests. If found to be non-significant (p > 0.1) we dropped the interaction and fitted a main effects model. We then tested the significance of the main effect of 'Population', 'Predator' or 'Background' (depending on the model) using Wald tests with robust variance estimators and a Satterthwaite degrees of freedom correction.  
+Chromatic and luminance contrast from visual models, measured in just noticeable differences (JNDs), were analyzed using linear mixed effects models in R using the `lme4` package @RN24 in combination with the package `clubSandwich` @RN25. For each individual, measurements for each body region (top flank, mid-flank, tail base and gular region) were contrasted against each of six average background spectra (i.e., average top and bottom of lighter leaves, average top and bottom of darker leaves, average green and average brown stems). While we present sensitivity analyses for all body regions (see below - *Additional Supplemental Results*), we were mainly interested in overall signal differences displayed by chameleons. As such, for our main analyses we averaged estimates (marginalized) across these body regions and background environments given that in many cases body regions showed remarkably similar effects (see *Additional Supplemental Results*). In all cases, our results and conclusions were not impacted (see supplementary code). Deriving multiple contrasts for each individual body region and background, however, resulted in a substantial number of comparisons, each of which were not completely independent of each other. To ensure that non-independence of data did not impact our inferences, we included individual ID as a random effect to account for repeated measures on each individual and used a Robust Variance Estimator (RVE) (using our final models to correct standard errors) and a Satterthwaite degrees of freedom correction.
+
+First, we tested whether Hawaiian chameleons were more conspicuous (as perceived by chameleons) in social contexts than Kenyan chameleons. We ran separate linear models with chromatic and luminance contrast of male display or courtship coloration against the local background as the response variable. We included population of origin and z-transformed snout-vent length (SVL) as fixed effects. Next, we tested whether Kenyan chameleons were more cryptic (less conspicuous against the local background) in response to predators. For these models, chromatic or luminance contrast against the local background (as perceived by the corresponding predator type) was the response variable and predator type (i.e, snake or bird), population of origin (Hawaii or Kenya) and their interaction were fixed effects. Finally, to evaluate evidence for local adaptation, we tested whether the chromatic or luminance contrast of Hawaiian chameleons during social interactions (male-male and male-female) varied depending on whether contrast was against a native Kenyan background or their current introduced habitat background in Hawaii. For all models, interaction terms were first tested using Wald tests. If found to be non-significant (p > 0.1) we dropped the interaction and fitted a main effects model. We then tested the significance of the main effects using Wald tests with robust variance estimators and a Satterthwaite degrees of freedom correction. 
 
 # Supplemental Results
+## Body Size Comparisons between Hawaii and Kenya
+```{r svl, results = "hide"}
+SVLdat <- read.table("data/SVL2.csv", 
+                        header=TRUE, sep=",", dec=".", strip.white=TRUE)
+SVLdat$SVL2 <- with(SVLdat, scale(SVL))
+
+# Fit the model
+SVL_pop <- t.test(SVL ~ Population, data=SVLdat)
+summary(SVL_pop)
+
+# Body size
+svl <- data.frame(SVLdat %>% group_by(Population) %>% summarise(mean = mean(SVL), sd = sd(SVL), n = n()))
+
+```
+Of the individuals used in social interactions (male-male display or male courtship), chameleons from Kenya were significantly larger than those from Hawaii (mean ± standard deviation Hawaii: `r svl[1,"mean"]`$\pm$ `r svl[1,"sd"]` mm, N = `r svl[1,"n"]`; Kenya `r svl[2,"mean"]`$\pm$ `r svl[2,"sd"]`, N = `r svl[2,"n"]` mm; t = `r SVL_pop$statistic`, p <0.001). SVL did not significantly predict luminance contrast against the background; thus the higher luminance contrast of Hawaiian chameleons during male-male contests and courtship cannot be explained by body size differences between the population. SVL was a weak predictor of chromatic contrast: larger chameleons had slightly higher chromatic contrast against the background. However, the populations did not differ in chromatic contrast during male displays (courtship and contests).
+
 ## Supporting Supplementary Tables for Main Text
 
-```{r table1, fig.width = 8, fig.height = 1, fig.asp = 0.1136364, tab.cap = "Model estimates, standard errors (SE), Satterthwaite degrees of freedom (df) and 95% confidence internals (95% CI) comparing achromatic and chromatic mean differences between Kenyan and Hawaiian lizards in two social contexts (Male-Male Competition and Courtship). Standard errors are corrected by using robust variance estimators. "}
+```{r table1, fig.width = 8, fig.height = 1, fig.asp = 0.1136364, tab.cap = "**Results of models comparing mean differences between Kenyan and Hawaiian lizards in luminance and chromatic contrast against the local background in two social contexts (male-male competition and courtship)**. Model estimates, standard errors (SE), Satterthwaite degrees of freedom (df) and 95% confidence internals (95% CI). Standard errors are corrected by using robust variance estimators "}
 source("./R/func.R")
 final_T1 <-  read.csv(file = "./output/tables/Table1_MS.csv")
   
@@ -493,7 +543,7 @@ final_T1 <-  read.csv(file = "./output/tables/Table1_MS.csv")
  
 ```
 
-```{r table2, fig.width = 8, fig.height = 1, fig.asp = 0.1136364, tab.cap = "Model estimates, standard errors (SE), Satterthwaite degrees of freedom (df) and 95% confidence internals (95% CI) comparing achromatic and chromatic mean differences between Kenyan and Hawaiian lizards for snakes and lizards. Full models are provided and standard errors are corrected by using robust variance estimators."}
+```{r table2, fig.width = 8, fig.height = 1, fig.asp = 0.1136364, tab.cap = "**Results of models comparing luminance and chromatic mean differences between Kenyan and Hawaiian lizards in response to snakes and birds**. Model estimates, standard errors (SE), Satterthwaite degrees of freedom (df) and 95% confidence internals (95% CI). Full models are provided and standard errors are corrected by using robust variance estimators."}
   final_T2 <- read.csv(file = "./output/tables/Table2_MS.csv")
   # Table
  table2 <- flextable(final_T2) %>%
@@ -502,14 +552,14 @@ final_T1 <-  read.csv(file = "./output/tables/Table1_MS.csv")
  table2
 ```
 
-```{r table3, fig.width = 9, fig.height = 1, fig.asp = 0.1136364, tab.cap = "Planned contrasts between mean achromatic and chormatic contrast in Hawaii and Kenya for both predators (snakes and birds). Estimates of the mean difference ebtween Hawaii and Kenya propulations are provided along with their 95% confidence intervals (95% CI lower and upper). Wald tests of contrast significance are provided (F, degrees of freedom (df) and associated p-value).  We also applied a Bonferroni correction to p-value to control for multiple comparisons."}
+```{r table3, fig.width = 9, fig.height = 1, fig.asp = 0.1136364, tab.cap = "**Planned contrasts between mean luminance and chromatic contrast in Hawaii and Kenya for both predators (snakes and birds)**. Estimates of the mean difference ebtween Hawaii and Kenya propulations are provided along with their 95% confidence intervals (95% CI lower and upper). Wald tests of contrast significance are provided (F, degrees of freedom (df) and associated p-value).  We also applied a Bonferroni correction to p-value to control for multiple comparisons."}
  contrast <- read.csv(file = "./output/tables/Table3_MS.csv")
  table3 <- flextable(contrast) %>% table_style8() %>% fit_to_width(max_width = 7)
  table3
 ```
 
 
-```{r table4, fig.width = 9, fig.height = 1, fig.asp = 0.1136364, tab.cap = "Model estimates (mean and contrasts), standard error (SE), degrees of freedom (df) and 95% confidence intervals (95% CI) for comparing achromatic and chromatic contrast of Hawaiian lizards against their introduced Hawaiian background (intercept) and Hawaiian lizards against their native Kenyan background (Background = Kenya) in both social contexts (Male-male competition and Courtship). Models were fit using robust variance estaimators to correct standard errors for non-independence, and we used a Saitterwaite degrees of freedom. Significance parameter estimates are those where 95% CI does not include zero."}
+```{r table4, fig.width = 9, fig.height = 1, fig.asp = 0.1136364, tab.cap = "**Results of models comparing luminance and chromatic contrast of Hawaiian lizards against their introduced Hawaiian background (intercept) and Hawaiian lizards against their native Kenyan background (background = Kenya) in both social contexts (male-male competition and courtship)**. Model estimates (mean and contrasts), standard error (SE), degrees of freedom (df) and 95% confidence intervals (95% CI) for Models were fit using robust variance estimators to correct standard errors for non-independence, and we used a Saitterwaite degrees of freedom. Significant parameter estimates are those where the 95% CIs do not include zero."}
  tb4 <- read.csv(file = "./output/tables/Table4_MS.csv")
  table4 <- flextable(tb4) %>% table_style9() %>% fit_to_width(max_width = 7)
  table4
@@ -552,7 +602,7 @@ p3 <- ggplot(summary_data_pred, aes(x = Population, y = Mean_dL, group = BodyReg
   geom_line(position = position_dodge(width=0.5)) + 
   scale_color_manual(values = wes_palette("Cavalcanti1")) + #Change color palette here see: https://github.com/karthik/wesanderson
   xlab("") + 
-  ylab("Achromatic contrast (JND)") +
+  ylab("Luminance contrast (JND)") +
   theme_bw() +
   labs(color = "Body Region") + 
   theme(legend.position = c(0.90, 0.85), 
@@ -595,7 +645,7 @@ plot_grid(p4, p3, nrow = 2, ncol = 1, labels = c("A", "B"), label_size = 30,
 fulltableP <- rbind(Wald_table_PredatorAC,
                     Wald_table_PredatorCC)
 
-fulltableP <- fulltableP %>% mutate(JND = c("Achromatic Contrast", rep("",4), "Chromatc Contrast", rep("",4)),
+fulltableP <- fulltableP %>% mutate(JND = c("Luminance Contrast", rep("",4), "Chromatc Contrast", rep("",4)),
                                             p_val = sapply(p_val, function(x) p_value(x))) %>% 
                                       select(JND, Variable, Fstat, df_num, df_denom, p_val)
 
@@ -608,7 +658,7 @@ S4
 robust_sc_pred_table <- rbind(robust_PredatorAC,
                          robust_PredatorCC) %>% 
                     mutate(p_Satt = sapply(p_Satt, function(x) p_value(x)),
-                           JND = c("Achromatic Contrast", rep("", 9), 
+                           JND = c("Luminance Contrast", rep("", 9), 
                                    "Chromatic Contrast", rep("", 9)))
 
 robust_sc_pred_table$parameter <- rownames(robust_sc_pred_table)
@@ -757,7 +807,7 @@ pS4.2 <- ggplot(courtship_summary, aes(x = Background_pop, y = Mean_dL, color = 
   geom_line(position = position_dodge(width=0.5)) + 
   scale_color_manual(values = wes_palette("Cavalcanti1")) + #Change color palette here see: https://github.com/karthik/wesanderson
   xlab("Background Environment") + 
-  ylab("Achromatic contrast (JND)") +
+  ylab("Luminance contrast (JND)") +
   theme_bw() +
   labs(colour = "Body Region") +
   theme(legend.position = "none",
@@ -774,7 +824,7 @@ pS4.3 <- ggplot(display_summary, aes(x = Background_pop, y = Mean_dL, group = Bo
   geom_line(position = position_dodge(width=0.5)) + 
   scale_color_manual(values = wes_palette("Cavalcanti1")) + #Change color palette here see: https://github.com/karthik/wesanderson
   xlab("Background Environment") + 
-  ylab("Achromatic contrast (JND)") +
+  ylab("Luminance contrast (JND)") +
   theme_bw() +
   theme(legend.position = c(0.80, 0.85),
     panel.grid.major = element_blank(), 
@@ -817,8 +867,8 @@ rownames(table7) <- NULL
 
 table7 <- table7 %>% 
               mutate(Context = c("Male-Male Display", rep("", 12), "Courtship Display", rep("", 12)),
-                     JND = c("Achromatic Contrast", rep("", 4), "Chromatic Contrast", rep("", 7), 
-                             "Achromatic Contrast", rep("", 4), "Chromatic Contrast", rep("", 7))) %>% 
+                     JND = c("Luminance Contrast", rep("", 4), "Chromatic Contrast", rep("", 7), 
+                             "Luminance Contrast", rep("", 4), "Chromatic Contrast", rep("", 7))) %>% 
                       select(Context, JND, Paramater, beta, SE, df, CI_L, CI_U)
 
 Table7 <- flextable(table7) %>% table_style10() %>% fit_to_width(max_width = 7)
@@ -837,4 +887,5 @@ Table8 <- flextable(tab8) %>% table_style11() %>% fit_to_width(max_width = 7)
 Table8
 ```
 
+## Hawaiian chameleons show greater individual change between display and bird color states than Kenyan chameleons
 # References
