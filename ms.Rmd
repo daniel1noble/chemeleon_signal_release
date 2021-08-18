@@ -441,6 +441,9 @@ CourtshipBgrd <- CourtshipBgrd %>%
     Diff_dL_BR_int <- lmer(dL_diff_abs ~ sc_SVL + Population + BodyRegion + BodyRegion:Population + (1|ID), data=Diff)
     summary(Diff_dL_BR_int)
     
+    # Refit mdoel using robust standard errors
+  robust_Diff_dL_BR_int <- clubSandwich::conf_int(Diff_dL_BR_int, cluster = Diff$ID, vcov =  "CR2") 
+  
     # Significance of interaction
       robust_Diff_dl_int <- Wald_test(Diff_dL_BR_int, constraints = constrain_zero(7:9), 
                                     cluster = Diff$ID, vcov = "CR2")
@@ -457,11 +460,11 @@ CourtshipBgrd <- CourtshipBgrd %>%
   summary(Diff_dL)
 
 # Check residuals of model
-  hist(residuals(Diff_dL))
-  plot(Diff_dL) # Some patterns in residuals, but likely driven by the absolute. Note that results are essentially the same if using absolute or raw, signed values. 
+ # hist(residuals(Diff_dL))
+ # plot(Diff_dL) # Some patterns in residuals, but likely driven by the absolute. Note that results are essentially the same if using absolute or raw, signed values. 
   
 # Refit mdoel using robust standard errors
-  robust_Diff_dl_BR <- clubSandwich::conf_int(Diff_dL, cluster = Diff$ID, vcov =  "CR2") 
+  robust_Diff_dl_BR <- clubSandwich::conf_int(Diff_dL_BR_me, cluster = Diff$ID, vcov =  "CR2") 
 
 # Wald tests - Test significance of pop dofferences and SVL differences averaging over body regions
    
@@ -478,7 +481,10 @@ CourtshipBgrd <- CourtshipBgrd %>%
     Diff_dS_BR_int <- lmer(dS_diff_abs ~ sc_SVL + Population + BodyRegion + BodyRegion:Population + (1|ID), data=Diff)
     summary(Diff_dS_BR_int)
     
-    # Significance of interaction
+        # Refit mdoel using robust standard errors
+     robust_Diff_dS_BR_int <- clubSandwich::conf_int(Diff_dS_BR_int, cluster = Diff$ID, vcov =  "CR2") 
+    
+     # Significance of interaction
       robust_Diff_dS_int <- Wald_test(Diff_dS_BR_int, constraints = constrain_zero(7:9), 
                                     cluster = Diff$ID, vcov = "CR2")
   # Main effects BR
@@ -494,11 +500,11 @@ CourtshipBgrd <- CourtshipBgrd %>%
   summary(Diff_dS)
 
 # Check residuals of model
-  hist(residuals(Diff_dS))
-  plot(Diff_dS) # Some patterns in residuals, but likely driven by the absolute. Note that results are essentially the same if using absolute or raw, signed values. 
+  #hist(residuals(Diff_dS))
+  #plot(Diff_dS) # Some patterns in residuals, but likely driven by the absolute. Note that results are essentially the same if using absolute or raw, signed values. 
   
 # Refit mdoel using robust standard errors
-  robust_Diff_dS <- clubSandwich::conf_int(Diff_dS, cluster = Diff$ID, vcov =  "CR2") 
+  robust_Diff_dS <- clubSandwich::conf_int(Diff_dS_BR_me, cluster = Diff$ID, vcov =  "CR2") 
 
 # Wald tests - Test significance of pop dofferences and SVL differences averaging over body regions
    robust_Diff_dS_pop <- Wald_test(Diff_dS, constraints = constrain_zero(3), 
@@ -539,7 +545,7 @@ Released from predation, Hawaiian chameleons were less cryptic than Kenyan chame
 
 Character release may reflect rapid evolutionary change, phenotypic plasticity or a combination of these processes [@RN19; @RN20]. Rapid evolutionary change results in local adaptation, whereby signals should become more conspicuous to conspecifics in their local environment than in ancestral environments. Consistent with local adaptation, we found that Hawaiian chameleons were more conspicuous to other chameleons against their own (Hawaiian) background than against their ancestral Kenyan background, in both social contexts, although effect sizes for luminance were much larger than for chromatic contrast (Fig.\@ref(fig:figure4); male-male contests: luminance ($dl$), $\beta$ = `r robust_localAdapt_DispBgrdAC[3,1]`, 95% CI = `r robust_localAdapt_DispBgrdAC[3,4]` to `r robust_localAdapt_DispBgrdAC[3,5]`, $F_{`r background_AC_Disp$df_num`,`r background_AC_Disp$df_denom`}$ = `r background_AC_Disp$Fstat`, p = `r p_value(background_AC_Disp[,6])`, chromatic ($dS$), $\beta$ = `r robust_DispBgrdCC[3,1]`, 95% CI = `r robust_DispBgrdCC[3,4]` to `r robust_DispBgrdCC[3,5]`, $F_{`r background_CC_Disp$df_num`,`r background_CC_Disp$df_denom`}$ = `r background_CC_Disp$Fstat`, p = `r p_value(background_CC_Disp[,6])`; courtship: luminance ($dl$), $\beta$ = `r robust_CourtshipAC[3,1]`, 95% CI = `r robust_CourtshipAC[3,4]` to `r robust_CourtshipAC[3,5]`, $F_{`r background_AC_Court$df_num`,`r background_AC_Court$df_denom`}$ = `r background_AC_Court$Fstat`, p = `r p_value(background_AC_Court[,6])`, chromatic ($dS$) $\beta$ = `r robust_CourtshipCC[3,1]`, 95% CI = `r robust_CourtshipCC[3,4]` to `r robust_CourtshipCC[3,5]`, $F_{`r background_CC_Court$df_num`,`r background_CC_Court$df_denom`}$ = `r background_CC_Court$Fstat`, p = `r p_value(background_CC_Court[,6]) `). Although these results are consistent with local adaptation, this does not exclude a role for phenotypic plasticity, which can also evolve rapidly [@RN26].
 
-To gauge the extent of color plasticity, we examined individual change between display (male-male contest) and anti-predator (bird) color states (absolute difference in JNDs between states; N = `r N_diff[1,2]` Hawaii, N = `r N_diff[2,2]` Kenya). While body regions varied in there overall effects (significant body region effect: chromatic: $F_{`r robust_Diff_dS_BR_me$df_num`,`r robust_Diff_dS_BR_me$df_denom`}$ = `r robust_Diff_dS_BR_me$Fstat`, p = `r p_value(robust_Diff_dS_BR_me[,6])`; lunminance: $F_{`r robust_Diff_dL_BR_me$df_num`,`r robust_Diff_dL_BR_me$df_denom`}$ = `r robust_Diff_dL_BR_me$Fstat`, p = `r p_value(robust_Diff_dL_BR_me[,6])`, but no population by bodyregion interaction: chromatic: $F_{`r robust_Diff_dS_int$df_num`,`r robust_Diff_dS_int$df_denom`}$ = `r robust_Diff_dS_int$Fstat`, p = `r p_value(robust_Diff_dS_int[,6])`; lunminance: $F_{`r robust_Diff_dl_int$df_num`,`r robust_Diff_dl_int$df_denom`}$ = `r robust_Diff_dl_int$Fstat`, p = `r p_value(robust_Diff_dl_int[,6])`) all exhibited positive absolute JND's between display and antipreadtor color states. Overall, Hawaiian chameleons showed greater chromatic but not luminance change (chromatic: $F_{`r robust_Diff_dS_pop$df_num`,`r robust_Diff_dS_pop$df_denom`}$ = `r robust_Diff_dS_pop$Fstat`, p = `r p_value(robust_Diff_dS_pop[,6])`; luminance: $F_{`r robust_Diff_dl_pop$df_num`,`r robust_Diff_dl_pop$df_denom`}$ = `r robust_Diff_dl_pop$Fstat`, p = `r p_value(robust_Diff_dl_pop[,6])`). Together, these results indicate that chameleons introduced to Hawaii only 50 years ago have evolved signals that are locally adapted, more conspicuous to conspecifics, and show greater changes between display and anti-predator color states. While it is possible that differences between Hawaiian and Kenyan chameleons could reflect a founder effect, the observed differences are all in the predicted direction of adaptive change, whereas founder effects are expected to be random with respect to the local environment.
+To gauge the extent of color plasticity, we examined individual change between display (male-male contest) and anti-predator (bird) color states (absolute difference in JNDs between states; N = `r N_diff[1,2]` Hawaii, N = `r N_diff[2,2]` Kenya). While there were slight differences between body regions (see supplementary text), overall, Hawaiian chameleons showed greater chromatic but not luminance change compared to Kenyan chameleons (chromatic: $F_{`r robust_Diff_dS_pop$df_num`,`r robust_Diff_dS_pop$df_denom`}$ = `r robust_Diff_dS_pop$Fstat`, p = `r p_value(robust_Diff_dS_pop[,6])`; luminance: $F_{`r robust_Diff_dl_pop$df_num`,`r robust_Diff_dl_pop$df_denom`}$ = `r robust_Diff_dl_pop$Fstat`, p = `r p_value(robust_Diff_dl_pop[,6])`); although luminance change showed similar trends across body regions (Fig. SX). Together, these results indicate that chameleons introduced to Hawaii only 50 years ago have evolved signals that are locally adapted, more conspicuous to conspecifics, and show greater changes between display and anti-predator color states. While it is possible that differences between Hawaiian and Kenyan chameleons could reflect a founder effect, the observed differences are all in the predicted direction of adaptive change, whereas founder effects are expected to be random with respect to the local environment.
 
 We have documented a surprisingly strong effect of recent release from predation on a conspicuous, dynamic visual signal. Oahu has no snakes or raptors that feed on lizards. Domestic and feral cats would be their main threat on Oahu, and cats have very limited color vision [@RN22]. In the absence of the usual suite of predators they would experience in their native range of Kenya -- a diverse community of snake and bird predators -- the conditions were highly favorable for character release of social signals. Jackson’s chameleons likely experience strong sexual selection, given their polygynous mating system, elaborate courtship displays and intense male contest competition (Fig.\@ref(fig:figure1)) in which males lock and twist their three horns into rivals during intense bouts that sometimes result in physical injury. Consequently, a ‘perfect storm’ of conditions set the stage for what we have demonstrated -- character release of a dynamic social signal over a short ecological time scale.
 
@@ -859,69 +865,6 @@ plot_grid(p1.2, p2.2, labels = c("A", "B"), label_size = 16,
 
 ```
 
-```{r}
-# Courship data
-
-##########
-# Data
-##########
-abs_display_pred <- Diff %>%
-                group_by(Population, BodyRegion) %>%
-                summarise( Mean_dS_abs = mean(dS_diff_abs, na.rm = T), 
-                             SE_dS_abs = sd(dS_diff_abs)/sqrt(length(unique(ID))),
-                             Upper_dS_abs = Mean_dS_abs + 1.96*SE_dS_abs,
-                             Lower_dS_abs = Mean_dS_abs - 1.96*SE_dS_abs, 
-                           Mean_dL_abs = mean(dL_diff_abs, na.rm = T), 
-                             SE_dL_abs = sd(dL_diff_abs)/sqrt(length(unique(ID))),
-                             Upper_dL_abs = Mean_dL_abs + 1.96*SE_dL_abs,
-                             Lower_dL_abs = Mean_dL_abs - 1.96*SE_dL_abs) %>% as.data.frame()
-
-
-##########
-# Plots
-##########
-
-#plots
-p1 <- ggplot(abs_display_pred, aes(x = Population, y = Mean_dS_abs, color = BodyRegion, group = BodyRegion)) +
-  geom_point(size = 3, position = position_dodge(width=0.5)) +
-  geom_errorbar(aes(ymin = Lower_dS_abs, ymax = Upper_dS_abs), position = position_dodge(width=0.5), width = 0) + 
-  geom_line(position = position_dodge(width=0.5)) + 
-  scale_color_manual(values = wes_palette("Cavalcanti1")) + #Change color palette here see: https://github.com/karthik/wesanderson
-  xlab("Population") + 
-  ylab("Chromatic contrast (JND)") +
-  theme_bw() +
-  labs(colour = "Body Region") +
-  theme(legend.position = "none",
-    panel.grid.major = element_blank(), 
-    panel.grid.minor = element_blank(),
-    axis.text=element_text(size=18),
-    axis.title=element_text(size=20,face="bold"),
-    legend.text =element_text(size = 12),
-    legend.title =element_text(size = 12, face = "bold")) 
-
-
-p2 <- ggplot(abs_display_pred, aes(x = Population, y = Mean_dL_abs, color = BodyRegion, group = BodyRegion)) +
-  geom_point(size = 3, position = position_dodge(width=0.5)) +
-  geom_errorbar(aes(ymin = Lower_dL_abs, ymax = Upper_dL_abs), position = position_dodge(width=0.5), width = 0) + 
-  geom_line(position = position_dodge(width=0.5)) + 
-  scale_color_manual(values = wes_palette("Cavalcanti1")) + #Change color palette here see: https://github.com/karthik/wesanderson
-  xlab("Population") + 
-  ylab("Luminance contrast (JND)") +
-  theme_bw() +
-  labs(colour = "Body Region") +
-  theme(legend.position = "right",
-    panel.grid.major = element_blank(), 
-    panel.grid.minor = element_blank(),
-    axis.text=element_text(size=18),
-    axis.title=element_text(size=20,face="bold"),
-    legend.text =element_text(size = 12),
-    legend.title =element_text(size = 12, face = "bold")) 
-
-#pdf(file="./output/figures/Figure2.pdf", height = 10, width = 18)
-plot_grid(p1, p2, labels = c("A", "B"), label_size = 30,
-  label_fontface = "bold", rel_widths=c(1,1))
-```
-
 ```{r table4, results='hide'}
 #Section will create and write Tables for Supplement. It is not spit out in the main MS. Exported then imported for the supp
 
@@ -980,6 +923,18 @@ plot_grid(p1, p2, labels = c("A", "B"), label_size = 30,
     
     write.csv(tb4, file = "./output/tables/Table4_MS.csv", row.names = FALSE)
 
+
+# Table S5
+    tb5 <- data.frame(rbind(robust_Diff_dl_BR,
+                      robust_Diff_dS))
+    tb5$parameter <- rownames(tb5)
+    rownames(tb5) <- NULL
+    
+  tb5 <- tb5 %>% mutate(VisualRealm = c("Luminance Contrast", rep("", 5), "Chromatic Contrast", 
+                                        rep("", 5))) %>%
+                  select(VisualRealm, parameter, beta, SE, df, CI_L, CI_U)
+     write.csv(tb5, file = "./output/tables/Table5_MS.csv", row.names = FALSE)
+    
 ```
 
 
