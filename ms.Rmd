@@ -925,13 +925,13 @@ plot_grid(p1.2, p2.2, labels = c("A", "B"), label_size = 16,
 
 
 # Table S5
-    tb5 <- data.frame(rbind(robust_Diff_dl_BR,
-                      robust_Diff_dS))
+    tb5 <- data.frame(rbind(robust_Diff_dL_BR_int,
+                            robust_Diff_dS_BR_int))
     tb5$parameter <- rownames(tb5)
     rownames(tb5) <- NULL
     
-  tb5 <- tb5 %>% mutate(VisualRealm = c("Luminance Contrast", rep("", 5), "Chromatic Contrast", 
-                                        rep("", 5))) %>%
+  tb5 <- tb5 %>% mutate(VisualRealm = c("Luminance Contrast", rep("", 8), "Chromatic Contrast", 
+                                        rep("", 8))) %>%
                   select(VisualRealm, parameter, beta, SE, df, CI_L, CI_U)
      write.csv(tb5, file = "./output/tables/Table5_MS.csv", row.names = FALSE)
     
