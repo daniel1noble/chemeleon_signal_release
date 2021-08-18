@@ -28,7 +28,7 @@ knitr::opts_chunk$set(echo = FALSE, cache = TRUE, message = FALSE, warning = FAL
 ```{r getlibrary, echo = FALSE, results = "hide"}
 # load libraries
 devtools::install_github("karthik/wesanderson")
-pacman::p_load(flextable, lme4, lmerTest, ggplot2, lsmeans, emmeans, multcomp, dplyr, wesanderson, patchwork, latex2exp, png, cowplot, magick, jpeg, clubSandwich)
+pacman::p_load(flextable, lme4, lmerTest, ggplot2, lsmeans, emmeans, multcomp, dplyr, wesanderson, patchwork, latex2exp, png, cowplot, magick, jpeg, clubSandwich, readxl, pavo)
 source("./R/func.R")
 ```
 
@@ -495,9 +495,36 @@ We calculated JNDs for chromatic and luminance contrast against each of the rele
 
 The visual models require information on the spectral sensitivities and photoreceptor noise (Weber fraction), which is a function of the relative density of each photoreceptor type within the retina, for the relevant receiver. Chameleons have four spectral classes of single cone enabling tetrachromatic vision @RN16. We used spectral sensitivities for the congeneric flap-necked chameleon (*Chameleo dilepis*) @RN16 and a standard Weber fraction of 0.1 @RN17 to account for the receptor noise of the LWS photoreceptor. We calculated noise for the other photoreceptor classes using the relative photoreceptor ratio of 1: 1.6: 3.3: 3.2 for the four single cones (UVS, SWS, MWS, and LWS, respectively). *Chameleo dilepis* and other chameleons appear to have two populations of MWS cones ($\lambda_{max}$ 481 nm, 497 nm) and three populations of LWS cones ($\lambda_{max}$ 568 nm, 584 nm, 605 nm) so we used a combined sensitivity function for the MWS and LWS cones (Fig. \@ref(fig:Figcolsig6SPec)).
 
-```{r Figcolsig6SPec, fig.align = 'center', fig.width = 12, fig.height = 12, fig.cap = "**Spectral sensitivities of chameleons (A), snake (B) and bird (C) used for visual models (details in text)**."}
-figs5 <- image_read("./output/figures/FigS5.jpg")
-figs5
+```{r Figcolsig6SPec, fig.align = 'center', fig.width = 12, fig.height = 10, fig.cap = "**Spectral sensitivities of chameleons (A), bird (B) and snake (C) used for visual models (details in text)**."}
+sens_cham_c_dilepis <- read_excel("./data/Spectral sensitivities.xls", sheet = "C_dilepis")[,1:6]
+        sens_birdUV <- read_excel("./data/Spectral sensitivities.xls", sheet = "birdUV")
+         sens_snake <- read_excel("./data/Spectral sensitivities.xls", sheet = "snake")[,1:4]
+
+cham <- sens_cham_c_dilepis %>% pivot_longer(cols = c(2:6)) %>% select(wavelength, name, value) %>%  data.frame()
+bird <- sens_birdUV %>% pivot_longer(cols = c(2:6)) %>% select(wavelength, name, value) %>%  data.frame()
+snake <- sens_snake %>% pivot_longer(cols = c(2:4)) %>% select(wavelength, name, value) %>%  data.frame()
+
+plot_spec <- function(data, tri = FALSE){
+        data %>% ggplot(aes(x = wavelength, y = value)) + 
+      geom_line(aes(color = name), size = 1.2) + 
+      theme_bw() +
+    scale_colour_manual(values = rev(c("#8D25CC", "#3770C9", "#93C572", "#FFA500", "#DBD8D6"))) +
+      labs(x = "Wavelength (nm)", y = "Absorbance", color = "") + 
+        theme(legend.position  = c(0.90, 0.65),
+            panel.grid.major = element_blank(), 
+            panel.grid.minor = element_blank(),
+            axis.text = element_text(size = 16),
+            axis.title = element_text(size = 24),
+            legend.text = element_text(size = 16),
+            legend.title = element_text(size = 20))}
+
+p1 <- plot_spec(cham) + theme(legend.position  = "none")
+p2 <- plot_spec(bird) 
+p3 <- plot_spec(snake) + scale_colour_manual(values = rev(c("#8D25CC", "#93C572", "#FFA500"))) + theme(legend.position  = "none")
+
+plot_grid(p1, p2,p3,nrow = 3, ncol = 1, labels = c("A", "B", "C"), label_size = 30,
+  label_fontface = "bold", rel_widths=c(1,1))
+
 ```
 
 For birds, we used an ultraviolet sensitive (UVS) visual system @RN18 characteristic of raptors and other birds of prey @RN19. A Weber fraction of 0.06 was used for the LWS photoreceptor based on the most recent empirical measurement @RN20. We used a relative photoreceptor ratio of 1:2:3.4:3 for the UVS, SWS, MWS, and LWS photoreceptors respectively, which represent average values for UVS birds @RN21. 
@@ -889,7 +916,7 @@ Table8
 
 ## Hawaiian chameleons show greater individual change between display and bird color states than Kenyan chameleons
 
-```{r}
+```{r, results='hide'}
 #########################################################
 # Comparing displays
 #########################################################
@@ -993,9 +1020,9 @@ Table8
 ```
 To gauge the extent of individual color change, we calculated the absolute difference in JNDs between for each individual that had both display (male-male contest) and bird response data (N = `r N_diff[1,2]` individuals from Hawaii, N = `r N_diff[2,2]` Kenya). We chose these two color states to maximize sample size and because chameleons and birds have similar tetrachromatic visual systems. We tested whether the absolute difference in luminance or chromatic contrast between these two color states differed between populations and body regions. We included SVL, Population, Body region and the interaction between population and body region as fixed effects. ID was included as a random effect due to measures for more than one body region per individual.
 
-Body regions varied in there overall effects but mainly showed a decrease in absolute JND difference between display and antipredator color states in Kenya compared to Hawaii (Fig. \@ref(fig:figDisplayPred)). While there was some evidence for an interaction between population and body region for luminance change (albeit weak) this was not the case for chromatic change (population by body region interaction: chromatic: $F_{`r robust_Diff_dS_int$df_num`,`r robust_Diff_dS_int$df_denom`}$ = `r robust_Diff_dS_int$Fstat`, p = `r p_value(robust_Diff_dS_int[,6])`; lunminance: $F_{`r robust_Diff_dl_int$df_num`,`r robust_Diff_dl_int$df_denom`}$ = `r robust_Diff_dl_int$Fstat`, p = `r p_value(robust_Diff_dl_int[,6])`) (Fig. \@ref(fig:figDisplayPred)). However, the degree to which body regions varied within poplations was more apparent for luminance than for chromatic change (main effect of body region: chromatic: $F_{`r robust_Diff_dS_BR_me$df_num`,`r robust_Diff_dS_BR_me$df_denom`}$ = `r robust_Diff_dS_BR_me$Fstat`, p = `r p_value(robust_Diff_dS_BR_me[,6])`; lunminance: $F_{`r robust_Diff_dL_BR_me$df_num`,`r robust_Diff_dL_BR_me$df_denom`}$ = `r robust_Diff_dL_BR_me$Fstat`, p = `r p_value(robust_Diff_dL_BR_me[,6])`) (Fig. \@ref(fig:figDisplayPred)).
+Body regions varied in there overall effects but mainly showed a decrease in absolute JND difference between display and antipredator color states in Kenya compared to Hawaii (Fig. \@ref(fig:figDisplayPred)). While there was some evidence for an interaction between population and body region for luminance change (albeit weak) this was not the case for chromatic change (population by body region interaction: chromatic: $F_{`r robust_Diff_dS_int$df_num`,`r robust_Diff_dS_int$df_denom`}$ = `r robust_Diff_dS_int$Fstat`, p = `r p_value(robust_Diff_dS_int[,6])`; luminance: $F_{`r robust_Diff_dl_int$df_num`,`r robust_Diff_dl_int$df_denom`}$ = `r robust_Diff_dl_int$Fstat`, p = `r p_value(robust_Diff_dl_int[,6])`) (Fig. \@ref(fig:figDisplayPred) & Table \@ref(tab:tableS9)). However, the degree to which body regions varied within poplations was more apparent for luminance than for chromatic change (main effect of body region: chromatic: $F_{`r robust_Diff_dS_BR_me$df_num`,`r robust_Diff_dS_BR_me$df_denom`}$ = `r robust_Diff_dS_BR_me$Fstat`, p = `r p_value(robust_Diff_dS_BR_me[,6])`; luminance: $F_{`r robust_Diff_dL_BR_me$df_num`,`r robust_Diff_dL_BR_me$df_denom`}$ = `r robust_Diff_dL_BR_me$Fstat`, p = `r p_value(robust_Diff_dL_BR_me[,6])`) (Fig. \@ref(fig:figDisplayPred); Table \@ref(tab:tableS9)).
 
-```{r, figDisplayPred, fig.align = 'center', fig.width = 13, fig.height = 12, fig.cap = " Extent of color plasticity between display (male-male contest) and anti-predator (bird) color states (absolute difference in JNDs between states) for Hawaiian (N = 30) and Kenyan (N = 13) chameleons. **(A)** Average chromatic and **(B)** luminance contrast are provided for each bory region"}
+```{r, figDisplayPred, fig.align = 'center', fig.width = 13, fig.height = 7, fig.cap = " Extent of color plasticity between display (male-male contest) and anti-predator (bird) color states (absolute difference in JNDs between states) for Hawaiian (N = 30) and Kenyan (N = 13) chameleons. **(A)** Average chromatic and **(B)** luminance contrast are provided for each bory region"}
 ##########
 # Data
 ##########
