@@ -308,7 +308,24 @@ DisplayBgrd_Hawaii <- DisplayBgrd %>%
     # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
       robust_DispBgrdCC <- clubSandwich::conf_int(DispBgrdCC_inter, cluster = DisplayBgrd_Hawaii$ID, vcov =  "CR2")
 
-
+ # Get contrasts to understand the specific changes better. Refit model in slight different form. This is essentially an interaction model anyway because it's estimating the mean for Hawaiian and Kenyan background for each body region. The model above is just a contrast-based model.
+    DisplayBgrd_pop_back_regionCC <- lmer(dS ~ -1 + sc_svl + pop_back_region + (1|ID), data = DisplayBgrd_Hawaii) 
+    # Fit Robust model
+    robust_DisplayBgrd_pop_back_regionCC <- clubSandwich::conf_int(DisplayBgrd_pop_back_regionCC, 
+                                                            cluster = DisplayBgrd_Hawaii$ID, 
+                                                            vcov =  "CR2")
+   
+    # Contrasts hypothesis tests, but use RVE 
+      result_DisplayBgrd_pop_back_regionCC <- Wald_test(DisplayBgrd_pop_back_regionCC, 
+                                                 constraints = constrain_pairwise(c(1:9)), 
+                                                 vcov="CR2", tidy = TRUE)
+      
+      result_DisplayBgrd_pop_back_regionCC$p_val_bonfer <- 
+                                  sapply(p.adjust(result_DisplayBgrd_pop_back_regionCC$p_val, "bonferroni"), 
+                                                                  function(x) p_value(x))
+     # Grab contrasts that we need from the robust esatimtes
+      string <- c("pop_back_regionKenya.gular - pop_back_regionHawaii.gular|pop_back_regionKenya.midflank - pop_back_regionHawaii.midflank|pop_back_regionKenya.tailbase - pop_back_regionHawaii.tailbase|pop_back_regionKenya.topflank - pop_back_regionHawaii.topflank")
+      result_DisplayBgrd_pop_back_regionCC <- result_DisplayBgrd_pop_back_regionCC[grep(string, result_DisplayBgrd_pop_back_regionCC$hypothesis),]
 ###################
 # Social Context: Courtship
 ##################
@@ -385,14 +402,14 @@ CourtshipBgrd_Hawaii <- CourtshipBgrd %>%
   
      # Contrasts hypothesis tests, but use RVE 
           result_CourtshipBgrd_pop_back_BR_CC <- Wald_test(CourtshipBgrd_pop_back_BR_CC, 
-                                                   constraints = constrain_pairwise(c(1:8)),
+                                                   constraints = constrain_pairwise(c(1:9)),
                                                    cluster = CourtshipBgrd_Hawaii$ID,
                                                    vcov="CR2", tidy = TRUE)
              result_CourtshipBgrd_pop_back_BR_CC$p_val_bonfer <- sapply(p.adjust(result_CourtshipBgrd_pop_back_BR_CC$p_val, "bonferroni"), 
                                                                     function(x) p_value(x))
       
        # Grab contrasts that we need from the robust esatimtes
-      string <- c("pop_back_BRHawaii.Kenya.gular - pop_back_BRHawaii.Hawaii.gular|pop_back_BRHawaii.Kenya.midflank - pop_back_BRHawaii.Hawaii.midflank|pop_back_BRHawaii.Kenya.tailbase - pop_back_BRHawaii.Hawaii.tailbase|pop_back_BRHawaii.Kenya.topflank - pop_back_BRHawaii.Hawaii.topflank")
+      string <- c("pop_back_regionKenya.gular - pop_back_regionHawaii.gular|pop_back_regionKenya.midflank - pop_back_regionHawaii.midflank|pop_back_regionKenya.tailbase - pop_back_regionHawaii.tailbase|pop_back_regionKenya.topflank - pop_back_regionHawaii.topflank")
       
          result_CourtshipBgrd_pop_back_BR_CC <- result_CourtshipBgrd_pop_back_BR_CC[
                                             grep(string, result_CourtshipBgrd_pop_back_BR_CC$hypothesis),]
