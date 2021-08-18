@@ -1054,7 +1054,12 @@ plot_grid(p1, p2, labels = c("A", "B"), label_size = 30,
   label_fontface = "bold", rel_widths=c(1,1))
 ```
 
+```{r tableS9, tab.cap = "Estimated model parameters, standard errors (SE), degrees of freedom (df) along with 95% confidence interval for each parameter. Full interaction models are presented for chromatic and luminance change (absolute JND)."}
+tab9 <- read.csv("./output/tables/Table5_MS.csv")
 
+Table9 <- flextable(tab9) %>% table_style13() %>% fit_to_width(max_width = 7)
+Table9
+```
 
 # References
 
