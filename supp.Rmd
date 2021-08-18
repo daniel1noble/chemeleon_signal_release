@@ -254,6 +254,7 @@ Courtship$sc_SVL <- with(Courtship, scale(SVL, scale=FALSE))
 ##################
 DisplayBgrd <- read.table("./data/Display_5.csv", 
                         header=TRUE, sep=",", dec=".", strip.white=TRUE)
+svl_dat <- read.csv("./data/SVL2.csv")
 
 DisplayBgrd <- DisplayBgrd %>% 
                 filter(!BodyRegion == "botflank") %>% 
@@ -261,25 +262,30 @@ DisplayBgrd <- DisplayBgrd %>%
                 as.data.frame() #exclude bottom flank.
 DisplayBgrd$BodyRegion <- factor(DisplayBgrd$BodyRegion) #updates levels for the variable BodyRegion
 
-# We only really want to compar the Hawaiian population, so we can subset that data
-  DisplayBgrd$pop_back_region <- with(DisplayBgrd, interaction(Population, Background_pop, BodyRegion))
-           DisplayBgrd_Hawaii <- DisplayBgrd %>% filter(Population == "Hawaii")
+# Filter out only Hawaiian and add in SVL for IDs
+DisplayBgrd$pop_back_region <- with(DisplayBgrd, interaction(Background_pop, BodyRegion))
+DisplayBgrd_Hawaii <- DisplayBgrd %>% 
+               filter(Population == "Hawaii") %>% 
+               left_join(select(svl_dat, ID, SVL), by = "ID", keep = FALSE) %>% 
+               mutate(sc_svl = scale(SVL, scale = FALSE)) %>% 
+                filter(!is.na(SVL))
+
 ##########
 # Achromatic Contrast - dL
 ##########
 
   # Main effercts
-   DispBgrdAC_main <- lmer(dL ~  Background_pop + BodyRegion + (1|ID), data=DisplayBgrd_Hawaii)
+   DispBgrdAC_main <- lmer(dL ~  sc_svl + Background_pop + BodyRegion + (1|ID), data=DisplayBgrd_Hawaii)
     summary(DispBgrdAC_main)
   
   # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE). Given that there is no interaction, we can just present the main effects model with teh figure. Plus wald tests
   robust_localAdapt_DispBgrdAC <- clubSandwich::conf_int(DispBgrdAC_main, cluster = DisplayBgrd_Hawaii$ID, vcov =  "CR2")
 
   # Add Wald test to test signifiacnce of each factor using roust variance 
-  background_AC_Disp <- Wald_test(DispBgrdAC_main, constraints = constrain_zero(2), 
+  background_AC_Disp <- Wald_test(DispBgrdAC_main, constraints = constrain_zero(3), 
                                   cluster = DisplayBgrd_Hawaii$ID, vcov = "CR2")
   
-  BodyRegion_AC_Disp <- Wald_test(DispBgrdAC_main, constraints = constrain_zero(3:5), 
+  BodyRegion_AC_Disp <- Wald_test(DispBgrdAC_main, constraints = constrain_zero(4:6), 
                                   cluster = DisplayBgrd_Hawaii$ID, vcov = "CR2")
 
    
@@ -288,40 +294,20 @@ DisplayBgrd$BodyRegion <- factor(DisplayBgrd$BodyRegion) #updates levels for the
 ##########
    
      # Fit the inetarction model
-          DispBgrdCC_inter <- lmer(dS ~ Background_pop  + BodyRegion + Background_pop:BodyRegion + (1|ID), data=DisplayBgrd_Hawaii)
+          DispBgrdCC_inter <- lmer(dS ~ sc_svl + Background_pop  + BodyRegion + Background_pop:BodyRegion + (1|ID), data=DisplayBgrd_Hawaii)
           summary(DispBgrdCC_inter)
   
     # Fit the main effect model
-          DispBgrdCC_main <- lmer(dS ~ Background_pop  + BodyRegion + (1|ID), data=DisplayBgrd_Hawaii)
+          DispBgrdCC_main <- lmer(dS ~ sc_svl + Background_pop  + BodyRegion + (1|ID), data=DisplayBgrd_Hawaii)
           summary(DispBgrdCC_main)
     
     # Wald test to see if interaction is important. Yes, body regions way in how they change from a Hawaiian and Kenyan population. Fig S4, this makes sense. 
-        intearction_CC_Disp <- Wald_test(DispBgrdCC_inter, constraints = constrain_zero(6:8), 
+        intearction_CC_Disp <- Wald_test(DispBgrdCC_inter, constraints = constrain_zero(7:9), 
                                   cluster = DisplayBgrd_Hawaii$ID, vcov = "CR2")
 
     # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
       robust_DispBgrdCC <- clubSandwich::conf_int(DispBgrdCC_inter, cluster = DisplayBgrd_Hawaii$ID, vcov =  "CR2")
 
-
-    # Get contrasts to understand the specific changes better. Refit model in slight different form. This is essentially an interaction model anyway because it's estimating the mean for Hawaiian and Kenyan background for each body region. The model above is just a contrast-based model.
-    DisplayBgrd_pop_back_regionCC <- lmer(dS ~ -1 + pop_back_region + (1|ID), data = DisplayBgrd_Hawaii) 
-
-    # Fit Robust model
-    robust_DisplayBgrd_pop_back_regionCC <- clubSandwich::conf_int(DisplayBgrd_pop_back_regionCC, 
-                                                            cluster = DisplayBgrd_Hawaii$ID, 
-                                                            vcov =  "CR2")
-   
-    # Contrasts hypothesis tests, but use RVE 
-      result_DisplayBgrd_pop_back_regionCC <- Wald_test(DisplayBgrd_pop_back_regionCC, 
-                                                 constraints = constrain_pairwise(c(1:8)), 
-                                                 vcov="CR2", tidy = TRUE)
-      
-      result_DisplayBgrd_pop_back_regionCC$p_val_bonfer <- 
-                                  sapply(p.adjust(result_DisplayBgrd_pop_back_regionCC$p_val, "bonferroni"), 
-                                                                  function(x) p_value(x))
-     # Grab contrasts that we need from the robust esatimtes
-      string <- c("pop_back_regionHawaii.Kenya.gular - pop_back_regionHawaii.Hawaii.gular|pop_back_regionHawaii.Kenya.midflank - pop_back_regionHawaii.Hawaii.midflank|pop_back_regionHawaii.Kenya.tailbase - pop_back_regionHawaii.Hawaii.tailbase|pop_back_regionHawaii.Kenya.topflank - pop_back_regionHawaii.Hawaii.topflank")
-      result_DisplayBgrd_pop_back_regionCC <- result_DisplayBgrd_pop_back_regionCC[grep(string, result_DisplayBgrd_pop_back_regionCC$hypothesis),]
 
 ###################
 # Social Context: Courtship
@@ -335,15 +321,20 @@ CourtshipBgrd <- CourtshipBgrd %>%
                 as.data.frame() #exclude bottom flank.
 CourtshipBgrd$BodyRegion <- factor(CourtshipBgrd$BodyRegion)
 
-# Just subset out the Hawaiian data as we are only intersted in Hawaii on different backgrounds
-  CourtshipBgrd$pop_back_BR <- with(CourtshipBgrd, interaction(Population, Background_pop, BodyRegion))
-         CourtshipBgrd_Hawaii <- CourtshipBgrd %>% filter(Population == "Hawaii")
+# Filter out only Hawaiian and add in SVL for IDs
+CourtshipBgrd$pop_back_region <- with(CourtshipBgrd, interaction(Background_pop, BodyRegion))
+CourtshipBgrd_Hawaii <- CourtshipBgrd %>% 
+               filter(Population == "Hawaii") %>% 
+               left_join(select(svl_dat, ID, SVL), by = "ID", keep = FALSE) %>% 
+               mutate(sc_svl = scale(SVL, scale = FALSE)) %>% 
+               filter(!is.na(SVL))
+
 ##########
 ## Achromatic Contrast - dL
 ##########
 
   # Fit main effects model
-    CourtshipAC_main <- lmer(dL ~ Background_pop + BodyRegion + (1|ID), data=CourtshipBgrd_Hawaii)
+    CourtshipAC_main <- lmer(dL ~ sc_svl + Background_pop + BodyRegion + (1|ID), data=CourtshipBgrd_Hawaii)
     summary(CourtshipAC_main)
     
 
@@ -354,7 +345,7 @@ CourtshipBgrd$BodyRegion <- factor(CourtshipBgrd$BodyRegion)
            background_AC_Court <- Wald_test(CourtshipAC_main, constraints = constrain_zero(3), 
                                   cluster = CourtshipBgrd_Hawaii$ID, vcov = "CR2")
            
-           BodyRegion_AC_Court <- Wald_test(CourtshipAC_main, constraints = constrain_zero(3:5), 
+           BodyRegion_AC_Court <- Wald_test(CourtshipAC_main, constraints = constrain_zero(4:6), 
                                   cluster = CourtshipBgrd_Hawaii$ID, vcov = "CR2")
 
 
@@ -363,30 +354,30 @@ CourtshipBgrd$BodyRegion <- factor(CourtshipBgrd$BodyRegion)
 ##########
   
   # Fit main effect model
-      CourtshipCC_inter <- lmer(dS ~ Background_pop + BodyRegion + Background_pop:BodyRegion + (1|ID), data=CourtshipBgrd_Hawaii)
+      CourtshipCC_inter <- lmer(dS ~ sc_svl + Background_pop + BodyRegion + Background_pop:BodyRegion + (1|ID), data=CourtshipBgrd_Hawaii)
       summary(CourtshipCC_inter)         
   
   # Fit main effect model
-      CourtshipCC_main <- lmer(dS ~ Background_pop + BodyRegion + (1|ID), data=CourtshipBgrd_Hawaii)
+      CourtshipCC_main <- lmer(dS ~ sc_svl + Background_pop + BodyRegion + (1|ID), data=CourtshipBgrd_Hawaii)
       summary(CourtshipCC_main)
 
   # Robust variance esatimation to correct SE's for fixed effects given spectral curves are used multiple times for generating JNDs for each individuals data. 
   robust_CourtshipCC <- clubSandwich::conf_int(CourtshipCC_inter, cluster = CourtshipBgrd_Hawaii$ID, vcov =  "CR2")
   
   # Wald test of interaction; Not important, so we'll simplify and assume just additive effects. This makes sense when we look at the raw data.
-  intearction_CC_Court <- Wald_test(CourtshipCC_inter, constraints = constrain_zero(6:8), 
+  intearction_CC_Court <- Wald_test(CourtshipCC_inter, constraints = constrain_zero(7:9), 
                                   cluster = CourtshipBgrd_Hawaii$ID, vcov = "CR2")
   
    # Wald tests
-           background_CC_Court <- Wald_test(CourtshipCC_main, constraints = constrain_zero(2), 
+           background_CC_Court <- Wald_test(CourtshipCC_main, constraints = constrain_zero(3), 
                                   cluster = CourtshipBgrd_Hawaii$ID, vcov = "CR2")
   
-           BodyRegion_CC_Court <- Wald_test(CourtshipCC_main, constraints = constrain_zero(3:5), 
+           BodyRegion_CC_Court <- Wald_test(CourtshipCC_main, constraints = constrain_zero(4:6), 
                                   cluster = CourtshipBgrd_Hawaii$ID, vcov = "CR2")
 
     # Get contrasts to understand the specific changes better. Refit model in slight different form. This is essentially an interaction model anyway because it's estimating the mean for Hawaiian and Kenyan background for each body region. The model above is just a contrast-based model.
 
-          CourtshipBgrd_pop_back_BR_CC <- lmer(dS ~ -1 + pop_back_BR + (1|ID), data = CourtshipBgrd_Hawaii) 
+          CourtshipBgrd_pop_back_BR_CC <- lmer(dS ~ -1 +  sc_svl + pop_back_BR + (1|ID), data = CourtshipBgrd_Hawaii) 
 
      # Fit Robust model
           robust_CourtshipBgrd_pop_back_BR_CC <- clubSandwich::conf_int(CourtshipBgrd_pop_back_BR_CC, 
