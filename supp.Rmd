@@ -888,4 +888,176 @@ Table8
 ```
 
 ## Hawaiian chameleons show greater individual change between display and bird color states than Kenyan chameleons
+
+```{r}
+#########################################################
+# Comparing displays
+#########################################################
+ # Load data from Devi
+       Display_bird_diff <- read_excel("data/Display_bird_diff.xlsx")
+       
+       Diff <- Display_bird_diff 
+
+      names(Diff) # header rows R is reading
+
+    Diff$BodyRegion <- factor(Diff$BodyRegion) #updates levels for the variable BodyRegion
+    str(diff.difftime) #how R is reading the stucture of the object, double checking the levels for body region after updating levels
+    Diff$ID <- factor(Diff$ID) #updates levels for the variable ID
+    str(diff.difftime) #how R is reading the stucture of the object, double checking the levels for body region after updating levels
+
+# Center SVL to make intercept interpretable
+    Diff$sc_SVL <- with(Diff, scale(SVL, scale=FALSE))
+
+# Filter missing SVL data
+  Diff <- Diff %>% filter(!is.na(SVL)) # filter out misssing SVL data
+
+# create as factor
+    Diff$BodyRegion <- factor(Diff$BodyRegion)
+
+# Sample sizes
+    N_diff <- data.frame(Diff %>% group_by(Population) %>% summarise(n = length(unique(ID))))
+    
+##################
+# Achromatic contrast
+##################
+    
+# Fit model testing this idea above. First just test for body region interaction. But, needs RVE
+    Diff_dL_BR_int <- lmer(dL_diff_abs ~ sc_SVL + Population + BodyRegion + BodyRegion:Population + (1|ID), data=Diff)
+    summary(Diff_dL_BR_int)
+    
+    # Significance of interaction
+      robust_Diff_dl_int <- Wald_test(Diff_dL_BR_int, constraints = constrain_zero(7:9), 
+                                    cluster = Diff$ID, vcov = "CR2")
+# Main effects BR
+    Diff_dL_BR_me <- lmer(dL_diff_abs ~ sc_SVL + Population + BodyRegion  + (1|ID), data=Diff)
+    summary(Diff_dL_BR_me)
+    
+    # Sig of Body Region
+        robust_Diff_dL_BR_me <- Wald_test(Diff_dL_BR_me, constraints = constrain_zero(4:6), 
+                                    cluster = Diff$ID, vcov = "CR2")
+  
+# Then fit marginalised model so that body regions are averaged
+  Diff_dL <- lmer(dL_diff_abs ~ sc_SVL + Population + (1|ID), data=Diff)
+  summary(Diff_dL)
+
+# Check residuals of model
+ # hist(residuals(Diff_dL))
+ # plot(Diff_dL) # Some patterns in residuals, but likely driven by the absolute. Note that results are essentially the same if using absolute or raw, signed values. 
+  
+# Refit mdoel using robust standard errors
+  robust_Diff_dl_BR <- clubSandwich::conf_int(Diff_dL, cluster = Diff$ID, vcov =  "CR2") 
+
+# Wald tests - Test significance of pop dofferences and SVL differences averaging over body regions
+   
+  robust_Diff_dl_pop <- Wald_test(Diff_dL, constraints = constrain_zero(3), 
+                                  cluster = Diff$ID, vcov = "CR2")
+   robust_Diff_dl_svl <- Wald_test(Diff_dL, constraints = constrain_zero(2), 
+                                  cluster = Diff$ID, vcov = "CR2")
+
+##################
+# Chromatic contrast
+##################  
+   
+  # Fit model testing this idea above. First just test for body region interaction. But, needs RVE
+    Diff_dS_BR_int <- lmer(dS_diff_abs ~ sc_SVL + Population + BodyRegion + BodyRegion:Population + (1|ID), data=Diff)
+    summary(Diff_dS_BR_int)
+    
+    # Significance of interaction
+      robust_Diff_dS_int <- Wald_test(Diff_dS_BR_int, constraints = constrain_zero(7:9), 
+                                    cluster = Diff$ID, vcov = "CR2")
+  # Main effects BR
+    Diff_dS_BR_me <- lmer(dS_diff_abs ~ sc_SVL + Population + BodyRegion  + (1|ID), data=Diff)
+    summary(Diff_dS_BR_me)
+    
+    # Sig of Body Region
+      robust_Diff_dS_BR_me <- Wald_test(Diff_dS_BR_me, constraints = constrain_zero(4:6), 
+                                    cluster = Diff$ID, vcov = "CR2")
+   
+# Fit model testing this idea above
+  Diff_dS <- lmer(dS_diff_abs ~  SVL + Population + (1|ID), data=Diff)
+  summary(Diff_dS)
+
+# Check residuals of model
+  #hist(residuals(Diff_dS))
+  #plot(Diff_dS) # Some patterns in residuals, but likely driven by the absolute. Note that results are essentially the same if using absolute or raw, signed values. 
+  
+# Refit mdoel using robust standard errors
+  robust_Diff_dS <- clubSandwich::conf_int(Diff_dS, cluster = Diff$ID, vcov =  "CR2") 
+
+# Wald tests - Test significance of pop dofferences and SVL differences averaging over body regions
+   robust_Diff_dS_pop <- Wald_test(Diff_dS, constraints = constrain_zero(3), 
+                                  cluster = Diff$ID, vcov = "CR2")
+   robust_Diff_dS_svl <- Wald_test(Diff_dS, constraints = constrain_zero(2), 
+                                  cluster = Diff$ID, vcov = "CR2")
+   
+```
+To gauge the extent of individual color change, we calculated the absolute difference in JNDs between for each individual that had both display (male-male contest) and bird response data (N = `r N_diff[1,2]` individuals from Hawaii, N = `r N_diff[2,2]` Kenya). We chose these two color states to maximize sample size and because chameleons and birds have similar tetrachromatic visual systems. We tested whether the absolute difference in luminance or chromatic contrast between these two color states differed between populations and body regions. We included SVL, Population, Body region and the interaction between population and body region as fixed effects. ID was included as a random effect due to measures for more than one body region per individual.
+
+Body regions varied in there overall effects but mainly showed a decrease in absolute JND difference between display and antipredator color states in Kenya compared to Hawaii (Fig. \@ref(fig:figDisplayPred)). While there was some evidence for an interaction between population and body region for luminance change (albeit weak) this was not the case for chromatic change (population by body region interaction: chromatic: $F_{`r robust_Diff_dS_int$df_num`,`r robust_Diff_dS_int$df_denom`}$ = `r robust_Diff_dS_int$Fstat`, p = `r p_value(robust_Diff_dS_int[,6])`; lunminance: $F_{`r robust_Diff_dl_int$df_num`,`r robust_Diff_dl_int$df_denom`}$ = `r robust_Diff_dl_int$Fstat`, p = `r p_value(robust_Diff_dl_int[,6])`) (Fig. \@ref(fig:figDisplayPred)). However, the degree to which body regions varied within poplations was more apparent for luminance than for chromatic change (main effect of body region: chromatic: $F_{`r robust_Diff_dS_BR_me$df_num`,`r robust_Diff_dS_BR_me$df_denom`}$ = `r robust_Diff_dS_BR_me$Fstat`, p = `r p_value(robust_Diff_dS_BR_me[,6])`; lunminance: $F_{`r robust_Diff_dL_BR_me$df_num`,`r robust_Diff_dL_BR_me$df_denom`}$ = `r robust_Diff_dL_BR_me$Fstat`, p = `r p_value(robust_Diff_dL_BR_me[,6])`) (Fig. \@ref(fig:figDisplayPred)).
+
+```{r, figDisplayPred, fig.align = 'center', fig.width = 13, fig.height = 12, fig.cap = " Extent of color plasticity between display (male-male contest) and anti-predator (bird) color states (absolute difference in JNDs between states) for Hawaiian (N = 30) and Kenyan (N = 13) chameleons. **(A)** Average chromatic and **(B)** luminance contrast are provided for each bory region"}
+##########
+# Data
+##########
+abs_display_pred <- Diff %>%
+                group_by(Population, BodyRegion) %>%
+                summarise( Mean_dS_abs = mean(dS_diff_abs, na.rm = T), 
+                             SE_dS_abs = sd(dS_diff_abs)/sqrt(length(unique(ID))),
+                             Upper_dS_abs = Mean_dS_abs + 1.96*SE_dS_abs,
+                             Lower_dS_abs = Mean_dS_abs - 1.96*SE_dS_abs, 
+                           Mean_dL_abs = mean(dL_diff_abs, na.rm = T), 
+                             SE_dL_abs = sd(dL_diff_abs)/sqrt(length(unique(ID))),
+                             Upper_dL_abs = Mean_dL_abs + 1.96*SE_dL_abs,
+                             Lower_dL_abs = Mean_dL_abs - 1.96*SE_dL_abs) %>% as.data.frame()
+##########
+# Plots
+##########
+
+#plots
+p1 <- ggplot(abs_display_pred, aes(x = Population, y = Mean_dS_abs, color = BodyRegion, group = BodyRegion)) +
+  geom_point(size = 3, position = position_dodge(width=0.5)) +
+  geom_errorbar(aes(ymin = Lower_dS_abs, ymax = Upper_dS_abs), position = position_dodge(width=0.5), width = 0) + 
+  geom_line(position = position_dodge(width=0.5)) + 
+  scale_color_manual(values = wes_palette("Cavalcanti1")) + #Change color palette here see: https://github.com/karthik/wesanderson
+  xlab("Population") + 
+  ylab("Chromatic Change (absolute JND)") +
+  theme_bw() +
+  labs(colour = "Body Region") +
+  theme(legend.position = "none",
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(size=18),
+    axis.title=element_text(size=20,face="bold"),
+    legend.text =element_text(size = 12),
+    legend.title =element_text(size = 12, face = "bold")) 
+
+
+p2 <- ggplot(abs_display_pred, aes(x = Population, y = Mean_dL_abs, color = BodyRegion, group = BodyRegion)) +
+  geom_point(size = 3, position = position_dodge(width=0.5)) +
+  geom_errorbar(aes(ymin = Lower_dL_abs, ymax = Upper_dL_abs), position = position_dodge(width=0.5), width = 0) + 
+  geom_line(position = position_dodge(width=0.5)) + 
+  scale_color_manual(values = wes_palette("Cavalcanti1")) + #Change color palette here see: https://github.com/karthik/wesanderson
+  xlab("Population") + 
+  ylab("Luminance Change (absolute JND)") +
+  theme_bw() +
+  labs(colour = "Body Region") +
+  theme(legend.position = c(0.80, 0.85),
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(size=18),
+    axis.title=element_text(size=20,face="bold"),
+    legend.text =element_text(size = 12),
+    legend.title =element_text(size = 12, face = "bold")) 
+
+#pdf(file="./output/figures/Figure2.pdf", height = 10, width = 18)
+plot_grid(p1, p2, labels = c("A", "B"), label_size = 30,
+  label_fontface = "bold", rel_widths=c(1,1))
+```
+
+
+
 # References
+
+
+
+
