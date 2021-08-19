@@ -365,6 +365,7 @@ CourtshipBgrd_Hawaii <- CourtshipBgrd %>%
            BodyRegion_AC_Court <- Wald_test(CourtshipAC_main, constraints = constrain_zero(4:6), 
                                   cluster = CourtshipBgrd_Hawaii$ID, vcov = "CR2")
 
+   
 
 ##########
 # Chromatic - dS
@@ -941,14 +942,16 @@ Table8
     str(diff.difftime) #how R is reading the stucture of the object, double checking the levels for body region after updating levels
 
 # Center SVL to make intercept interpretable
-    Diff$sc_SVL <- with(Diff, scale(SVL, scale=FALSE))
+    Diff$sc_SVL <- with(Diff, as.vector(scale(SVL, scale=FALSE)))
 
 # Filter missing SVL data
   Diff <- Diff %>% filter(!is.na(SVL)) # filter out misssing SVL data
 
 # create as factor
     Diff$BodyRegion <- factor(Diff$BodyRegion)
-
+# Add interaction for contrasts
+    Diff$Pop_BodReg <- with(Diff, interaction(Population, BodyRegion))
+    
 # Sample sizes
     N_diff <- data.frame(Diff %>% group_by(Population) %>% summarise(n = length(unique(ID))))
     
@@ -989,6 +992,29 @@ Table8
    robust_Diff_dl_svl <- Wald_test(Diff_dL, constraints = constrain_zero(2), 
                                   cluster = Diff$ID, vcov = "CR2")
 
+ # Get contrasts to understand the specific changes better. Refit model in slight different form. This is essentially an interaction model anyway because it's estimating the mean for Hawaiian and Kenyan background for each body region. The model above is just a contrast-based model.
+
+          Diff_pop_back_BR_AC <- lmer(dL_diff_abs ~ -1 +  sc_SVL + Pop_BodReg + (1|ID), data = Diff) 
+
+     # Fit Robust model
+          robust_Diff_pop_back_BR_AC <- clubSandwich::conf_int(Diff_pop_back_BR_AC, 
+                                                              cluster = Diff$ID, vcov =  "CR2")
+  
+     # Contrasts hypothesis tests, but use RVE 
+          result_robust_Diff_pop_back_BR_AC <- Wald_test(Diff_pop_back_BR_AC, 
+                                                   constraints = constrain_pairwise(c(2:9)),
+                                                   cluster = Diff$ID,
+                                                   vcov="CR2", tidy = TRUE)
+             result_robust_Diff_pop_back_BR_AC$p_val_bonfer <- sapply(p.adjust(result_robust_Diff_pop_back_BR_AC$p_val, "bonferroni"), 
+                                                                    function(x) p_value(x))
+      
+       # Grab contrasts that we need from the robust esatimtes
+      string <- c("Pop_BodRegKenya.gular - Pop_BodRegHawaii.gular|Pop_BodRegKenya.midflank - Pop_BodRegHawaii.midflank|Pop_BodRegKenya.tailbase - Pop_BodRegHawaii.tailbase|Pop_BodRegKenya.topflank - Pop_BodRegHawaii.topflank")
+      
+         result_robust_Diff_pop_back_BR_AC <- result_robust_Diff_pop_back_BR_AC[
+                                            grep(string, result_robust_Diff_pop_back_BR_AC$hypothesis),]
+   
+   
 ##################
 # Chromatic contrast
 ##################  
@@ -1024,6 +1050,29 @@ Table8
                                   cluster = Diff$ID, vcov = "CR2")
    robust_Diff_dS_svl <- Wald_test(Diff_dS, constraints = constrain_zero(2), 
                                   cluster = Diff$ID, vcov = "CR2")
+   
+   # Get contrasts to understand the specific changes better. Refit model in slight different form. This is essentially an interaction model anyway because it's estimating the mean for Hawaiian and Kenyan background for each body region. The model above is just a contrast-based model.
+
+          Diff_pop_back_BR_CC <- lmer(dS_diff_abs ~ -1 +  sc_SVL + Pop_BodReg + (1|ID), data = Diff) 
+
+     # Fit Robust model
+          robust_Diff_pop_back_BR_CC <- clubSandwich::conf_int(Diff_pop_back_BR_CC, 
+                                                              cluster = Diff$ID, vcov =  "CR2")
+  
+     # Contrasts hypothesis tests, but use RVE 
+          result_robust_Diff_pop_back_BR_CC <- Wald_test(Diff_pop_back_BR_CC, 
+                                                   constraints = constrain_pairwise(c(2:9)),
+                                                   cluster = Diff$ID,
+                                                   vcov="CR2", tidy = TRUE)
+             result_robust_Diff_pop_back_BR_CC$p_val_bonfer <- sapply(p.adjust(result_robust_Diff_pop_back_BR_CC$p_val, "bonferroni"), 
+                                                                    function(x) p_value(x))
+      
+       # Grab contrasts that we need from the robust esatimtes
+      string <- c("Pop_BodRegKenya.gular - Pop_BodRegHawaii.gular|Pop_BodRegKenya.midflank - Pop_BodRegHawaii.midflank|Pop_BodRegKenya.tailbase - Pop_BodRegHawaii.tailbase|Pop_BodRegKenya.topflank - Pop_BodRegHawaii.topflank")
+      
+         result_robust_Diff_pop_back_BR_CC <- result_robust_Diff_pop_back_BR_CC[
+                                            grep(string, result_robust_Diff_pop_back_BR_CC$hypothesis),]
+   
    
 ```
 To gauge the extent of individual color change, we calculated the absolute difference in JNDs between for each individual that had both display (male-male contest) and bird response data (N = `r N_diff[1,2]` individuals from Hawaii, N = `r N_diff[2,2]` Kenya). We chose these two color states to maximize sample size and because chameleons and birds have similar tetrachromatic visual systems. We tested whether the absolute difference in luminance or chromatic contrast between these two color states differed between populations and body regions. We included SVL, Population, Body region and the interaction between population and body region as fixed effects. ID was included as a random effect due to measures for more than one body region per individual.
