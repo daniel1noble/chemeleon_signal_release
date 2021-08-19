@@ -368,3 +368,29 @@ table_style13 <- function(table){
   
   return(table)
 }
+
+
+table_style14  <- function(table){
+  table <- table %>% 
+    align(align = "center", part = "header") %>% 
+    align(align = "center", part = "body") %>% 
+    flextable::compose(part = "header", j = 1, value = as_paragraph(as_b("Visual Spectrum"))) %>%
+    flextable::compose(part = "header", j = 2, value = as_paragraph(as_b("Contrast"))) %>%
+    flextable::compose(part = "header", j = 3, value = as_paragraph(as_b("F"))) %>%
+    flextable::compose(part = "header", j = 4, value = as_paragraph(as_b("DF"))) %>% 
+    flextable::compose(part = "header", j = 5, value = as_paragraph(as_b("p"))) %>% 
+    flextable::compose(part = "header", j = 6, value = as_paragraph(as_b("p"), as_sub(as_b(" Bonferroni")))) %>%
+    flextable::compose(part = "body", i = c(1,5), j = 2, 
+                       value = as_paragraph("Kenyan", as_sub(" gular"), " - ", "Hawaiian", as_sub(" gular")))  %>% 
+    flextable::compose(part = "body", i = c(2,6), j = 2, 
+                       value = as_paragraph("Kenyan", as_sub(" midflank"), " - ", "Hawaiian", as_sub(" midflank"))) %>% 
+    flextable::compose(part = "body", i = c(3,7), j = 2, 
+                       value = as_paragraph("Kenyan", as_sub(" tailbase"), " - ", "Hawaiian", as_sub(" tailbase"))) %>% 
+    flextable::compose(part = "body", i = c(4,8), j = 2, 
+                       value = as_paragraph("Kenyan", as_sub(" topflank"), " - ", "Hawaiian", as_sub(" topflank"))) %>% 
+    font(fontname="Times", part = "body") %>% 
+    font(fontname="Times", part = "header") %>% 
+    width(j = 1, width = 1) %>% width(j = 2, width = 8)
+  
+  return(table)
+}
