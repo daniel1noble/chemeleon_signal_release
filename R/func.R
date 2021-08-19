@@ -133,6 +133,8 @@ table_style3 <- function(table){
     flextable::compose(part = "header", j = 4, value = as_paragraph(as_b("df"), as_sub(as_b(" num")))) %>%
     flextable::compose(part = "header", j = 5, value = as_paragraph(as_b("df"), as_sub(as_b(" denom")))) %>% 
     flextable::compose(part = "header", j = 6, value = as_paragraph(as_b("p"))) %>% 
+    flextable::compose(part = "body", j = 2, i = c(4,9), value = as_paragraph("Predator", "* BodyRegion")) %>% 
+    flextable::compose(part = "body", j = 2, i = c(4,9)+1, value = as_paragraph("Predator", "* Population")) %>% 
     font(fontname="Times", part = "body") %>% 
     font(fontname="Times", part = "header")
   return(table)
