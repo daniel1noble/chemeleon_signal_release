@@ -1077,7 +1077,7 @@ Table8
 ```
 To gauge the extent of individual color change, we calculated the absolute difference in JNDs between for each individual that had both display (male-male contest) and bird response data (N = `r N_diff[1,2]` individuals from Hawaii, N = `r N_diff[2,2]` Kenya). We chose these two color states to maximize sample size and because chameleons and birds have similar tetrachromatic visual systems. We tested whether the absolute difference in luminance or chromatic contrast between these two color states differed between populations and body regions. We included SVL, Population, Body region and the interaction between population and body region as fixed effects. ID was included as a random effect due to measures for more than one body region per individual.
 
-Body regions varied in there overall effects but mainly showed a decrease in absolute JND difference between display and antipredator color states in Kenya compared to Hawaii (Fig. \@ref(fig:figDisplayPred)). While there was some evidence for an interaction between population and body region for luminance change (albeit weak) this was not the case for chromatic change (population by body region interaction: chromatic: $F_{`r robust_Diff_dS_int$df_num`,`r robust_Diff_dS_int$df_denom`}$ = `r robust_Diff_dS_int$Fstat`, p = `r p_value(robust_Diff_dS_int[,6])`; luminance: $F_{`r robust_Diff_dl_int$df_num`,`r robust_Diff_dl_int$df_denom`}$ = `r robust_Diff_dl_int$Fstat`, p = `r p_value(robust_Diff_dl_int[,6])`) (Fig. \@ref(fig:figDisplayPred) & Table \@ref(tab:tableS9)). However, the degree to which body regions varied within poplations was more apparent for luminance than for chromatic change (main effect of body region: chromatic: $F_{`r robust_Diff_dS_BR_me$df_num`,`r robust_Diff_dS_BR_me$df_denom`}$ = `r robust_Diff_dS_BR_me$Fstat`, p = `r p_value(robust_Diff_dS_BR_me[,6])`; luminance: $F_{`r robust_Diff_dL_BR_me$df_num`,`r robust_Diff_dL_BR_me$df_denom`}$ = `r robust_Diff_dL_BR_me$Fstat`, p = `r p_value(robust_Diff_dL_BR_me[,6])`) (Fig. \@ref(fig:figDisplayPred); Table \@ref(tab:tableS9)).
+Body regions varied in there overall effects but mainly showed a decrease in absolute JND difference between display and antipredator color states in Kenya compared to Hawaii (Fig. \@ref(fig:figDisplayPred)). While there was some evidence for an interaction between population and body region for luminance change (albeit weak) this was not the case for chromatic change (population by body region interaction: chromatic: $F_{`r robust_Diff_dS_int$df_num`,`r robust_Diff_dS_int$df_denom`}$ = `r robust_Diff_dS_int$Fstat`, p = `r p_value(robust_Diff_dS_int[,6])`; luminance: $F_{`r robust_Diff_dl_int$df_num`,`r robust_Diff_dl_int$df_denom`}$ = `r robust_Diff_dl_int$Fstat`, p = `r p_value(robust_Diff_dl_int[,6])`) (Fig. \@ref(fig:figDisplayPred) & Table \@ref(tab:tableS9)). However, the degree to which body regions varied within poplations was more apparent for luminance than for chromatic change (main effect of body region: chromatic: $F_{`r robust_Diff_dS_BR_me$df_num`,`r robust_Diff_dS_BR_me$df_denom`}$ = `r robust_Diff_dS_BR_me$Fstat`, p = `r p_value(robust_Diff_dS_BR_me[,6])`; luminance: $F_{`r robust_Diff_dL_BR_me$df_num`,`r robust_Diff_dL_BR_me$df_denom`}$ = `r robust_Diff_dL_BR_me$Fstat`, p = `r p_value(robust_Diff_dL_BR_me[,6])`) (Fig. \@ref(fig:figDisplayPred); Table \@ref(tab:tableS9) & Table \@ref(tab:tableS10)).
 
 ```{r, figDisplayPred, fig.align = 'center', fig.width = 13, fig.height = 7, fig.cap = " Extent of color plasticity between display (male-male contest) and anti-predator (bird) color states (absolute difference in JNDs between states) for Hawaiian (N = 30) and Kenyan (N = 13) chameleons. **(A)** Average chromatic and **(B)** luminance contrast are provided for each bory region"}
 ##########
@@ -1143,6 +1143,18 @@ tab9 <- read.csv("./output/tables/Table5_MS.csv")
 
 Table9 <- flextable(tab9) %>% table_style13() %>% fit_to_width(max_width = 7)
 Table9
+```
+
+
+```{r tableS10, tab.cap = "Pairwise Wald F tests for chromatic and luminance change between different body regions for color plasticity between display (male-male contest) and anti-predator (bird) color states (absolute difference in JNDs between states) for Hawaiian (N = 30) and Kenyan (N = 13) chameleons. F statistic, degrees of freedom (DF) and p-values are provided (p). A bonferroni correction to p-value is also provided to control for multiple testing."}
+
+tabS10 <- rbind(result_robust_Diff_pop_back_BR_AC, result_robust_Diff_pop_back_BR_CC)
+
+tabS10 <- tabS10 %>% mutate(VisRealm = c("Luminance Change", rep("",3), "Chromatic Change", rep("",3))) %>% 
+                        select(VisRealm, hypothesis, Fstat, df_denom, p_val, p_val_bonfer, -test, -delta, -df_num)
+
+Tables10 <- flextable(tabS10) %>% table_style14() %>% fit_to_width(max_width = 7)
+Tables10
 ```
 
 # References
