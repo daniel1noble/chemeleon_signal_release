@@ -563,7 +563,7 @@ img65
 
 ```{r figure2, fig.width = 14, fig.height= 14, fig.cap="**Mean spectral reflectance curves for male chameleons for representative body regions (gular, top flank) and background (leaves) for Hawaii and Kenya**. The context for measurement was (A) male contest displays; (B) courtship; (C) bird predator; and (D) snake predator. More details in online supplementary text and Fig. S5"}
 library(magick)
-img <- image_read_pdf("./output/figures/Figure3.pdf")
+img <- image_read("./output/figures/Figure3.png")
 img
 
 ```
