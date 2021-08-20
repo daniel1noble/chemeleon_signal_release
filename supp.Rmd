@@ -1,6 +1,5 @@
 ---
-title: "Supplemental Materials, Methods and Results"
-author: Whiting et al. 
+title: "Invasive chameleons released from predation display more conspicuous colors"
 date: "`r Sys.Date()`"
 bibliography: supp_refs.bib
 csl: science.csl
@@ -395,7 +394,7 @@ CourtshipBgrd_Hawaii <- CourtshipBgrd %>%
 
     # Get contrasts to understand the specific changes better. Refit model in slight different form. This is essentially an interaction model anyway because it's estimating the mean for Hawaiian and Kenyan background for each body region. The model above is just a contrast-based model.
 
-          CourtshipBgrd_pop_back_BR_CC <- lmer(dS ~ -1 +  sc_svl + pop_back_BR + (1|ID), data = CourtshipBgrd_Hawaii) 
+          CourtshipBgrd_pop_back_BR_CC <- lmer(dS ~ -1 +  sc_svl + pop_back_region + (1|ID), data = CourtshipBgrd_Hawaii) 
 
      # Fit Robust model
           robust_CourtshipBgrd_pop_back_BR_CC <- clubSandwich::conf_int(CourtshipBgrd_pop_back_BR_CC, 
@@ -418,21 +417,21 @@ CourtshipBgrd_Hawaii <- CourtshipBgrd %>%
 
 ```
 
-# Invasive chameleons released from predation display more conspicuous colors 
 Martin J. Whiting, Brenden S. Holland, J. Scott Keogh, Daniel W.A.Noble, Katrina J. Rankin and Devi M. Stuart-Fox
 
-Correspondance: Martin J. Whiting
-Email: Martin.Whiting@mq.edu.au
+Correspondance: Martin J. Whiting  
+Email: Martin.Whiting@mq.edu.au  
 
-The file includes:
-Supplementary text
-Figures S1 -- Sx
-Tables S1 -- Sx
-Supplementary References
+**The file includes**:
+
+Supplementary text  
+Figures S1 -- S9  
+Tables S1 -- S13  
+Supplementary References  
 
 # Expanded Hypotheses and Predictions
 
-We provided an expanded table of hypotheses and associated predictions. We also identify the data needed to test these predictions.
+We provide an expanded table of hypotheses and associated predictions. We also identify the data needed to test these predictions.
 
 ```{r tablehyp, tab.cap = "Hypotheses and associated predictions tested in this paper in relation to the population of interest, the receiver visual system used in visual modelling, and the background against which the contrast of the signal was calculated for chromatic and achromatic contrast."}
   source("./R/func.R") 
@@ -472,7 +471,7 @@ figs3 <- image_read("./output/figures/FigS3.jpg")
 figs3
 
 ```
-We staged trials between males to elicit dominant and subordinate displays and between males and females to elicit courtship displays. This consisted of placing two chameleons at a comfortable distance at which point they typically responded to the conspecific’s presence by rapidly changing color and behavior (Fig. \@ref(fig:Figcolsig)A,B). In male-male trials both individuals would adopt a lemon-yellow display coloration and advance towards each other. This would be accompanied by head shakes and would lead to horn-locking (Fig. \@ref(fig:Figcolsig)B) if males were not obviously asymmetric. Once dominance was settled, the subordinate would turn brown (Fig. \@ref(fig:Figcolsig)B and Fig. 3) and flee. In male-female (courtship) trials, males would turn the same lemon-yellow and approach the female while head shaking and rocking (Fig. \@ref(fig:Figcolsig)C). The day following social trials we presented each chameleon with a snake (Fig. \@ref(fig:Figcolsig4)A) and bird (Fig. \@ref(fig:Figcolsig4)B) model predator (separately). Lizards were drawn at random and the order of presentation (snake or bird first) was random. Both trials were conducted on the same day but were separated by at least three hours. A trial began when a chameleon was removed from its cloth bag and placed on the triangular stand. In the case of the snake model, one of us slowly moved the model snake towards the chameleon from both above and below it, without ever contacting the chameleon, in a standardized fashion (Fig. \@ref(fig:Figcolsig4)A). In the case of the bird trials, the bird was attached to an ca. 2 m wooden pole and was ‘flown’ past the chameleon from above and below it (Fig. \@ref(fig:Figcolsig4)B). Trials lasted no more than 2-min and we scored whether the chameleon flipped to the opposite side of the branch, which is a classic anti-predator behavior by chameleons. Once chameleons changed color, we quantified their spectral reflectance (details below). We also conducted seven trials with a just a branch with no predator attached, as a control for the model predator. The snake model was molded from a dead boomslang (*Dispholidus typus*) and painted by a professional artist to resemble a typical green form of this species (previously used in [@RN9;@RN10]). The bird was a mounted African cuckoo-hawk (*Aviceda cuculoides*).
+We staged trials between males to elicit dominant and subordinate displays and between males and females to elicit courtship displays. This consisted of placing two chameleons at a comfortable distance at which point they typically responded to the conspecific’s presence by rapidly changing color and behavior (Fig. \@ref(fig:Figcolsig)A,B). In male-male trials both individuals would adopt a lemon-yellow display coloration and advance towards each other. This would be accompanied by head shakes and would lead to horn-locking (Fig. \@ref(fig:Figcolsig)B) if males were not obviously asymmetric. Once dominance was settled, the subordinate would turn brown (Fig. \@ref(fig:Figcolsig)B and Fig. \@ref(fig:Figcolsig3)) and flee. In male-female (courtship) trials, males would turn the same lemon-yellow and approach the female while head shaking and rocking (Fig. \@ref(fig:Figcolsig)C). The day following social trials we presented each chameleon with a snake (Fig. \@ref(fig:Figcolsig4)A) and bird (Fig. \@ref(fig:Figcolsig4)B) model predator (separately). Lizards were drawn at random and the order of presentation (snake or bird first) was random. Both trials were conducted on the same day but were separated by at least three hours. A trial began when a chameleon was removed from its cloth bag and placed on the triangular stand. In the case of the snake model, one of us slowly moved the model snake towards the chameleon from both above and below it, without ever contacting the chameleon, in a standardized fashion (Fig. \@ref(fig:Figcolsig4)A). In the case of the bird trials, the bird was attached to an ca. 2 m wooden pole and was ‘flown’ past the chameleon from above and below it (Fig. \@ref(fig:Figcolsig4)B). Trials lasted no more than 2-min and we scored whether the chameleon flipped to the opposite side of the branch, which is a classic anti-predator behavior by chameleons. Once chameleons changed color, we quantified their spectral reflectance (details below). We also conducted seven trials with a just a branch with no predator attached, as a control for the model predator. The snake model was molded from a dead boomslang (*Dispholidus typus*) and painted by a professional artist to resemble a typical green form of this species (previously used in [@RN9;@RN10]). The bird was a mounted African cuckoo-hawk (*Aviceda cuculoides*).
 
 ```{r Figcolsig4, fig.align = 'center', fig.width = 12, fig.height = 12, fig.cap = "**We presented chameleons with model snake and bird predators to elicit an anti-predator response, particularly, color change, to test the hypothesis that character release in Hawaii would also result in a signal more conspicuous to a predator**. **(A)** A model snake (*Dispholidus typus*) causing a characteristic contrasting color change and **(B)** a model bird (*Aviceda cuculoides*) which was flown over the top of the chameleon"}
 figs4 <- image_read("./output/figures/FigS4.jpg")
@@ -569,7 +568,7 @@ Of the individuals used in social interactions (male-male display or male courts
 
 ## Supporting Supplementary Tables for Main Text
 
-```{r table1, fig.width = 8, fig.height = 1, fig.asp = 0.1136364, tab.cap = "**Results of models comparing mean differences between Kenyan and Hawaiian lizards in luminance and chromatic contrast against the local background in two social contexts (male-male competition and courtship)**. Model estimates, standard errors (SE), Satterthwaite degrees of freedom (df) and 95% confidence internals (95% CI). Standard errors are corrected by using robust variance estimators "}
+```{r table1, fig.width = 8, fig.height = 1, fig.asp = 0.1136364, tab.cap = "Results of models comparing mean differences between Kenyan and Hawaiian lizards in luminance and chromatic contrast against the local background in two social contexts (male-male competition and courtship). Model estimates, standard errors (SE), Satterthwaite degrees of freedom (df) and 95% confidence internals (95% CI). Standard errors are corrected by using robust variance estimators "}
 source("./R/func.R")
 final_T1 <-  read.csv(file = "./output/tables/Table1_MS.csv")
   
@@ -579,7 +578,7 @@ final_T1 <-  read.csv(file = "./output/tables/Table1_MS.csv")
  
 ```
 
-```{r table2, fig.width = 8, fig.height = 1, fig.asp = 0.1136364, tab.cap = "**Results of models comparing luminance and chromatic mean differences between Kenyan and Hawaiian lizards in response to snakes and birds**. Model estimates, standard errors (SE), Satterthwaite degrees of freedom (df) and 95% confidence internals (95% CI). Full models are provided and standard errors are corrected by using robust variance estimators."}
+```{r table2, fig.width = 8, fig.height = 1, fig.asp = 0.1136364, tab.cap = "Results of models comparing luminance and chromatic mean differences between Kenyan and Hawaiian lizards in response to snakes and birds. Model estimates, standard errors (SE), Satterthwaite degrees of freedom (df) and 95% confidence internals (95% CI). Full models are provided and standard errors are corrected by using robust variance estimators."}
   final_T2 <- read.csv(file = "./output/tables/Table2_MS.csv")
   # Table
  table2 <- flextable(final_T2) %>%
@@ -588,14 +587,13 @@ final_T1 <-  read.csv(file = "./output/tables/Table1_MS.csv")
  table2
 ```
 
-```{r table3, fig.width = 9, fig.height = 1, fig.asp = 0.1136364, tab.cap = "**Planned contrasts between mean luminance and chromatic contrast in Hawaii and Kenya for both predators (snakes and birds)**. Estimates of the mean difference ebtween Hawaii and Kenya propulations are provided along with their 95% confidence intervals (95% CI lower and upper). Wald tests of contrast significance are provided (F, degrees of freedom (df) and associated p-value).  We also applied a Bonferroni correction to p-value to control for multiple comparisons."}
+```{r table3, fig.width = 9, fig.height = 1, fig.asp = 0.1136364, tab.cap = "Planned contrasts between mean luminance and chromatic contrast in Hawaii and Kenya for both predators (snakes and birds). Estimates of the mean difference ebtween Hawaii and Kenya propulations are provided along with their 95% confidence intervals (95% CI lower and upper). Wald tests of contrast significance are provided (F, degrees of freedom (df) and associated p-value).  We also applied a Bonferroni correction to p-value to control for multiple comparisons."}
  contrast <- read.csv(file = "./output/tables/Table3_MS.csv")
  table3 <- flextable(contrast) %>% table_style8() %>% fit_to_width(max_width = 7)
  table3
 ```
 
-
-```{r table4, fig.width = 9, fig.height = 1, fig.asp = 0.1136364, tab.cap = "**Results of models comparing luminance and chromatic contrast of Hawaiian lizards against their introduced Hawaiian background (intercept) and Hawaiian lizards against their native Kenyan background (background = Kenya) in both social contexts (male-male competition and courtship)**. Model estimates (mean and contrasts), standard error (SE), degrees of freedom (df) and 95% confidence intervals (95% CI) for Models were fit using robust variance estimators to correct standard errors for non-independence, and we used a Saitterwaite degrees of freedom. Significant parameter estimates are those where the 95% CIs do not include zero."}
+```{r table4, fig.width = 9, fig.height = 1, fig.asp = 0.1136364, tab.cap = "Results of models comparing luminance and chromatic contrast of Hawaiian lizards against their introduced Hawaiian background (intercept) and Hawaiian lizards against their native Kenyan background (background = Kenya) in both social contexts (male-male competition and courtship). Model estimates (mean and contrasts), standard error (SE), degrees of freedom (df) and 95% confidence intervals (95% CI) for Models were fit using robust variance estimators to correct standard errors for non-independence, and we used a Saitterwaite degrees of freedom. Significant parameter estimates are those where the 95% CIs do not include zero."}
  tb4 <- read.csv(file = "./output/tables/Table4_MS.csv")
  table4 <- flextable(tb4) %>% table_style9() %>% fit_to_width(max_width = 7)
  table4
@@ -1144,7 +1142,6 @@ tab9 <- read.csv("./output/tables/Table5_MS.csv")
 Table9 <- flextable(tab9) %>% table_style13() %>% fit_to_width(max_width = 7)
 Table9
 ```
-
 
 ```{r tableS10, tab.cap = "Pairwise Wald F tests for chromatic and luminance change between different body regions for color plasticity between display (male-male contest) and anti-predator (bird) color states (absolute difference in JNDs between states) for Hawaiian (N = 30) and Kenyan (N = 13) chameleons. F statistic, degrees of freedom (DF) and p-values are provided (p). A bonferroni correction to p-value is also provided to control for multiple testing."}
 
