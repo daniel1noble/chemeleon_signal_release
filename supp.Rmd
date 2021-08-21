@@ -417,7 +417,7 @@ CourtshipBgrd_Hawaii <- CourtshipBgrd %>%
 
 ```
 
-Martin J. Whiting, Brenden S. Holland, J. Scott Keogh, Daniel W.A.Noble, Katrina J. Rankin and Devi M. Stuart-Fox
+Martin J. Whiting, Brenden S. Holland, J. Scott Keogh, Daniel W.A.Noble, Katrina J. Rankin and Devi Stuart-Fox
 
 Correspondance: Martin J. Whiting  
 Email: Martin.Whiting@mq.edu.au  

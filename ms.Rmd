@@ -1,5 +1,5 @@
 ---
-title: "Rapid evolution of a conspicuous dynamic visual signal in an introduced chameleon"
+title: "Invasive chameleons released from predation display more conspicuous colors"
 bibliography: ms_refs.bib
 csl: science.csl
 output: 
@@ -514,7 +514,7 @@ CourtshipBgrd <- CourtshipBgrd %>%
    
 ```
 
-Martin J. Whiting^1^, Brenden S. Holland^2^, J. Scott Keogh^3^, Daniel W.A.Noble^3^, Katrina J. Rankin^4^ and Devi M. Stuart-Fox^4^
+Martin J. Whiting^1^, Brenden S. Holland^2^, J. Scott Keogh^3^, Daniel W.A.Noble^3^, Katrina J. Rankin^4^ and Devi Stuart-Fox^4^
 
 ^1^ Department of Biological Sciences, Macquarie University, Sydney, NSW 2109, Australia
 
@@ -522,7 +522,7 @@ Martin J. Whiting^1^, Brenden S. Holland^2^, J. Scott Keogh^3^, Daniel W.A.Noble
 
 ^3^ Division of Ecology and Evolution, Research School of Biology, The Australian National University, Canberra, ACT 2602, Australia
 
-^4^ Department of Zoology, The University of Melbourne, Melbourne, Victoria 3010, Australia
+^4^ School of BioSciences, The University of Melbourne, Parkville, Victoria 3010, Australia
 
 # Abstract
 Colonization of novel environments can free introduced populations from the constraints imposed by native-range predators and promote rapid evolutionary change. We demonstrate such character release for color signals in Jackson’s chameleons (*Trioceros j. xanthopholus*) inadvertently introduced from Kenya to Hawaii (Oahu) where there are few lizard predators. Hawaiian chameleons displayed more conspicuous color signals than Kenyan chameleons during male contests and courtship, were less cryptic in response to bird and snake predators, and showed greater change between display and anti-predator color states. Consistent with local adaptation, the display colors of Hawaiian chameleons were more conspicuous in their local than ancestral habitats. These results demonstrate that relaxed predation pressure can result in character release of dynamic social signals in introduced species experiencing strong sexual selection.
