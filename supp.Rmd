@@ -433,7 +433,7 @@ Supplementary References
 
 We provide an expanded table of hypotheses and associated predictions. We also identify the data needed to test these predictions.
 
-```{r tablehyp, tab.cap = "Hypotheses and associated predictions tested in this paper in relation to the population of interest, the receiver visual system used in visual modelling, and the background against which the contrast of the signal was calculated for chromatic and achromatic contrast."}
+```{r tablehyp, tab.cap = "Hypotheses and associated predictions tested in this paper in relation to the population of interest, the receiver visual system used in visual modelling, and the background against which the contrast of the signal was calculated for chromatic and luminance contrast."}
   source("./R/func.R") 
   hyp <-  read.csv(file = "./output/tables/Table_hyp_pred.csv")
 
@@ -606,7 +606,7 @@ final_T1 <-  read.csv(file = "./output/tables/Table1_MS.csv")
 
 Chromatic contrast of color signals against the background varied by predator type, population and body region (Figure \@ref(fig:FigS3)A; Table \@ref(tab:tableS3)). Whereas all body regions in Kenyan chameleons showed a reduced contrast against the background for birds there were small differences among populations in how snakes perceived color signals (Figure \@ref(fig:FigS3)A). There was no significant interaction between predator type ('bird' vs 'snake') and population in luminance contrast against the background, but a marginally non-significant population and body region effect (Figure \@ref(fig:FigS3)B; Table \@ref(tab:tableS3)). Effects did not vary by predator type (Table \@ref(tab:tableS3)). Nonetheless, effect sizes across body regions were generally in the same direction (Figure \@ref(fig:FigS3)B & Table \@ref(tab:tableS4)). Overall, there were significant differences between Kenya and Hawaii in luminance contrast of the gular and tailbase regions, but not for mid- and top-flank (Table \@ref(tab:tableS5)). In contrast, no significant differences between Kenya and Hawaii existed across any body region for snakes, whereas significant differences existed between gular, midflank and tailbase for birds (Table \@ref(tab:tableS6)).
 
-```{r FigS3, fig.align = 'center', fig.width = 12, fig.height = 12, fig.cap = "All four body regions (gular, mid-flank, tailbase and topflank) and their achromatic (B) and chromatic contrast (A) to Hawaiian and Kenyan backgrounds (each population against their own background) are shown averaged across stems and leaves found in their habitat. Just noticable differences (JNDs) are calculated for both bird and snake predators. Mean JNDs are provided along with 95% confidence intervals."}
+```{r FigS3, fig.align = 'center', fig.width = 12, fig.height = 12, fig.cap = "All four body regions (gular, mid-flank, tailbase and topflank) and their luminance (B) and chromatic contrast (A) to Hawaiian and Kenyan backgrounds (each population against their own background) are shown averaged across stems and leaves found in their habitat. Just noticable differences (JNDs) are calculated for both bird and snake predators. Mean JNDs are provided along with 95% confidence intervals."}
 
 # Load the data
 Predator <- read.table("./data/Predator_2_3.csv", 
@@ -892,7 +892,7 @@ plot_grid(pS4.4, pS4.3, pS4.1, pS4.2 , labels = c("A", "B", "C", "D"), label_siz
 
 ```
 
-```{r tableS7, tab.cap = "Estimated model parameters, standard errors (SE), degrees of freedom (df) along with 95% confidence interval for each parameter. Main effects and interaction models are presented. Only main effect models are presented for achromatic contrast (see text for details), whereas interaction models are presented for chromatic contrast. Pairwise contrasts are presented for chromatic contrast models (see Table 8) for ease of interpretation."}
+```{r tableS7, tab.cap = "Estimated model parameters, standard errors (SE), degrees of freedom (df) along with 95% confidence interval for each parameter. Main effects and interaction models are presented. Only main effect models are presented for luminance contrast (see text for details), whereas interaction models are presented for chromatic contrast. Pairwise contrasts are presented for chromatic contrast models (see Table 8) for ease of interpretation."}
 table7 <- rbind(robust_localAdapt_DispBgrdAC,
                 robust_DispBgrdCC,
                 robust_CourtshipAC,
