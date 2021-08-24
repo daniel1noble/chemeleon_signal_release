@@ -420,7 +420,7 @@ CourtshipBgrd_Hawaii <- CourtshipBgrd %>%
 Martin J. Whiting, Brenden S. Holland, J. Scott Keogh, Daniel W.A.Noble, Katrina J. Rankin and Devi Stuart-Fox
 
 Correspondance: Martin J. Whiting  
-Email: Martin.Whiting@mq.edu.au  
+Email: martin.whiting@mq.edu.au  
 
 **The file includes**:
 
@@ -431,9 +431,9 @@ Supplementary References
 
 # Expanded Hypotheses and Predictions
 
-We provide an expanded table of hypotheses and associated predictions. We also identify the data needed to test these predictions.
+We provide an expanded table of the key hypothesis and associated predictions. We also identify the data needed to test these predictions.
 
-```{r tablehyp, tab.cap = "Hypotheses and associated predictions tested in this paper in relation to the population of interest, the receiver visual system used in visual modelling, and the background against which the contrast of the signal was calculated for chromatic and luminance contrast."}
+```{r tablehyp, tab.cap = "Hypothesis and associated predictions tested in this paper in relation to the population of interest, the receiver visual system used in visual modelling, and the background against which the contrast of the signal was calculated for chromatic and luminance contrast."}
   source("./R/func.R") 
   hyp <-  read.csv(file = "./output/tables/Table_hyp_pred.csv")
 
