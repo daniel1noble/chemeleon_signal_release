@@ -677,13 +677,13 @@ plot_grid(p4, p3, nrow = 2, ncol = 1, labels = c("A", "B"), label_size = 30,
 ```
 
 ```{r tableS3, tab.cap = "Wald F tests comparing the significance of model parameters for predator models. Wald F tests were computed using robust variance estimators with a Saitterwaite correction to the degrees of freedom. Interactions were first tested and models refit to test the signifiacnce of main effects"}
-
+source("./R/func.R")
 fulltableP <- rbind(Wald_table_PredatorAC,
                     Wald_table_PredatorCC)
 
 fulltableP <- fulltableP %>% mutate(JND = c("Luminance Contrast", rep("",4), "Chromatc Contrast", rep("",4)),
                                             p_val = sapply(p_val, function(x) p_value(x))) %>% 
-                                      select(JND, Variable, Fstat, df_num, df_denom, p_val)
+                                      dplyr::select(JND, Variable, Fstat, df_num, df_denom, p_val)
 
 S4 <- flextable(fulltableP) %>%
         table_style3(.) %>% fit_to_width(max_width = 7)
@@ -893,6 +893,7 @@ plot_grid(pS4.4, pS4.3, pS4.1, pS4.2 , labels = c("A", "B", "C", "D"), label_siz
 ```
 
 ```{r tableS7, tab.cap = "Estimated model parameters, standard errors (SE), degrees of freedom (df) along with 95% confidence interval for each parameter. Main effects and interaction models are presented. Only main effect models are presented for luminance contrast (see text for details), whereas interaction models are presented for chromatic contrast. Pairwise contrasts are presented for chromatic contrast models (see Table 8) for ease of interpretation."}
+source("./R/func.R")
 table7 <- rbind(robust_localAdapt_DispBgrdAC,
                 robust_DispBgrdCC,
                 robust_CourtshipAC,
@@ -902,10 +903,10 @@ table7$Paramater <- rownames(table7)
 rownames(table7) <- NULL
 
 table7 <- table7 %>% 
-              mutate(Context = c("Male-Male Display", rep("", 12), "Courtship Display", rep("", 12)),
-                     JND = c("Luminance Contrast", rep("", 4), "Chromatic Contrast", rep("", 7), 
-                             "Luminance Contrast", rep("", 4), "Chromatic Contrast", rep("", 7))) %>% 
-                      select(Context, JND, Paramater, beta, SE, df, CI_L, CI_U)
+              mutate(Context = c("Male-Male Display", rep("", 14), "Courtship Display", rep("", 14)),
+                     JND = c("Luminance Contrast", rep("", 5), "Chromatic Contrast", rep("", 8), 
+                             "Luminance Contrast", rep("", 5), "Chromatic Contrast", rep("", 8))) %>% 
+                      dplyr::select(Context, JND, Paramater, beta, SE, df, CI_L, CI_U)
 
 Table7 <- flextable(table7) %>% table_style10() %>% fit_to_width(max_width = 7)
 Table7
