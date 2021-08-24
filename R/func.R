@@ -33,11 +33,11 @@ wald_table   <- function(model_main, model_inter){
                         "Population", 
                         "Body Region", 
                         "Population:Body Region")) %>% 
-    select(Variable, Fstat, df_num, df_denom, p_val) %>% as.data.frame()
+    dplyr::select(Variable, Fstat, df_num, df_denom, p_val) %>% as.data.frame()
   
   return(WaldTab)
   }
-  
+
 wald_table_p <- function(model_main, model_inter){
     
     inter_BR_Pred <- Wald_test(model_inter, 
@@ -69,7 +69,7 @@ wald_table_p <- function(model_main, model_inter){
                           "Predator", 
                           "Predator:Body Region",
                           "Predator:Population")) %>% 
-      select(Variable, Fstat, df_num, df_denom, p_val) %>% as.data.frame()
+      dplyr::select(Variable, Fstat, df_num, df_denom, p_val) %>% as.data.frame()
     
     return(WaldTab)
   }
