@@ -429,6 +429,8 @@ Figures S1 -- S9
 Tables S1 -- S13  
 Supplementary References  
 
+[@RN15ms;@RN7ms;@RN11ms;@RN6ms;@RN22ms;@RN2ms;@RN25ms;@RN8ms;@RN3ms;@RN1ms;@RN13ms;@RN18ms;@RN9ms;@RN12ms;@RN26ms;@RN24ms;@RN19ms;@RN5ms;@Measey2014ms;@RN20ms;@RN14ms;@RN4ms;@RN10ms]
+
 # Expanded Hypotheses and Predictions
 
 We provide an expanded table of the key hypothesis and associated predictions. We also identify the data needed to test these predictions.
@@ -691,6 +693,7 @@ S4
 ```
 
 ```{r tableS4, tab.cap = "Estimated model parameters, standard errors (SE), degrees of freedom (df) along with 95% confidence interval for each parameter from linear mixed effects models. Standard errors were corrected using robust variance estimators and Saitterwaite degrees of freedom correction was used for calculated significance"}
+source("./R/func.R")
 robust_sc_pred_table <- rbind(robust_PredatorAC,
                          robust_PredatorCC) %>% 
                     mutate(p_Satt = sapply(p_Satt, function(x) p_value(x)),
@@ -707,7 +710,7 @@ tableS6
 ```
 
 ```{r tableS5, tab.cap = "Pairwise comparisons of luminance contrast between Kenyan and Hawaiian chameleon displays to a snake and bird visual system. Four different body regions ('gular', 'midflank', 'tailbase', topflank') are provided along with pairwise Wald test for contrast significance. Wald test uses a robust variance correction on the standard errors."}
-
+source("./R/func.R")
 # Split snakes and birds
 result5_snake <-  result5[grep("snake", result5$hypothesis), ] %>% mutate(Species = c("Snake", rep("",3)))
  result5_bird <- result5[grep("bird", result5$hypothesis), ] %>% mutate(Species = c("Bird", rep("",3)))
@@ -733,7 +736,7 @@ ft5 <- flextable(final_r5) %>%
 ```
 
 ```{r tableS6, tab.cap = "Pairwise comparisons of chromatic contrast between Kenyan and Hawaiian chameleon displays to a snake and bird visual system. Four different body regions ('gular', 'midflank', 'tailbase', topflank') are provided along with pairwise Wald test for contrast significance. Wald test uses a robust variance correction on the standard errors."}
-
+source("./R/func.R")
 # Split snakes and birds
 
 result6_snake <- result6[grep("snake", result6$hypothesis), ] %>% mutate(Species = c("Snake", rep("",3)))
@@ -913,6 +916,8 @@ Table7
 ```
 
 ```{r tableS8, tab.cap = "Pairwise Wald F tests comparing changes in chromatic contrast between different body regions for Hawaiian lizards against both Hawaiian and Kenyan backgrounds during male-male and courtship displays. F statistic, degrees of freedom (DF) and p-values are provided (p). A bonferroni correction to p-value is also provided to control for multiple testing. See Table 7 for model estimates."}
+
+source("./R/func.R")
 tab8 <- rbind(result_DisplayBgrd_pop_back_regionCC,
               result_CourtshipBgrd_pop_back_BR_CC) %>%  as.data.frame()
 
@@ -930,6 +935,7 @@ Table8
 #########################################################
 # Comparing displays
 #########################################################
+source("./R/func.R")
  # Load data from Devi
        Display_bird_diff <- read_excel("data/Display_bird_diff.xlsx")
        
@@ -1140,6 +1146,7 @@ plot_grid(p1, p2, labels = c("A", "B"), label_size = 30,
 ```
 
 ```{r tableS9, tab.cap = "Estimated model parameters, standard errors (SE), degrees of freedom (df) along with 95% confidence interval for each parameter. Full interaction models are presented for chromatic and luminance change (absolute JND)."}
+source("./R/func.R")
 tab9 <- read.csv("./output/tables/Table5_MS.csv")
 
 Table9 <- flextable(tab9) %>% table_style13() %>% fit_to_width(max_width = 7)
@@ -1147,7 +1154,7 @@ Table9
 ```
 
 ```{r tableS10, tab.cap = "Pairwise Wald F tests for chromatic and luminance change between different body regions for color plasticity between display (male-male contest) and anti-predator (bird) color states (absolute difference in JNDs between states) for Hawaiian (N = 30) and Kenyan (N = 13) chameleons. F statistic, degrees of freedom (DF) and p-values are provided (p). A bonferroni correction to p-value is also provided to control for multiple testing."}
-
+source("./R/func.R")
 tabS10 <- rbind(result_robust_Diff_pop_back_BR_AC, result_robust_Diff_pop_back_BR_CC)
 
 tabS10 <- tabS10 %>% mutate(VisRealm = c("Luminance Change", rep("",3), "Chromatic Change", rep("",3))) %>% 
