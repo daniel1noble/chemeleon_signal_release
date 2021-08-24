@@ -356,7 +356,7 @@ table_style13 <- function(table){
     flextable::compose(part = "header", j = 6, value = as_paragraph(as_b("95% CI"), as_sub(as_b("lower")))) %>% 
     flextable::compose(part = "header", j = 7, value = as_paragraph(as_b("95% CI"), as_sub(as_b("upper")))) %>% 
     flextable::compose(part = "body", j = 2, i = c(1, 10), value = as_paragraph("Intercept")) %>%
-    flextable::compose(part = "body", j = 2, i = c(1, 10)+1, value = as_paragraph("Snout-vent Length")) %>%
+    flextable::compose(part = "body", j = 2, i = c(1, 10)+1, value = as_paragraph("Snout-vent Length (SVL)")) %>%
     flextable::compose(part = "body", j = 2, i = c(1, 10)+2, value = as_paragraph("Population", as_sub(" Kenya"))) %>%
     flextable::compose(part = "body", j = 2, i = c(1, 10)+3, value = as_paragraph("Body Region", as_sub(" midflank"))) %>%
     flextable::compose(part = "body", j = 2, i = c(1, 10)+4, value = as_paragraph("Body Region", as_sub(" tailbase"))) %>%
