@@ -153,7 +153,7 @@ table_style4 <- function(table){
     flextable::compose(part = "header", j = 7, value = as_paragraph(as_b("df"))) %>% 
     flextable::compose(part = "header", j = 8, value = as_paragraph(as_b("p"))) %>% 
     flextable::compose(part = "body", j = 3, i = c(1, 10, 19, 28), value = as_paragraph("Intercept")) %>%
-    flextable::compose(part = "body", j = 3, i = c(1, 10, 19, 28)+1, value = as_paragraph("SVL")) %>%
+    flextable::compose(part = "body", j = 3, i = c(1, 10, 19, 28)+1, value = as_paragraph("Snout-vent Length (SVL)")) %>%
     flextable::compose(part = "body", j = 3, i = c(1, 10, 19, 28)+2, value = as_paragraph("Population", as_sub(" Kenya"))) %>%
     flextable::compose(part = "body", j = 3, i = c(1, 10, 19, 28)+3, value = as_paragraph("Body Region", as_sub(" midflank"))) %>%
     flextable::compose(part = "body", j = 3, i = c(1, 10, 19, 28)+4, value = as_paragraph("Body Region", as_sub(" tailbase"))) %>%
@@ -209,7 +209,7 @@ table_style6 <- function(table){
     flextable::compose(part = "header", j = 7, value = as_paragraph(as_b("95% CI"), as_sub(as_b(" lower")))) %>% 
     flextable::compose(part = "header", j = 8, value = as_paragraph(as_b("95% CI"), as_sub(as_b(" upper")))) %>% 
     flextable::compose(part = "body", j = 3, i = c(1,4,7,10), value = as_paragraph("Intercept")) %>%
-    flextable::compose(part = "body", j = 3, i = c(1,4,7,10)+1, value = as_paragraph("SVL", as_sub(" z-transformed"))) %>%
+    flextable::compose(part = "body", j = 3, i = c(1,4,7,10)+1, value = as_paragraph("Snout-vent Length (SVL)")) %>%
     flextable::compose(part = "body", j = 3, i = c(1,4,7,10)+2, value = as_paragraph("Population", as_sub(" Kenya"))) %>% 
     font(fontname="Times", part = "body") %>% 
     font(fontname="Times", part = "header")
@@ -289,7 +289,7 @@ table_style10 <- function(table){
     flextable::compose(part = "header", j = 7, value = as_paragraph(as_b("95% CI"), as_sub(as_b("lower")))) %>% 
     flextable::compose(part = "header", j = 8, value = as_paragraph(as_b("95% CI"), as_sub(as_b("upper")))) %>% 
     flextable::compose(part = "body", j = 3, i = c(1, 7, 16, 22), value = as_paragraph("Intercept")) %>%
-    flextable::compose(part = "body", j = 3, i = c(1, 7, 16, 22)+1, value = as_paragraph("SVL", as_sub(" z"))) %>%
+    flextable::compose(part = "body", j = 3, i = c(1, 7, 16, 22)+1, value = as_paragraph("Snout-vent length (SVL)")) %>%
     flextable::compose(part = "body", j = 3, i = c(1, 7, 16, 22)+2, value = as_paragraph("Background Population", as_sub(" Kenya"))) %>%
     flextable::compose(part = "body", j = 3, i = c(1, 7, 16, 22)+3, value = as_paragraph("Body Region", as_sub(" midflank"))) %>%
     flextable::compose(part = "body", j = 3, i = c(1, 7, 16, 22)+4, value = as_paragraph("Body Region", as_sub(" tailbase"))) %>%
