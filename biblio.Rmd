@@ -17,14 +17,14 @@ output:
     bibliography: refs.bib
 ---
 
-```{r setup, include=FALSE, purl = FALSE}
+```{r setup1, include=FALSE, purl = FALSE}
 knitr::opts_chunk$set(echo = FALSE, cache = TRUE, message = FALSE, warning = FALSE, tidy = TRUE, fig.width = 10)
 ## numbers >= 10^5 will be denoted in scientific notation,      ## numbers >= 10^5 will be denoted in scientific notation,
   ## and rounded to 2 digits      ## and rounded to 2 digits
   options(digits = 2)
 ```
 
-```{r getlibrary, echo = FALSE, results = "hide"}
+```{r getlibrary1, echo = FALSE, results = "hide"}
 # load libraries
 devtools::install_github("karthik/wesanderson")
 pacman::p_load(lme4, lmerTest, ggplot2, lsmeans, emmeans, multcomp, dplyr, wesanderson, patchwork, latex2exp, png, cowplot, magick, jpeg, clubSandwich, flextable, readxl)
@@ -861,78 +861,6 @@ plot_grid(p1.2, p2.2, labels = c("A", "B"), label_size = 16,
 
 ```
 
-```{r table4, results='hide'}
-#Section will create and write Tables for Supplement. It is not spit out in the main MS. Exported then imported for the supp
-
-# Table S1
-    table1 <- as.data.frame(rbind(robust_ConspicDisplayAC_CI,
-                    robust_ConspicDisplayCC_CI,
-                    robust_ConspicCourtshipAC_CI,
-                    robust_ConspicCourtshipCC_CI))
-    table1$Parameter <- rownames(table1)
-    rownames(table1) <- NULL
-    # Clean
-     final_T1 <- table1 %>% 
-                 mutate(SocialContext = c("Male-Male Display", rep("", 5), "Courtship Display", rep("", 5)),
-                        VisualRealm = c("Luminance  Contrast", rep("", 2), "Chromatic Contrast", rep("", 2), 
-                                        "Luminance Contrast", rep("", 2), "Chromatic Contrast", rep("", 2))) %>%
-                  select(SocialContext, VisualRealm, Parameter, beta, SE, df, CI_L, CI_U)
-     write.csv(final_T1, file = "./output/tables/Table1_MS.csv", row.names = FALSE)
- 
-# Table S2
-    table2 <- as.data.frame(rbind(robust_PredatorAC_CI_inter,
-                                  robust_PredatorCC_CI_inter))
-    table2$Parameter <- rownames(table2)
-    rownames(table2) <- NULL
-    
-    # Clean
-     final_T2 <- table2 %>% 
-                 mutate(JND = c("Luminance Contrast", rep("", 3), "Chromatic Contrast", rep("", 3))) %>%
-                  select(JND, Parameter, beta, SE, df, CI_L, CI_U)
-     write.csv(final_T2, file = "./output/tables/Table2_MS.csv", row.names = FALSE)
-
- #Table S3
-    contrast <- rbind(CI_hyp_test,
-                     CI_hyp_testAC)
-    
-    contrast <- contrast %>% mutate(VisualSpec = c("Chromatic Contrast", "", "Luminance Contrast", ""),
-                                    p_val = sapply(p_val, function(x) p_value(x))) %>% 
-                select(VisualSpec, comparison, Estimate, lwr, upr, Fstat, df, p_val, p_bonf)
-    
-    write.csv(contrast, file = "./output/tables/Table3_MS.csv", row.names = FALSE)
-
-
-#TableS4
-    tb4 <- data.frame(rbind(robust_localAdapt_DispBgrdAC,
-                 robust_DispBgrdCC,
-                 robust_CourtshipAC,
-                 robust_CourtshipCC))
-    tb4$parameter <- rownames(tb4)
-    rownames(tb4) <- NULL
-    
-    tb4 <- tb4 %>% mutate(SocialContext = c("Male-Male Display", rep("", 5), 
-                                            "Courtship Display", rep("", 5)),
-                        VisualRealm = c("Luminance Contrast", rep("", 2), "Chromatic Contrast", 
-                                        rep("", 2), "Luminance Contrast", rep("", 2), 
-                                        "Chromatic Contrast", rep("", 2))) %>%
-                  select(SocialContext, VisualRealm, parameter, beta, SE, df, CI_L, CI_U)
-    
-    write.csv(tb4, file = "./output/tables/Table4_MS.csv", row.names = FALSE)
-
-
-# Table S5
-    tb5 <- data.frame(rbind(robust_Diff_dL_BR_int,
-                            robust_Diff_dS_BR_int))
-    tb5$parameter <- rownames(tb5)
-    rownames(tb5) <- NULL
-    
-  tb5 <- tb5 %>% mutate(VisualRealm = c("Luminance Contrast", rep("", 8), "Chromatic Contrast", 
-                                        rep("", 8))) %>%
-                  select(VisualRealm, parameter, beta, SE, df, CI_L, CI_U)
-     write.csv(tb5, file = "./output/tables/Table5_MS.csv", row.names = FALSE)
-    
-```
-
 ```{r setup, include=FALSE, purl = FALSE}
 knitr::opts_chunk$set(echo = FALSE, cache = TRUE, message = FALSE, warning = FALSE, tidy = TRUE)
 ## numbers >= 10^5 will be denoted in scientific notation,      ## numbers >= 10^5 will be denoted in scientific notation,
@@ -1392,7 +1320,7 @@ figs3
 
 We staged trials between males to elicit dominant and subordinate displays and between males and females to elicit courtship displays. This consisted of placing two chameleons at a comfortable distance at which point they typically responded to the conspecific’s presence by rapidly changing color and behavior (Fig. S\@ref(fig:Figcolsig)A,B). In male-male trials both individuals would adopt a lemon-yellow display coloration and advance towards each other. This would be accompanied by head shakes and gapping, leading to horn-locking (Fig. S\@ref(fig:Figcolsig)B) if males were not obviously asymmetric. Once dominance was settled, the subordinate would turn brown (Fig. S\@ref(fig:Figcolsig)B and Fig. S\@ref(fig:Figcolsig3)) and flee. In male-female (courtship) trials, males would turn the same lemon-yellow and approach the female while head shaking and rocking (Fig. S\@ref(fig:Figcolsig)C). 
 
-The day following social trials we presented each chameleon with a snake (Fig. S\@ref(fig:Figcolsig4)A) and bird (Fig. S\@ref(fig:Figcolsig4)B) model predator model (separately). Lizards were drawn at random and the order of presentation (snake or bird first) was random. Both trials were conducted on the same day but were separated by at least three hours. A trial began when a chameleon was removed from its cloth bag and placed on the triangular stand. In the case of the snake model, one of us slowly moved the model snake towards the chameleon from both above and below it, without ever contacting the chameleon, in a standardized fashion (Fig. S\@ref(fig:Figcolsig4)A). In the case of the bird trials, the bird was attached to an ca. 2 m wooden pole and was ‘flown’ past the chameleon from above and below it (Fig. S\@ref(fig:Figcolsig4)B). Trials lasted no more than 2-min and we scored whether the chameleon flipped to the opposite side of the branch, which is a classic anti-predator behavior by chameleons. Once chameleons changed color, we quantified their spectral reflectance (details below). We also conducted seven trials with a just a branch with no predator attached, as a control for the model predator. The snake model was molded from a dead boomslang (*Dispholidus typus*) and painted by a professional artist to resemble a typical green form of this species (previously used in [@RN9;@RN10]). The bird was a mounted African Cuckoo-hawk (*Aviceda cuculoides*).
+The day following social trials we presented each chameleon with a snake (Fig. S\@ref(fig:Figcolsig4)A) and bird (Fig. S\@ref(fig:Figcolsig4)B) model predator model (separately). Lizards were drawn at random and the order of presentation (snake or bird first) was random. Both trials were conducted on the same day but were separated by at least three hours. A trial began when a chameleon was removed from its cloth bag and placed on the triangular stand. In the case of the snake model, one of us slowly moved the model snake towards the chameleon from both above and below it, without ever contacting the chameleon, in a standardized fashion (Fig. S\@ref(fig:Figcolsig4)A). In the case of the bird trials, the bird was attached to an ca. 2 m wooden pole and was ‘flown’ past the chameleon from above and below it (Fig. S\@ref(fig:Figcolsig4)B). Trials lasted no more than 2-min and we scored whether the chameleon flipped to the opposite side of the branch, which is a classic anti-predator behavior by chameleons. Once chameleons changed color, we quantified their spectral reflectance (details below). We also conducted seven trials with a just a branch with no predator attached, as a control for the model predator. The snake model was molded from a dead boomslang (*Dispholidus typus*) and painted by a professional artist to resemble a typical green form of this species (previously used in [@RN18ms;@RN10]). The bird was a mounted African Cuckoo-hawk (*Aviceda cuculoides*).
 
 ```{r Figcolsig4, fig.align = 'center', fig.width = 12, fig.height = 12, fig.cap = "**We presented chameleons with model snake and bird predators to elicit an anti-predator response, particularly, color change, to test the hypothesis that character release in Hawaii would also result in a signal more conspicuous to a predator**. **(A)** A model snake (*Dispholidus typus*) causing a characteristic contrasting color change and **(B)** a model bird (*Aviceda cuculoides*) which was flown over the top of the chameleon."}
 figs4 <- image_read("./output/figures/FigS4.jpg")
@@ -1418,7 +1346,7 @@ figs5
 
 We visualized and quality-checked all spectra, adjusted very minor negative reflectance values caused by electrical noise by lifting the curves by the maximum negative value, then smoothed all spectra with LOESS smoothing of 0.16 using the plotsmooth function in `Pavo` vers. 1.0 [@RN29]. We also took the median reflectance for all leaves (top, bottom) and stems (2 measures/stem) for each population (Hawaii, Kenya). 
 
-We modelled how conspicuous a chameleon would appear to both a conspecific receiver and a predator (bird and snake) using the receptor-noise limited (RNL) model [@RN27; @RN28] implemented in the R package `pavo` @RN29. This model assumes that color discrimination is limited only by photoreceptor noise and does not account for potential effects of neural processing. Color contrasts are expressed in units of just-noticeable-differences (JND), where 1 JND is the theoretical threshold of color discrimination for stimuli viewed simultaneously under ideal viewing conditions @RN17. Under natural conditions, discrimination thresholds are likely to be >1 and vary depending on the species and conditions [@RN12;@RN13; @RN14]. Additionally, perceived conspicuousness may not scale linearly with color distance (JNDs) @RN15. Nevertheless, the models provide a reasonable approximation of relative conspicuousness that can be compared between populations and trial types (social and predator). 
+We modelled how conspicuous a chameleon would appear to both a conspecific receiver and a predator (bird and snake) using the receptor-noise limited (RNL) model [@RN25ms; @RN28] implemented in the R package `pavo` @RN29. This model assumes that color discrimination is limited only by photoreceptor noise and does not account for potential effects of neural processing. Color contrasts are expressed in units of just-noticeable-differences (JND), where 1 JND is the theoretical threshold of color discrimination for stimuli viewed simultaneously under ideal viewing conditions @RN17. Under natural conditions, discrimination thresholds are likely to be >1 and vary depending on the species and conditions [@RN12;@RN13; @RN14]. Additionally, perceived conspicuousness may not scale linearly with color distance (JNDs) @RN15. Nevertheless, the models provide a reasonable approximation of relative conspicuousness that can be compared between populations and trial types (social and predator). 
 
 We calculated JNDs for chromatic and luminance contrast against each of the relevant backgrounds for each body region and color state, based on the visual system of the relevant receiver (chameleon, bird, snake; see below). We first calculated the quantum catch of each photoreceptor under standard daylight illumination (D65; Commission internationale de l’éclairage – CIE) using the ‘vismodel’ function. We applied the von Kries chromatic adaptation (vonkries = TRUE) and used the average background reflectance of the relevant background (Hawaii or Kenya) as the adapting background. The signal in each photoreceptor class was proportional to the natural logarithm of the quantum catch, in accordance with Fechner's law (“fi” in pavo). Next, we calculated the chromatic contrast between pairs of spectra using the function ‘coldist’. 
 
@@ -1428,7 +1356,7 @@ The visual models require information on the spectral sensitivities and photorec
 sens_cham_c_dilepis <- read_excel("./data/Spectral sensitivities.xls", sheet = "C_dilepis")[,1:6]
         sens_birdUV <- read_excel("./data/Spectral sensitivities.xls", sheet = "birdUV")
          sens_snake <- read_excel("./data/Spectral sensitivities.xls", sheet = "snake")[,1:4]
-
+library(tidyverse)
 cham <- sens_cham_c_dilepis %>% pivot_longer(cols = c(2:6)) %>% select(wavelength, name, value) %>%  data.frame()
 bird <- sens_birdUV %>% pivot_longer(cols = c(2:6)) %>% select(wavelength, name, value) %>%  data.frame()
 snake <- sens_snake %>% pivot_longer(cols = c(2:4)) %>% select(wavelength, name, value) %>%  data.frame()
