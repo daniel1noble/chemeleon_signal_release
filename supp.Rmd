@@ -592,13 +592,13 @@ final_T1 <-  read.csv(file = "./output/tables/Table1_MS.csv")
  table2
 ```
 
-```{r table3, fig.width = 9, fig.height = 1, fig.asp = 0.1136364, tab.cap = "Planned contrasts between mean luminance and chromatic contrast in Hawaii and Kenya for both predators (snakes and birds). Estimates of the mean difference ebtween Hawaii and Kenya propulations are provided along with their 95% confidence intervals (95% CI lower and upper). Wald tests of contrast significance are provided (F, degrees of freedom (df) and associated p-value).  We also applied a Bonferroni correction to p-value to control for multiple comparisons."}
+```{r table3, fig.width = 9, fig.height = 1, fig.asp = 0.1136364, tab.cap = "Planned contrasts between mean luminance and chromatic contrast in Hawaii and Kenya for both predators (snakes and birds). Estimates of the mean difference ebtween Hawaii and Kenya propulations are provided along with their 95% confidence intervals (95% CI lower and upper). Wald tests of contrast significance are provided (F, degrees of freedom (df) and associated p-value).  We also applied a Bonferroni correction to p-values to control for multiple comparisons."}
  contrast <- read.csv(file = "./output/tables/Table3_MS.csv")
  table3 <- flextable(contrast) %>% table_style8() %>% fit_to_width(max_width = 7)
  table3
 ```
 
-```{r table4, fig.width = 9, fig.height = 1, fig.asp = 0.1136364, tab.cap = "Results of models comparing luminance and chromatic contrast of Hawaiian lizards against their introduced Hawaiian background (intercept) and Hawaiian lizards against their native Kenyan background (background = Kenya) in both social contexts (male-male competition and courtship). Model estimates (mean and contrasts), standard error (SE), degrees of freedom (df) and 95% confidence intervals (95% CI) for Models were fit using robust variance estimators to correct standard errors for non-independence, and we used a Satterthwaite degrees of freedom. Significant parameter estimates are those where the 95% CIs do not include zero."}
+```{r table4, fig.width = 9, fig.height = 1, fig.asp = 0.1136364, tab.cap = "Results of models comparing luminance and chromatic contrast of Hawaiian lizards against their introduced Hawaiian background (intercept) and Hawaiian lizards against their native Kenyan background (background = Kenya) in both social contexts (male-male competition and courtship). Model estimates (mean and contrasts), standard error (SE), degrees of freedom (df) and 95% confidence intervals (95% CI) for models were fitted using robust variance estimators to correct standard errors for non-independence, and we used a Satterthwaite degrees of freedom. Significant parameter estimates are those where the 95% CIs do not include zero."}
  tb4 <- read.csv(file = "./output/tables/Table4_MS.csv")
  table4 <- flextable(tb4) %>% table_style9() %>% fit_to_width(max_width = 7)
  table4
