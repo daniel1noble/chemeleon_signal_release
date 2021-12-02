@@ -395,3 +395,26 @@ table_style14  <- function(table){
   
   return(table)
 }
+
+
+table_styleS6  <- function(table){
+  table <- table  %>% 
+    align(align = "center", part = "header") %>% 
+    align(align = "center", part = "body") %>% 
+    flextable::compose(part = "header", j = 1, value = as_paragraph(as_b("Social Context"))) %>% 
+    flextable::compose(part = "header", j = 2, value = as_paragraph(as_b("Visual Spectrum"))) %>% 
+    flextable::compose(part = "header", j = 3, value = as_paragraph(as_b("Parameter"))) %>% 
+    flextable::compose(part = "header", j = 4, value = as_paragraph(as_b("Estimate"))) %>% 
+    flextable::compose(part = "header", j = 5, value = as_paragraph(as_b("SE"))) %>%
+    flextable::compose(part = "header", j = 6, value = as_paragraph(as_b("df"))) %>% 
+    flextable::compose(part = "header", j = 7, value = as_paragraph(as_b("95% CI"), as_sub(as_b("lower")))) %>% 
+    flextable::compose(part = "header", j = 8, value = as_paragraph(as_b("95% CI"), as_sub(as_b("upper")))) %>%
+    flextable::compose(part = "body", j = 3, i = c(1,6,11,16), value = as_paragraph("Intercept", as_sub(" Hawaii-Kenya"))) %>%
+    flextable::compose(part = "body", j = 3, i = c(1,6,11,16)+1, value = as_paragraph("Snout-vent length (SVL)")) %>%
+    flextable::compose(part = "body", j = 3, i = c(1,6,11,16)+2, value = as_paragraph("Population", as_sub(" Hawaii"),"-", "Background", as_sub(" Hawaii"))) %>% 
+    flextable::compose(part = "body", j = 3, i = c(1,6,11,16)+3, value = as_paragraph("Population", as_sub(" Kenya"),"-", "Background", as_sub(" Hawaii"))) %>% 
+    flextable::compose(part = "body", j = 3, i = c(1,6,11,16)+4, value = as_paragraph("Population", as_sub(" Kenya"),"-", "Background", as_sub(" Kenya"))) %>% 
+    font(fontname="Times", part = "body") %>% 
+    font(fontname="Times", part = "header")
+  return(table)
+}
