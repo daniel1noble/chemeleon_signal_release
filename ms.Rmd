@@ -1039,7 +1039,7 @@ final_S6 <- tableS6 %>%
   mutate(SocialContext = c("Male-Male Display", rep("", 9), "Courtship Display", rep("", 9)),
          VisualRealm = c("Luminance  Contrast", rep("", 4), "Chromatic Contrast", rep("", 4), 
                          "Luminance Contrast", rep("", 4), "Chromatic Contrast", rep("", 4))) %>%
-  select(SocialContext, VisualRealm, Parameter, beta, SE, df, CI_L, CI_U)
+  dplyr::select(SocialContext, VisualRealm, Parameter, beta, SE, df, CI_L, CI_U)
 write.csv(tableS6, file = "./output/tables/tableS6.csv", row.names = FALSE)
      
      
