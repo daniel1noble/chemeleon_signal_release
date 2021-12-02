@@ -467,7 +467,8 @@ CourtshipBgrd$BodyRegion <- factor(CourtshipBgrd$BodyRegion)
 
 # Filter out only Hawaiian and add in SVL for IDs
 CourtshipBgrd <- CourtshipBgrd %>% 
-               mutate(pop_background = interaction(Population, Background_pop)) %>%  left_join(select(svl_dat, ID, SVL), by = "ID", keep = FALSE) %>% 
+               mutate(pop_background = interaction(Population, Background_pop)) %>%  
+                left_join(select(svl_dat, ID, SVL), by = "ID", keep = FALSE) %>% 
                mutate(sc_svl = scale(SVL, scale = FALSE)) %>% 
                 filter(!is.na(SVL))
 
@@ -1024,7 +1025,24 @@ plot_grid(p1.2, p2.2, labels = c("A", "B"), label_size = 16,
                                         rep("", 8))) %>%
                   select(VisualRealm, parameter, beta, SE, df, CI_L, CI_U)
      write.csv(tb5, file = "./output/tables/Table5_MS.csv", row.names = FALSE)
-    
+  
+# Table S6
+tableS6 <- as.data.frame(rbind(robust_localAdapt_DispBgrdAC_s6,
+                               robust_DispBgrdCC_s6,
+                               robust_CourtshipAC_s6,
+                              robust_CourtshipCC_s6))
+tableS6$Parameter <- rownames(tableS6)
+rownames(tableS6) <- NULL
+
+# Clean
+final_S6 <- tableS6 %>% 
+  mutate(SocialContext = c("Male-Male Display", rep("", 9), "Courtship Display", rep("", 9)),
+         VisualRealm = c("Luminance  Contrast", rep("", 4), "Chromatic Contrast", rep("", 4), 
+                         "Luminance Contrast", rep("", 4), "Chromatic Contrast", rep("", 4))) %>%
+  select(SocialContext, VisualRealm, Parameter, beta, SE, df, CI_L, CI_U)
+write.csv(tableS6, file = "./output/tables/tableS6.csv", row.names = FALSE)
+     
+     
 ```
 
 **Acknowledgments**: This research was approved by the Kenya Wildlife Service (R. Bagine, KWS 5001) and Ministry of Science & Technology (Research Permit No. MOS&T 13/36C 208). **Funding**: This work was supported by the University of the Witwatersrand. **Authors contributions**: MJW conceived the study. MJW and DSF designed the study with help from JSK and BH. MJW, BSH, JSK and DSF collected the data. MJW, DSF, KJR and DWAN performed data curation, visualisation and exploratory analyses. DWAN performed final analyses. MJW wrote the first draft, with help from DWAN and DSF. All authors contributed substantially to subsequent versions. **Competing interests**: we (the authors) declare no competing interests. **Data and materials availability**: the data and code are available at OSF.
