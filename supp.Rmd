@@ -611,8 +611,8 @@ source("./R/func.R")
 final_S6 <-  read.csv(file = "./output/tables/tableS6.csv")
   
   # Table
- Tab_S6 <- flextable(final_S6) %>%  table_style6() %>% fit_to_width(max_width = 7)
- table1
+ Tab_S6 <- flextable(final_S6) %>%  table_styleS6() %>% fit_to_width(max_width = 7)
+ Tab_S6
  
 ```
 # Additional Supplemental Results
