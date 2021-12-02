@@ -406,6 +406,94 @@ CourtshipBgrd <- CourtshipBgrd %>%
            svl_CC_Court <- Wald_test(CourtshipCC, constraints = constrain_zero(2), 
                                   cluster = CourtshipBgrd$ID, vcov = "CR2")
 
+
+#########################################################***** NEW
+# Background Analysis - Founder           
+#########################################################***** NEW
+DisplayBgrd <- read.table("./data/Display_5.csv", 
+                        header=TRUE, sep=",", dec=".", strip.white=TRUE)
+svl_dat <- read.csv("./data/SVL2.csv")
+
+DisplayBgrd <- DisplayBgrd %>% 
+                filter(!BodyRegion == "botflank") %>% 
+                mutate(Background_pop = ifelse(Background2 == "own", Population, 
+                                               if_else(Background2 == "other" & Population == "Hawaii", "Kenya", "Hawaii"))) %>%
+                 as.data.frame() #exclude bottom flank.
+
+DisplayBgrd$BodyRegion <- factor(DisplayBgrd$BodyRegion) #updates levels for the variable BodyRegion
+           
+DisplayBgrd <- DisplayBgrd %>% 
+                mutate(pop_background = interaction(Population, Background_pop)) %>%  
+                left_join(select(svl_dat, ID, SVL), by = "ID", keep = FALSE) %>% 
+                mutate(sc_svl = scale(SVL, scale = FALSE)) %>% 
+                filter(!is.na(SVL))
+
+#unique(DisplayBgrd$pop_background)
+###################################
+# Male-male display
+###################################
+##########
+# Achromatic Contrast - dL
+##########
+  # Fit the main effect model
+  DispBgrdAC_s6 <- lmer(dL ~ sc_svl  + relevel(pop_background, ref = "Hawaii.Kenya")  + (1|ID), data=DisplayBgrd)
+  summary(DispBgrdAC_s6)
+  
+  # Check robustness of results to non-independence using Robust Variance Estimator (RVE)
+  robust_localAdapt_DispBgrdAC_s6 <- clubSandwich::conf_int(DispBgrdAC_s6, cluster = DisplayBgrd$ID, vcov =  "CR2")
+
+##########
+# Chromatic Contrast - dS
+##########
+    # Fit the main effect model
+          DispBgrdCC_s6 <- lmer(dS ~ sc_svl + relevel(pop_background, ref = "Hawaii.Kenya")  + (1|ID), data=DisplayBgrd)
+          summary(DispBgrdCC_s6)
+ 
+    # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
+      robust_DispBgrdCC_s6 <- clubSandwich::conf_int(DispBgrdCC_s6, cluster = DisplayBgrd$ID, vcov =  "CR2")
+      
+
+###################
+# Social Context: Courtship
+##################
+CourtshipBgrd <- read.table("./data/Courtship_5.csv", 
+                        header=TRUE, sep=",", dec=".", strip.white=TRUE)
+
+CourtshipBgrd <- CourtshipBgrd %>% 
+                filter(!BodyRegion == "botflank") %>% 
+                mutate(Background_pop = ifelse(Background2 == "own", Population, if_else(Background2 == "other" & Population == "Hawaii", "Kenya", "Hawaii"))) %>% 
+                as.data.frame() #exclude bottom flank.
+CourtshipBgrd$BodyRegion <- factor(CourtshipBgrd$BodyRegion)
+
+# Filter out only Hawaiian and add in SVL for IDs
+CourtshipBgrd <- CourtshipBgrd %>% 
+               mutate(pop_background = interaction(Population, Background_pop)) %>%  left_join(select(svl_dat, ID, SVL), by = "ID", keep = FALSE) %>% 
+               mutate(sc_svl = scale(SVL, scale = FALSE)) %>% 
+                filter(!is.na(SVL))
+
+##########
+## Achromatic Contrast - dL
+##########
+
+  # Fit main effects model
+    CourtshipAC_s6 <- lmer(dL ~ sc_svl  + relevel(pop_background, ref = "Hawaii.Kenya")  + (1|ID), data=CourtshipBgrd)
+    summary(CourtshipAC_s6)
+
+   # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
+   robust_CourtshipAC_s6 <- clubSandwich::conf_int(CourtshipAC_s6, cluster = CourtshipBgrd$ID, vcov =  "CR2")
+
+
+##########
+# Chromatic - dS
+##########
+
+  # Fit main effect model
+      CourtshipCC_s6 <- lmer(dS ~ sc_svl  + relevel(pop_background, ref = "Hawaii.Kenya")  + (1|ID), data=CourtshipBgrd)
+      summary(CourtshipCC_s6)
+
+  # Robust variance esatimation to correct SE's for fixed effects given spectral curves are used multiple times for generating JNDs for each individuals data. 
+  robust_CourtshipCC_s6 <- clubSandwich::conf_int(CourtshipCC_s6, cluster = CourtshipBgrd$ID, vcov =  "CR2")
+      
 #########################################################
 # Comparing displays
 #########################################################
