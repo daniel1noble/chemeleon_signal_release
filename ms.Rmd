@@ -435,7 +435,15 @@ DisplayBgrd <- DisplayBgrd %>%
 ##########
 # Achromatic Contrast - dL
 ##########
-  # Fit the main effect model
+  # Fit the interaction model
+  DispBgrdAC_s6 <- lmer(dL ~ sc_svl  + Population*Background_pop + (1|ID), data=DisplayBgrd)
+  summary(DispBgrdAC_s6)
+  
+  # Interaction test. Does the difference between Hawaii and Kenya depend on the background. It shouldn't. Wald F-test
+  F_AC_Disp_pop_bgk <- Wald_test(DispBgrdAC_s6, constraints = constrain_zero(5), 
+                                  cluster = DisplayBgrd$ID, vcov = "CR2")
+  
+  # Reparameterise the interaction model to generate the contrasts. It's not surprising that there is no interaction because we are literatlly just shifting the environment. 
   DispBgrdAC_s6 <- lmer(dL ~ sc_svl  + relevel(pop_background, ref = "Hawaii.Kenya")  + (1|ID), data=DisplayBgrd)
   summary(DispBgrdAC_s6)
   
@@ -445,10 +453,18 @@ DisplayBgrd <- DisplayBgrd %>%
 ##########
 # Chromatic Contrast - dS
 ##########
-    # Fit the main effect model
-          DispBgrdCC_s6 <- lmer(dS ~ sc_svl + relevel(pop_background, ref = "Hawaii.Kenya")  + (1|ID), data=DisplayBgrd)
+    # Fit the interaction  model
+      DispBgrdCC_s6 <- lmer(dS ~ sc_svl + Population*Background_pop  + (1|ID), data=DisplayBgrd)
+      summary(DispBgrdCC_s6)
+    
+    # Interaction test. Does the difference between Hawaii and Kenya depend on the background. It shouldn't. Wald F-test
+      F_CC_Disp_pop_bgk <- Wald_test(DispBgrdCC_s6, constraints = constrain_zero(5), 
+                                  cluster = DisplayBgrd$ID, vcov = "CR2")
+  
+      # Reparameterise the interaction model to generate the contrasts. It's not surprising that there is no interaction because we are literatlly just shifting the environment. 
+    DispBgrdCC_s6 <- lmer(dS ~ sc_svl + relevel(pop_background, ref = "Hawaii.Kenya")  + (1|ID), data=DisplayBgrd)
           summary(DispBgrdCC_s6)
- 
+          
     # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
       robust_DispBgrdCC_s6 <- clubSandwich::conf_int(DispBgrdCC_s6, cluster = DisplayBgrd$ID, vcov =  "CR2")
       
@@ -476,10 +492,18 @@ CourtshipBgrd <- CourtshipBgrd %>%
 ## Achromatic Contrast - dL
 ##########
 
-  # Fit main effects model
-    CourtshipAC_s6 <- lmer(dL ~ sc_svl  + relevel(pop_background, ref = "Hawaii.Kenya")  + (1|ID), data=CourtshipBgrd)
+  # Fit interaction model
+    CourtshipAC_s6 <- lmer(dL ~ sc_svl  + Population*Background_pop  + (1|ID), data=CourtshipBgrd)
     summary(CourtshipAC_s6)
 
+  # Interaction test. Does the difference between Hawaii and Kenya depend on the background. It shouldn't. Wald F-test
+      F_AC_Court_pop_bgk <- Wald_test(CourtshipAC_s6, constraints = constrain_zero(5), 
+                                  cluster = CourtshipBgrd$ID, vcov = "CR2")
+    
+  # Reparameterise the interaction model to generate the contrasts. It's not surprising that there is no interaction because we are literatlly just shifting the environment. 
+    CourtshipAC_s6 <- lmer(dL ~ sc_svl  + relevel(pop_background, ref = "Hawaii.Kenya")  + (1|ID), data=CourtshipBgrd)
+    summary(CourtshipAC_s6)  
+      
    # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
    robust_CourtshipAC_s6 <- clubSandwich::conf_int(CourtshipAC_s6, cluster = CourtshipBgrd$ID, vcov =  "CR2")
 
@@ -489,9 +513,16 @@ CourtshipBgrd <- CourtshipBgrd %>%
 ##########
 
   # Fit main effect model
-      CourtshipCC_s6 <- lmer(dS ~ sc_svl  + relevel(pop_background, ref = "Hawaii.Kenya")  + (1|ID), data=CourtshipBgrd)
+      CourtshipCC_s6 <- lmer(dS ~ sc_svl  + Population*Background_pop  + (1|ID), data=CourtshipBgrd)
       summary(CourtshipCC_s6)
 
+  # Interaction test. Does the difference between Hawaii and Kenya depend on the background. It shouldn't. Wald F-test
+      F_CC_Court_pop_bgk <- Wald_test(CourtshipCC_s6, constraints = constrain_zero(5), 
+                                  cluster = CourtshipBgrd$ID, vcov = "CR2")
+  
+  # Reparameterise the interaction model to generate the contrasts. It's not surprising that there is no interaction because we are literatlly just shifting the environment. 
+      CourtshipCC_s6 <- lmer(dS ~ sc_svl  + relevel(pop_background, ref = "Hawaii.Kenya")  + (1|ID), data=CourtshipBgrd)
+      summary(CourtshipCC_s6)
   # Robust variance esatimation to correct SE's for fixed effects given spectral curves are used multiple times for generating JNDs for each individuals data. 
   robust_CourtshipCC_s6 <- clubSandwich::conf_int(CourtshipCC_s6, cluster = CourtshipBgrd$ID, vcov =  "CR2")
       
