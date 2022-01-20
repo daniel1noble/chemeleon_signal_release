@@ -1,0 +1,1088 @@
+---
+title: "Invasive chameleons released from predation display more conspicuous colors"
+bibliography: ms_refs.bib
+csl: science.csl
+output: 
+  bookdown::word_document2:
+    toc: no
+    toc_depth: 6
+    number_sections: false
+    reference_docx: template.docx
+  bookdown::html_document2:
+    code_folding: hide
+    number_sections: no
+    toc: yes
+    toc_depth: 6
+    toc_float: yes
+    bibliography: refs.bib
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE, purl = FALSE}
+knitr::opts_chunk$set(echo = FALSE, cache = TRUE, message = FALSE, warning = FALSE, tidy = TRUE, fig.width = 10)
+## numbers >= 10^5 will be denoted in scientific notation,      ## numbers >= 10^5 will be denoted in scientific notation,
+  ## and rounded to 2 digits      ## and rounded to 2 digits
+  options(digits = 2)
+```
+
+```{r getlibrary, echo = FALSE, results = "hide"}
+# load libraries
+devtools::install_github("karthik/wesanderson")
+pacman::p_load(lme4, lmerTest, ggplot2, lsmeans, emmeans, multcomp, dplyr, wesanderson, patchwork, latex2exp, png, cowplot, magick, jpeg, clubSandwich, flextable, readxl)
+source("./R/func.R")
+
+```
+
+```{r Models, echo = FALSE, results = "hide"}
+source("./R/func.R")
+#########################################################
+# Social Context: Male-male Competition Displays
+#########################################################
+#Load data and clean a bit
+Display_1 <- read.table("./data/Display_1.csv", 
+                          header=TRUE, sep=",", dec=".", strip.white=TRUE)
+
+# Sample sizes
+N_display <- data.frame(Display_1 %>% group_by(Population) %>% summarise(n = length(unique(ID))))
+
+# Center SVL to make intercept interpretable
+Display_1$sc_SVL <- with(Display_1, scale(SVL, scale=FALSE))
+
+#exclude bottom flank.
+Display_1 <- Display_1 %>% 
+              filter(!BodyRegion == "botflank") %>% as.data.frame() 
+
+# create as factor
+    Display_1$BodyRegion <- factor(Display_1$BodyRegion)
+
+##########
+## Achromatic Contrast - dL
+##########
+      
+    # Fit the model
+    ConspicDisplayAC <- lmer(dL ~ sc_SVL + Population + (1|ID), data=Display_1)
+      summary(ConspicDisplayAC)
+     
+    # Check robustness of results to non-independence using Robust Variance Estimator (RVE)
+    Display_1_IDs <- Display_1 %>% filter(!is.na(sc_SVL), !is.na(Population)) # filter out missing data
+       robust_ConspicDisplayAC <- coef_test(ConspicDisplayAC, 
+                                            cluster = Display_1_IDs$ID, vcov = "CR2")  
+    robust_ConspicDisplayAC_CI <- conf_int(ConspicDisplayAC, 
+                                           cluster = Display_1_IDs$ID, vcov = "CR2")
+    
+     # Wald test
+            Population_ConspicDisplayAC <- Wald_test(ConspicDisplayAC, 
+                                             constraints = constrain_zero(3),
+                                            cluster = Display_1_IDs$ID, vcov = "CR2")
+    
+##########
+# Chromatic contrast - dS
+##########
+    #Fit the model
+         ConspicDisplayCC <- lmer(dS ~ sc_SVL + Population + (1|ID), data=Display_1)
+         summary(ConspicDisplayCC)
+    
+    # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
+    Display_1_IDs <- Display_1 %>% filter(!is.na(sc_SVL), !is.na(Population)) # filter out misssing data
+    robust_ConspicDisplayCC <- coef_test(ConspicDisplayCC, cluster = Display_1_IDs$ID, vcov = "CR2")
+ robust_ConspicDisplayCC_CI <- conf_int(ConspicDisplayCC, cluster = Display_1_IDs$ID, vcov = "CR2")
+    
+  # Wald test
+            Population_ConspicDisplayCC <- Wald_test(ConspicDisplayCC, 
+                                             constraints = constrain_zero(3),
+                                            cluster = Display_1_IDs$ID, vcov = "CR2")
+#########################################################
+# Social Context: Courtship Displays
+#########################################################
+
+# Load data
+Courtship <- read.table("./data/Courtship_1.2.csv", 
+                          header=TRUE, sep=",", dec=".", strip.white=TRUE)
+
+# Sample sizes
+N_Courtship <- data.frame(Courtship %>% group_by(Population) %>% summarise(n = length(unique(ID))))
+
+# Center SVL do intercept is at the mean body size
+Courtship$sc_SVL <- with(Courtship, scale(SVL, scale=FALSE))
+    
+##########
+## Achromatic Contrast - dL
+##########
+
+  # Fit the model
+    ConspicCourtshipAC <- lmer(dL ~ sc_SVL + Population  + (1|ID), data=Courtship)
+    summary(ConspicCourtshipAC)
+    
+ # Check robustness of results to non-independence using Robust Variance Estimator (RVE)
+    Courtship_IDs <- Courtship %>% filter(!is.na(sc_SVL), !is.na(Population)) # filter out missing data
+    robust_ConspicCourtshipAC <- coef_test(ConspicCourtshipAC, 
+                                           cluster = Courtship_IDs$ID, vcov = "CR2")
+ robust_ConspicCourtshipAC_CI <- conf_int(ConspicCourtshipAC, 
+                                          cluster = Courtship_IDs$ID, vcov = "CR2")
+ 
+    # Wald test
+            Population_ConspicCourtshipAC <- Wald_test(ConspicCourtshipAC, 
+                                             constraints = constrain_zero(3),
+                                            cluster = Courtship_IDs$ID, vcov = "CR2")
+
+##########
+# Chromatic contrast - dS
+##########
+    
+  # Fit the model
+  ConspicCourtshipCC <- lmer(dS ~ sc_SVL + Population  + (1|ID), data=Courtship)
+    summary(ConspicCourtshipCC)
+ 
+  # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
+    Courtship_IDs <- Courtship %>% filter(!is.na(sc_SVL), !is.na(Population)) # filter out misssing data
+       robust_ConspicCourtshipCC <- coef_test(ConspicCourtshipCC, cluster = Courtship_IDs$ID, vcov = "CR2")
+    robust_ConspicCourtshipCC_CI <- conf_int(ConspicCourtshipCC, cluster = Courtship_IDs$ID, vcov = "CR2")
+    
+    # Wald test
+            Population_ConspicCourtshipCC <- Wald_test(ConspicCourtshipCC, 
+                                             constraints = constrain_zero(3),
+                                            cluster = Courtship_IDs$ID, vcov = "CR2")
+    
+ #########################################################
+# Predator Context: Birds and snakes
+#########################################################
+ Predator <- read.table("./data/Predator_2_3.csv", 
+                       header=TRUE, sep=",", dec=".", strip.white=TRUE)
+ 
+# Sample sizes
+N_Pred <- data.frame(Predator %>% group_by(Population, Predator) %>% summarise(n = length(unique(ID)))) %>% arrange(Predator)
+            
+# Clean up
+ Predator <- Predator %>% filter(!BodyRegion == "botflank" & !BodyRegion =='gularbot') %>% as.data.frame() #exclude bottom flank.
+Predator$BodyRegion <- factor(Predator$BodyRegion) #updates levels for the variable BodyRegion
+
+##########
+## Achromatic Contrast - dL
+##########
+
+# First, if predator type varies across populations then we would predcit that whether snake and bird actually are different would depend on the population. For example, if, say, in Hawaii and Kenya birds were equally likely as predators then dL would not vary for birds across populations, but would so for snakes. This is an interaction.
+
+  # Fit model testing this idea above
+    PredatorAC_inter <- lmer(dL ~ Predator + Population + Predator:Population + (1|ID), 
+                             data = Predator) 
+    summary(PredatorAC_inter)
+    
+  #Refit main effects so we can test main effects on own.
+         PredatorAC <- lmer(dL ~ Predator + Population + (1|ID), data = Predator) 
+        summary(PredatorAC)
+  
+     # Wald tests
+            back_pred_AC_Pred <- Wald_test(PredatorAC_inter, constraints = constrain_zero(4), 
+                                   cluster = Predator$ID, vcov = "CR2")
+           
+             Predator_AC_Pred <- Wald_test(PredatorAC, constraints = constrain_zero(2), 
+                                  cluster = Predator$ID, vcov = "CR2")
+  
+           Population_AC_Pred <- Wald_test(PredatorAC, constraints = constrain_zero(3), 
+                                  cluster = Predator$ID, vcov = "CR2")
+     
+  # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
+    Predator_IDs <- Predator %>% filter(!is.na(Predator), !is.na(Population)) # filter out misssing data
+              robust_PredatorAC <- coef_test(PredatorAC, cluster = Predator_IDs$ID, vcov = "CR2")
+           robust_PredatorAC_CI <-  conf_int(PredatorAC, cluster = Predator_IDs$ID, vcov = "CR2")
+     robust_PredatorAC_CI_inter <-  conf_int(PredatorAC_inter, cluster = Predator_IDs$ID, vcov = "CR2")
+     
+  # Model allows us to get bird in Hwaii compared to bird in Kenya (contrast 3)
+      Predator$pred_pop <- with(Predator, interaction(Predator, Population))
+    
+      PredatorAC_pred_pop1 <- lmer(dL ~  pred_pop + (1|ID), data = Predator) 
+      summary(PredatorAC_pred_pop1)
+      PredatorAC_pred_pop2 <- lmer(dL ~  relevel(pred_pop, ref = "snake.Hawaii") + (1|ID), data = Predator) 
+      summary(PredatorAC_pred_pop2)
+      
+      # Fit the models so we get the estimate and corrected robust standard error for the contrasts we want to make
+      robust_PredatorAC_pred_pop1 <- conf_int(PredatorAC_pred_pop1, cluster = Predator$ID, vcov="CR2")
+      robust_PredatorAC_pred_pop2 <- conf_int(PredatorAC_pred_pop2, cluster = Predator$ID, vcov="CR2")
+      
+     # Contrasts hypothesis tests, but use RVE 
+      
+      PredatorAC_pred_pop <- lmer(dL ~  0+ pred_pop + (1|ID), data = Predator) 
+    result_pred <- Wald_test(PredatorAC_pred_pop, constraints = constrain_pairwise(c(1:4)), 
+                             vcov="CR2", tidy = TRUE)
+    result_pred$p_val_bonfer <- sapply(p.adjust(result_pred$p_val, "bonferroni"), function(x) p_value(x))
+    
+    
+    # Get the contrasts and Wald stats for comparions
+     CI_hyp_testAC <- data.frame(
+              comparison = c("Snake (Hawaii-Kenya)", "Birds (Hawaii-Kenya)"), 
+                Estimate = c(robust_PredatorAC_pred_pop2[4,1], robust_PredatorAC_pred_pop1[3, 1]),
+                lwr = c(robust_PredatorAC_pred_pop2[4,4], robust_PredatorAC_pred_pop1[3, 4]),
+                upr = c(robust_PredatorAC_pred_pop2[4,5], robust_PredatorAC_pred_pop1[3, 5]),
+              Fstat = c(result_pred[5,3], result_pred[2,3]),
+              df = c(result_pred[5,5], result_pred[2,5]),
+              p_val = c(result_pred[5,7], result_pred[2,7]),
+              p_bonf = c(result_pred[5,8], result_pred[2,8]))
+
+##########
+# Chromatic contrast - dS
+##########
+
+    # First, if predator type varies across populations then we would predcit that whether snake and bird actually are different would depend on the population. For example, if, say, in Hawaii and Kenya birds were equally likely as predators then dL would not vary for birds across populations, but would so for snakes. This is an interaction.
+    
+    # Fit the interaction model.
+    PredatorCC <- lmer(dS ~ Predator + Population + Predator:Population + (1|ID), 
+                       data = Predator) 
+    summary(PredatorCC)
+  
+    #Refit main effects so we can test main effects on own.
+      PredatorCC_main <- lmer(dS ~ Predator + Population + (1|ID), data = Predator) 
+
+     # Wald tests
+            back_pred_CC_Pred <- Wald_test(PredatorCC, constraints = constrain_zero(4), 
+                                   cluster = Predator$ID, vcov = "CR2")
+           
+             Predator_CC_Pred <- Wald_test(PredatorCC_main, constraints = constrain_zero(2), 
+                                  cluster = Predator$ID, vcov = "CR2")
+  
+           Population_CC_Pred <- Wald_test(PredatorCC_main, constraints = constrain_zero(3), 
+                                  cluster = Predator$ID, vcov = "CR2")
+           
+    # Support for an interaction between predator type and population in the chromatic realm. Planned comparisons. First re-fit model
+      Predator$pred_pop <- with(Predator, interaction(Predator, Population))
+    PredatorCC_pred_pop <- lmer(dS ~ -1 + pred_pop + (1|ID), data = Predator) 
+    summary(PredatorCC_pred_pop)
+    
+    # Present full model
+         robust_PredatorCC_CI_inter <-  conf_int(PredatorCC, cluster = Predator_IDs$ID, vcov = "CR2")
+    
+    # Fit RVE, we want contrast effects because annoyingly RVE doesn't provide them so will relevel to get them in the context of RVE
+      
+    # Model allows us to get bird in Hwaii compared to bird in Kenya (contrast 3)
+      PredatorCC_pred_pop1 <- lmer(dS ~  pred_pop + (1|ID), data = Predator) 
+      summary(PredatorCC_pred_pop1)
+      PredatorCC_pred_pop2 <- lmer(dS ~  relevel(pred_pop, ref = "snake.Hawaii") + (1|ID), data = Predator) 
+      summary(PredatorCC_pred_pop2)
+      
+      # Fit the models so we get the estimate and corrected robust standard error for the contrasts we want to make
+      robust_PredatorCC_pred_pop1 <- conf_int(PredatorCC_pred_pop1, cluster = Predator$ID, vcov="CR2")
+      robust_PredatorCC_pred_pop2 <- conf_int(PredatorCC_pred_pop2, cluster = Predator$ID, vcov="CR2")
+      
+     # Contrasts hypothesis tests, but use RVE 
+    result_pred <- Wald_test(PredatorCC_pred_pop, constraints = constrain_pairwise(c(1:4)), vcov="CR2", tidy = TRUE)
+    result_pred$p_val_bonfer <- sapply(p.adjust(result_pred$p_val, "bonferroni"), function(x) p_value(x))
+    
+    
+    # Get the contrasts and Wald stats for comparions
+     CI_hyp_test <- data.frame(
+              comparison = c("Snake (Hawaii-Kenya)", "Birds (Hawaii-Kenya)"), 
+                Estimate = c(robust_PredatorCC_pred_pop2[4,1], robust_PredatorCC_pred_pop1[3, 1]),
+                lwr = c(robust_PredatorCC_pred_pop2[4,4], robust_PredatorCC_pred_pop1[3, 4]),
+                upr = c(robust_PredatorCC_pred_pop2[4,5], robust_PredatorCC_pred_pop1[3, 5]),
+              Fstat = c(result_pred[5,3], result_pred[2,3]),
+              df = c(result_pred[5,5], result_pred[2,5]),
+              p_val = c(result_pred[5,7], result_pred[2,7]),
+              p_bonf = c(result_pred[5,8], result_pred[2,8]))
+
+      
+#########################################################
+# Local Adaptation: Testing for local adaptation
+#########################################################
+##################
+# Social Context: Male-male competition
+##################
+DisplayBgrd <- read.table("./data/Display_5.csv", 
+                        header=TRUE, sep=",", dec=".", strip.white=TRUE)
+svl_dat <- read.csv("./data/SVL2.csv")
+
+DisplayBgrd <- DisplayBgrd %>% 
+                filter(!BodyRegion == "botflank") %>% 
+                mutate(Background_pop = ifelse(Background2 == "own", Population, if_else(Background2 == "other" & Population == "Hawaii", "Kenya", "Hawaii"))) %>% 
+                as.data.frame() #exclude bottom flank.
+DisplayBgrd$BodyRegion <- factor(DisplayBgrd$BodyRegion) #updates levels for the variable BodyRegion
+
+# Filter out only Hawaiian and add in SVL for IDs
+DisplayBgrd <- DisplayBgrd %>% 
+               filter(Population == "Hawaii") %>% 
+               left_join(select(svl_dat, ID, SVL), by = "ID", keep = FALSE) %>% 
+               mutate(sc_svl = scale(SVL, scale = FALSE)) %>% 
+                filter(!is.na(SVL))
+
+##########
+# Achromatic Contrast - dL
+##########
+
+  # Here, we want to test if the conspicuousness of lizard signals is locally adapted to the specific background of the Kenyan and Hawaiian population. The predcition is simply that, if we were to place a Hawaiian animal against the Kenyan background that it would be far more conspicuous compared to if we place a Kenyan animal in a Hawaiian background. 
+
+  # Fit the main effect model
+  DispBgrdAC <- lmer(dL ~ sc_svl  + Background_pop  + (1|ID), data=DisplayBgrd)
+  summary(DispBgrdAC)
+  
+
+  # Check robustness of results to non-independence using Robust Variance Estimator (RVE)
+  robust_localAdapt_DispBgrdAC <- clubSandwich::conf_int(DispBgrdAC, cluster = DisplayBgrd$ID, vcov =  "CR2")
+
+  # Add Wald test to test signifiacnce of each factor, background and population using roust variance
+  
+  background_AC_Disp <- Wald_test(DispBgrdAC, constraints = constrain_zero(3), 
+                                  cluster = DisplayBgrd$ID, vcov = "CR2")
+  
+  svl_AC_Disp <- Wald_test(DispBgrdAC, constraints = constrain_zero(2), 
+                                  cluster = DisplayBgrd$ID, vcov = "CR2")
+  
+ ##########
+# Chromatic Contrast - dS
+##########
+
+ # Here, we want to test if the conspicuousness of lizard signals is locally adapted to the specific background of the Kenyan and Hawaiian population. The predcition is simply that, if we were to place a Hawaiian animal against the Kenyan background that it would be far more conspicuous compared to if we place a Kenyan animal in a Hawaiian background. 
+   
+    # Fit the main effect model
+          DispBgrdCC <- lmer(dS ~ sc_svl + Background_pop  + (1|ID), data=DisplayBgrd)
+          summary(DispBgrdCC)
+ 
+    # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
+      robust_DispBgrdCC <- clubSandwich::conf_int(DispBgrdCC, cluster = DisplayBgrd$ID, vcov =  "CR2")
+      
+    # Check significance of each factor
+        background_CC_Disp <- Wald_test(DispBgrdCC, constraints = constrain_zero(3), 
+                                  cluster = DisplayBgrd$ID, vcov = "CR2")
+  
+        svl_CC_Disp <- Wald_test(DispBgrdCC, constraints = constrain_zero(2), 
+                                  cluster = DisplayBgrd$ID, vcov = "CR2")
+
+###################
+# Social Context: Courtship
+##################
+CourtshipBgrd <- read.table("./data/Courtship_5.csv", 
+                        header=TRUE, sep=",", dec=".", strip.white=TRUE)
+
+CourtshipBgrd <- CourtshipBgrd %>% 
+                filter(!BodyRegion == "botflank") %>% 
+                mutate(Background_pop = ifelse(Background2 == "own", Population, if_else(Background2 == "other" & Population == "Hawaii", "Kenya", "Hawaii"))) %>% 
+                as.data.frame() #exclude bottom flank.
+CourtshipBgrd$BodyRegion <- factor(CourtshipBgrd$BodyRegion)
+
+# Filter out only Hawaiian and add in SVL for IDs
+CourtshipBgrd <- CourtshipBgrd %>% 
+               filter(Population == "Hawaii") %>% 
+               left_join(select(svl_dat, ID, SVL), by = "ID", keep = FALSE) %>% 
+               mutate(sc_svl = scale(SVL, scale = FALSE)) %>% 
+               filter(!is.na(SVL))
+
+##########
+## Achromatic Contrast - dL
+##########
+
+ # Here, we want to test if the conspicuousness of lizard signals is locally adapted to the specific background of the Kenyan and Hawaiian population. The predcition is simply that, if we were to place a Hawaiian animal against the Kenyan background that it would be far more conspicuous compared to if we place a Kenyan animal in a Hawaiian background. 
+
+  # Fit main effects model
+    CourtshipAC <- lmer(dL ~ sc_svl  + Background_pop  + (1|ID), data=CourtshipBgrd)
+    summary(CourtshipAC)
+
+   # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
+   robust_CourtshipAC <- clubSandwich::conf_int(CourtshipAC, cluster = CourtshipBgrd$ID, vcov =  "CR2")
+   
+   # Wald tests
+           background_AC_Court <- Wald_test(CourtshipAC, constraints = constrain_zero(3), 
+                                  cluster = CourtshipBgrd$ID, vcov = "CR2")
+  
+           svl_AC_Court <- Wald_test(CourtshipAC, constraints = constrain_zero(2), 
+                                  cluster = CourtshipBgrd$ID, vcov = "CR2")
+
+
+##########
+# Chromatic - dS
+##########
+ # Here, we want to test if the conspicuousness of lizard signals is locally adapted to the specific background of the Kenyan and Hawaiian population. The predcition is simply that, if we were to place a Hawaiian animal against the Kenyan background that it would be far more conspicuous compared to if we place a Kenyan animal in a Hawaiian background. 
+
+
+  # Fit main effect model
+      CourtshipCC <- lmer(dS ~ sc_svl  + Background_pop  + (1|ID), data=CourtshipBgrd)
+      summary(CourtshipCC)
+
+  # Robust variance esatimation to correct SE's for fixed effects given spectral curves are used multiple times for generating JNDs for each individuals data. 
+  robust_CourtshipCC <- clubSandwich::conf_int(CourtshipCC, cluster = CourtshipBgrd$ID, vcov =  "CR2")
+  
+  
+   # Wald tests
+           background_CC_Court <- Wald_test(CourtshipCC, constraints = constrain_zero(3), 
+                                  cluster = CourtshipBgrd$ID, vcov = "CR2")
+  
+           svl_CC_Court <- Wald_test(CourtshipCC, constraints = constrain_zero(2), 
+                                  cluster = CourtshipBgrd$ID, vcov = "CR2")
+
+
+#########################################################***** NEW
+# Background Analysis - Founder           
+#########################################################***** NEW
+DisplayBgrd <- read.table("./data/Display_5.csv", 
+                        header=TRUE, sep=",", dec=".", strip.white=TRUE)
+svl_dat <- read.csv("./data/SVL2.csv")
+
+DisplayBgrd <- DisplayBgrd %>% 
+                filter(!BodyRegion == "botflank") %>% 
+                mutate(Background_pop = ifelse(Background2 == "own", Population, 
+                                               if_else(Background2 == "other" & Population == "Hawaii", "Kenya", "Hawaii"))) %>%
+                 as.data.frame() #exclude bottom flank.
+
+DisplayBgrd$BodyRegion <- factor(DisplayBgrd$BodyRegion) #updates levels for the variable BodyRegion
+           
+DisplayBgrd <- DisplayBgrd %>% 
+                mutate(pop_background = interaction(Population, Background_pop)) %>%  
+                left_join(select(svl_dat, ID, SVL), by = "ID", keep = FALSE) %>% 
+                mutate(sc_svl = scale(SVL, scale = FALSE)) %>% 
+                filter(!is.na(SVL))
+
+#unique(DisplayBgrd$pop_background)
+###################################
+# Male-male display
+###################################
+##########
+# Achromatic Contrast - dL
+##########
+  # Fit the interaction model
+  DispBgrdAC_s6 <- lmer(dL ~ sc_svl  + Population*Background_pop + (1|ID), data=DisplayBgrd)
+  summary(DispBgrdAC_s6)
+  
+  # Interaction test. Does the difference between Hawaii and Kenya depend on the background. It shouldn't. Wald F-test
+  F_AC_Disp_pop_bgk <- Wald_test(DispBgrdAC_s6, constraints = constrain_zero(5), 
+                                  cluster = DisplayBgrd$ID, vcov = "CR2")
+  
+  # Reparameterise the interaction model to generate the contrasts. It's not surprising that there is no interaction because we are literatlly just shifting the environment. 
+  DispBgrdAC_s6 <- lmer(dL ~ sc_svl  + relevel(pop_background, ref = "Hawaii.Kenya")  + (1|ID), data=DisplayBgrd)
+  summary(DispBgrdAC_s6)
+  
+  # Check robustness of results to non-independence using Robust Variance Estimator (RVE)
+  robust_localAdapt_DispBgrdAC_s6 <- clubSandwich::conf_int(DispBgrdAC_s6, cluster = DisplayBgrd$ID, vcov =  "CR2")
+
+##########
+# Chromatic Contrast - dS
+##########
+    # Fit the interaction  model
+      DispBgrdCC_s6 <- lmer(dS ~ sc_svl + Population*Background_pop  + (1|ID), data=DisplayBgrd)
+      summary(DispBgrdCC_s6)
+    clubSandwich::conf_int(DispBgrdCC_s6, cluster = DisplayBgrd$ID, vcov =  "CR2")
+    # Interaction test. Does the difference between Hawaii and Kenya depend on the background. It shouldn't. Wald F-test. Although, somthing might be up with this one - effect size tiny but goes from non-sig to signficant. 
+      F_CC_Disp_pop_bgk <- Wald_test(DispBgrdCC_s6, constraints = constrain_zero(5), 
+                                  cluster = DisplayBgrd$ID, vcov = "CR2")
+  
+      # Reparameterise the interaction model to generate the contrasts. It's not surprising that there is no interaction because we are literatlly just shifting the environment. 
+    DispBgrdCC_s6 <- lmer(dS ~ sc_svl + relevel(pop_background, ref = "Hawaii.Kenya")  + (1|ID), data=DisplayBgrd)
+          summary(DispBgrdCC_s6)
+          
+    # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
+      robust_DispBgrdCC_s6 <- clubSandwich::conf_int(DispBgrdCC_s6, cluster = DisplayBgrd$ID, vcov =  "CR2")
+      
+
+###################
+# Social Context: Courtship
+##################
+CourtshipBgrd <- read.table("./data/Courtship_5.csv", 
+                        header=TRUE, sep=",", dec=".", strip.white=TRUE)
+
+CourtshipBgrd <- CourtshipBgrd %>% 
+                filter(!BodyRegion == "botflank") %>% 
+                mutate(Background_pop = ifelse(Background2 == "own", Population, if_else(Background2 == "other" & Population == "Hawaii", "Kenya", "Hawaii"))) %>% 
+                as.data.frame() #exclude bottom flank.
+CourtshipBgrd$BodyRegion <- factor(CourtshipBgrd$BodyRegion)
+
+# Filter out only Hawaiian and add in SVL for IDs
+CourtshipBgrd <- CourtshipBgrd %>% 
+               mutate(pop_background = interaction(Population, Background_pop)) %>%  
+                left_join(select(svl_dat, ID, SVL), by = "ID", keep = FALSE) %>% 
+               mutate(sc_svl = scale(SVL, scale = FALSE)) %>% 
+                filter(!is.na(SVL))
+
+##########
+## Achromatic Contrast - dL
+##########
+
+  # Fit interaction model
+    CourtshipAC_s6 <- lmer(dL ~ sc_svl  + Population*Background_pop  + (1|ID), data=CourtshipBgrd)
+    summary(CourtshipAC_s6)
+
+  # Interaction test. Does the difference between Hawaii and Kenya depend on the background. It shouldn't. Wald F-test
+      F_AC_Court_pop_bgk <- Wald_test(CourtshipAC_s6, constraints = constrain_zero(5), 
+                                  cluster = CourtshipBgrd$ID, vcov = "CR2")
+    
+  # Reparameterise the interaction model to generate the contrasts. It's not surprising that there is no interaction because we are literatlly just shifting the environment. 
+    CourtshipAC_s6 <- lmer(dL ~ sc_svl  + relevel(pop_background, ref = "Hawaii.Kenya")  + (1|ID), data=CourtshipBgrd)
+    summary(CourtshipAC_s6)  
+      
+   # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
+   robust_CourtshipAC_s6 <- clubSandwich::conf_int(CourtshipAC_s6, cluster = CourtshipBgrd$ID, vcov =  "CR2")
+
+
+##########
+# Chromatic - dS
+##########
+
+  # Fit main effect model
+      CourtshipCC_s6 <- lmer(dS ~ sc_svl  + Population*Background_pop  + (1|ID), data=CourtshipBgrd)
+      summary(CourtshipCC_s6)
+
+  # Interaction test. Does the difference between Hawaii and Kenya depend on the background. It shouldn't. Wald F-test
+      F_CC_Court_pop_bgk <- Wald_test(CourtshipCC_s6, constraints = constrain_zero(5), 
+                                  cluster = CourtshipBgrd$ID, vcov = "CR2")
+  
+  # Reparameterise the interaction model to generate the contrasts. It's not surprising that there is no interaction because we are literatlly just shifting the environment. 
+      CourtshipCC_s6 <- lmer(dS ~ sc_svl  + relevel(pop_background, ref = "Hawaii.Kenya")  + (1|ID), data=CourtshipBgrd)
+      summary(CourtshipCC_s6)
+  
+  # Robust variance esatimation to correct SE's for fixed effects given spectral curves are used multiple times for generating JNDs for each individuals data. 
+  robust_CourtshipCC_s6 <- clubSandwich::conf_int(CourtshipCC_s6, cluster = CourtshipBgrd$ID, vcov =  "CR2")
+      
+#########################################################
+# Comparing displays
+#########################################################
+ # Load data from Devi
+       Display_bird_diff <- read_excel("data/Display_bird_diff.xlsx")
+       
+       Diff <- Display_bird_diff 
+
+      names(Diff) # header rows R is reading
+
+    Diff$BodyRegion <- factor(Diff$BodyRegion) #updates levels for the variable BodyRegion
+    str(diff.difftime) #how R is reading the stucture of the object, double checking the levels for body region after updating levels
+    Diff$ID <- factor(Diff$ID) #updates levels for the variable ID
+    str(diff.difftime) #how R is reading the stucture of the object, double checking the levels for body region after updating levels
+
+# Center SVL to make intercept interpretable
+    Diff$sc_SVL <- with(Diff, scale(SVL, scale=FALSE))
+
+# Filter missing SVL data
+  Diff <- Diff %>% filter(!is.na(SVL)) # filter out misssing SVL data
+
+# create as factor
+    Diff$BodyRegion <- factor(Diff$BodyRegion)
+
+# Sample sizes
+    N_diff <- data.frame(Diff %>% group_by(Population) %>% summarise(n = length(unique(ID))))
+    
+##################
+# Achromatic contrast
+##################
+    
+# Fit model testing this idea above. First just test for body region interaction. But, needs RVE
+    Diff_dL_BR_int <- lmer(dL_diff_abs ~ sc_SVL + Population + BodyRegion + BodyRegion:Population + (1|ID), data=Diff)
+    summary(Diff_dL_BR_int)
+    
+    # Refit mdoel using robust standard errors
+  robust_Diff_dL_BR_int <- clubSandwich::conf_int(Diff_dL_BR_int, cluster = Diff$ID, vcov =  "CR2") 
+  
+    # Significance of interaction
+      robust_Diff_dl_int <- Wald_test(Diff_dL_BR_int, constraints = constrain_zero(7:9), 
+                                    cluster = Diff$ID, vcov = "CR2")
+# Main effects BR
+    Diff_dL_BR_me <- lmer(dL_diff_abs ~ sc_SVL + Population + BodyRegion  + (1|ID), data=Diff)
+    summary(Diff_dL_BR_me)
+    
+    # Sig of Body Region
+        robust_Diff_dL_BR_me <- Wald_test(Diff_dL_BR_me, constraints = constrain_zero(4:6), 
+                                    cluster = Diff$ID, vcov = "CR2")
+  
+# Then fit marginalised model so that body regions are averaged
+  Diff_dL <- lmer(dL_diff_abs ~ sc_SVL + Population + (1|ID), data=Diff)
+  summary(Diff_dL)
+
+# Check residuals of model
+ # hist(residuals(Diff_dL))
+ # plot(Diff_dL) # Some patterns in residuals, but likely driven by the absolute. Note that results are essentially the same if using absolute or raw, signed values. 
+  
+# Refit mdoel using robust standard errors
+  robust_Diff_dl_BR <- clubSandwich::conf_int(Diff_dL_BR_me, cluster = Diff$ID, vcov =  "CR2") 
+
+# Wald tests - Test significance of pop dofferences and SVL differences averaging over body regions
+   
+  robust_Diff_dl_pop <- Wald_test(Diff_dL, constraints = constrain_zero(3), 
+                                  cluster = Diff$ID, vcov = "CR2")
+   robust_Diff_dl_svl <- Wald_test(Diff_dL, constraints = constrain_zero(2), 
+                                  cluster = Diff$ID, vcov = "CR2")
+
+##################
+# Chromatic contrast
+##################  
+   
+  # Fit model testing this idea above. First just test for body region interaction. But, needs RVE
+    Diff_dS_BR_int <- lmer(dS_diff_abs ~ sc_SVL + Population + BodyRegion + BodyRegion:Population + (1|ID), data=Diff)
+    summary(Diff_dS_BR_int)
+    
+        # Refit mdoel using robust standard errors
+     robust_Diff_dS_BR_int <- clubSandwich::conf_int(Diff_dS_BR_int, cluster = Diff$ID, vcov =  "CR2") 
+    
+     # Significance of interaction
+      robust_Diff_dS_int <- Wald_test(Diff_dS_BR_int, constraints = constrain_zero(7:9), 
+                                    cluster = Diff$ID, vcov = "CR2")
+  # Main effects BR
+    Diff_dS_BR_me <- lmer(dS_diff_abs ~ sc_SVL + Population + BodyRegion  + (1|ID), data=Diff)
+    summary(Diff_dS_BR_me)
+    
+    # Sig of Body Region
+      robust_Diff_dS_BR_me <- Wald_test(Diff_dS_BR_me, constraints = constrain_zero(4:6), 
+                                    cluster = Diff$ID, vcov = "CR2")
+   
+# Fit model testing this idea above
+  Diff_dS <- lmer(dS_diff_abs ~  SVL + Population + (1|ID), data=Diff)
+  summary(Diff_dS)
+
+# Check residuals of model
+  #hist(residuals(Diff_dS))
+  #plot(Diff_dS) # Some patterns in residuals, but likely driven by the absolute. Note that results are essentially the same if using absolute or raw, signed values. 
+  
+# Refit mdoel using robust standard errors
+  robust_Diff_dS <- clubSandwich::conf_int(Diff_dS_BR_me, cluster = Diff$ID, vcov =  "CR2") 
+
+# Wald tests - Test significance of pop dofferences and SVL differences averaging over body regions
+   robust_Diff_dS_pop <- Wald_test(Diff_dS, constraints = constrain_zero(3), 
+                                  cluster = Diff$ID, vcov = "CR2")
+   robust_Diff_dS_svl <- Wald_test(Diff_dS, constraints = constrain_zero(2), 
+                                  cluster = Diff$ID, vcov = "CR2")
+   
+```
+
+Martin J. Whiting^1,2^, Brenden S. Holland^3^, J. Scott Keogh^4^, Daniel W.A.Noble^4^, Katrina J. Rankin^5^ and Devi Stuart-Fox^5^
+
+^1^ Department of Biological Sciences, Macquarie University, Sydney, NSW 2109, Australia
+    
+^2^    School of Animal, Plant and Environmental Sciences, University of the Witwatersrand, Wits 2050, South Africa
+
+^3^ Department of Natural Sciences, Hawaii Pacific University, Honolulu, Hawaii, USA
+
+^4^ Division of Ecology and Evolution, Research School of Biology, The Australian National University, Canberra, ACT 2602, Australia
+
+^5^ School of BioSciences, The University of Melbourne, Parkville, Victoria 3010, Australia
+
+# Abstract
+Colonization of novel environments can free invasive populations from the constraints imposed by native-range predators and promote rapid evolutionary change. We demonstrate such character release for color signals in Jackson’s chameleons (*Trioceros j. xanthopholus*) inadvertently introduced from Kenya to Hawaii (Oahu) where there are few lizard predators. Hawaiian chameleons displayed more conspicuous color signals than Kenyan chameleons during male contests and courtship, were less cryptic in response to bird and snake predators and showed greater change between display and anti-predator color states. Hawaiian chameleon display colors were more conspicuous in their local than ancestral habitats, consistent with local adaptation of social signals. These results demonstrate that relaxed predation pressure can result in character release of dynamic social signals in introduced species experiencing strong sexual selection.
+
+**One sentence summary**: Relaxing predation results in character release and local adaptation in a dynamic social signal in a chameleon.
+
+When species encounter novel environments, such as during human-mediated introductions, evolutionary change can occur more rapidly than Darwin ever thought possible [@RN1; @RN2; @RN3; @RN4]. In particular, release from predation by native-range predators enables evolutionary exploration of entirely new regions of the adaptive landscape [@RN4; @RN5]. Such character release should be most evident for social and sexual signals; released from constraints on conspicuousness imposed by predation risk, signals could elaborate in many directions [e.g., @RN4; @RN6; @RN7; @RN8]. However, we are only beginning to understand how social and sexual signals change in response to rapid environmental change and there remain very few empirical examples from natural populations [but see @RN7; @RN9; @RN10]. This is especially true for species with dynamic color change, for which we are not aware of any examples. Here, we examine character release of a dynamic color signal by taking advantage of an unintended evolutionary ‘experiment’: accidental translocation of chameleons to a novel, low predation environment.  
+
+In 1972, a shipment of Jackson’s chameleons (*Trioceros jacksonii xanthopholus*; Fig. \@ref(fig:figure1) and fig. S1; thought to be 36 or fewer individuals) was sent from Kenya to the Hawaiian island of Oahu, destined for the pet trade. The animals arrived in poor condition and were left outdoors to recover, at which point they dispersed and became established on the island [@RN11]. Jackson’s chameleons have a high intrinsic population growth rate (9--12 month generation time and live birth of up to 50 young @RN24), enabling their rapid establishment and potentially rapid evolution (approx. 50 -- 65 generations). On Oahu, there are few potential predators of chameleons (no snakes or lizard-eating raptors, other potential bird predators absent or rare, supplementary text), while in Kenya they are preyed upon by a wide range of bird, snake and occasionally, mammal, predators @Measey2014. This accidental introduction enables us to test whether relaxed predation results in character release of a dynamic visual signal and whether this might be explained by local adaptation.
+
+Chameleons are famous for their rapid color change [@RN12; @RN13; @RN14]. When presented with another chameleon, male Jackson’s chameleons adopt a characteristic display posture and become intensely yellow-green during courtship or to signal dominance (Fig. 1, figs. S1 and S3). At other times, they are a duller green, brown or become mottled green-brown, particularly in response to predators (Fig. \@ref(fig:figure1) and fig. S4A). Their different color states vary in conspicuousness depending on the context, background, and viewer (e.g., conspecific or predator). If introduced chameleons in Hawaii experience character release from reduced predation, we expect males to have more conspicuous display colors in response to conspecifics and to be less cryptic in response to bird and snake predators. We should also see evidence of local adaptation: color signals should be more conspicuous to conspecifics against the local than ancestral background. 
+
+To test these predictions, we presented wild-caught male chameleons in both Hawaii and Kenya with either a male chameleon, a female chameleon, a bird predator (stuffed African cuckoo-hawk, *Aviceda cuculoides*) or a snake predator (replica boomslang, *Dispholidus typus*) (fig. S4), or a control (stick). We measured the spectral reflectance of male color states during male-male display (dominant in male-male contests, *n* = `r N_display[1,2]` Hawaii, *n* = `r N_display[2,2]` Kenya), courtship (*n* = `r N_Courtship[1,2]` Hawaii, *n* = `r N_Courtship[2,2]` Kenya) and in response to bird (*n* = `r N_Pred[1,3]` Hawaii, *n* = `r N_Pred[2,3]` Kenya) and snake (*n* = `r N_Pred[3,3]` Hawaii, *n* = `r N_Pred[4,3]` Kenya) predators (Fig. \@ref(fig:figure2) and fig. S5). We then modelled how conspicuous these colors would appear to the relevant receiver’s visual system (chameleon, bird, snake), estimated as chromatic or luminance contrast (Just Noticeable Differences, JNDs; @RN25) against the background vegetation of each environment (Hawaii or Kenya; supplementary text).
+
+In support of predictions of character release, male display coloration of Hawaiian chameleons had higher luminance contrast against the local background than those of Kenyan chameleons (Fig. \@ref(fig:figure2), Fig. \@ref(fig:figure3)A and table S2) (male-male contests: luminance contrast ($dl$); $F_{`r Population_ConspicDisplayAC$df_num`,`r Population_ConspicDisplayAC$df_denom`}$ = `r Population_ConspicDisplayAC$Fstat`, *P* = `r p_value(Population_ConspicDisplayAC$p_val)`; courtship displays: luminance contrast ($dl$); $F_{`r Population_ConspicCourtshipAC$df_num`,`r Population_ConspicCourtshipAC$df_denom`}$ = `r Population_ConspicCourtshipAC$Fstat`, *P* = `r p_value(Population_ConspicCourtshipAC$p_val)`). This result was consistent for all body regions (supplementary text). However, Hawaiian chameleons did not differ from Kenyan chameleons in chromatic contrast of color signals (Fig. \@ref(fig:figure3)B and table S2, male-male contests: $F_{`r Population_ConspicDisplayCC$df_num`,`r Population_ConspicDisplayCC$df_denom`}$ = `r Population_ConspicDisplayCC$Fstat`, *P* = `r p_value(Population_ConspicDisplayCC$p_val)`; courtship: $F_{`r Population_ConspicCourtshipCC$df_num`,`r Population_ConspicCourtshipCC$df_denom`}$ = `r Population_ConspicCourtshipCC$Fstat`, *P* = `r p_value(Population_ConspicCourtshipCC$p_val)`).
+
+The importance of luminance contrast is consistent with the nature and mechanism of rapid color change in individual chameleons, which usually involves much greater luminance than chromatic change (Fig. \@ref(fig:figure1)). Specifically, color change is caused by dispersion or concentration of melanin within melanophore pigment cells @RN15 or changes in the spacing of guanine crystals within iridophores @RN14, both of which strongly affect luminance. Accordingly, character release was observed in the overall luminance of signals rather than their hue.
+
+Released from predation, Hawaiian chameleons were less cryptic than Kenyan chameleons when threatened by both bird and snake predators. Hawaiian chameleons had higher luminance contrast against the local background to the visual system of the corresponding predator (Fig. \@ref(fig:figure3)C; main effect of population; $F_{`r Population_AC_Pred$df_num`,`r Population_AC_Pred$df_denom`}$ = `r Population_AC_Pred$Fstat`, *P* = `r p_value(Population_AC_Pred$p_val)`, no interaction between population and predator type, table S3). Differences between populations in chromatic contrast against the background, however, depended on the predator (significant predator by population interaction, table S3: $F_{`r back_pred_CC_Pred$df_num`,`r back_pred_CC_Pred$df_denom`}$ = `r back_pred_CC_Pred$Fstat`, *P* = `r p_value(back_pred_CC_Pred$p_val)`). Hawaiian chameleons were significantly more conspicuous to birds than were Kenyan conspecifics (Fig. \@ref(fig:figure3)D and table S4; Birds (Hawaii-Kenya): $\beta$ = `r CI_hyp_test[2,2]`, 95% CI = `r CI_hyp_test[2,3]` to `r CI_hyp_test[2,4]`, *P* = `r CI_hyp_test[2,8]`, JND values > 5). By comparison, chameleons from both populations had very low and similar chromatic contrast to the visual system of snakes (Fig. \@ref(fig:figure3)D and table S4; Snakes (Hawaii-Kenya): $\beta$ = `r CI_hyp_test[1,2]`, 95% CI = `r CI_hyp_test[1,3]` to `r CI_hyp_test[1,4]`, *P* = 1; JND values ~ 2). The much lower chromatic contrast of chameleons to the visual system of snakes than birds reflects the much poorer chromatic discrimination of trichromatic snakes compared to tetrachromatic birds [@RN18]. The poor color discrimination of snakes may also explain why Hawaiian and Kenyan chameleons differ little their chromatic response to snakes, despite the absence of snakes on Hawaii.
+
+Character release may reflect rapid evolutionary change, phenotypic plasticity or a combination of these processes [@RN19; @RN20]. Rapid evolutionary change results in local adaptation, whereby signals become more conspicuous to conspecifics in their local environment than in ancestral environments. Consistent with local adaptation, we found that Hawaiian chameleons were more conspicuous to other chameleons against their own (Hawaiian) background than against their ancestral Kenyan background, in both social contexts, although effect sizes for luminance were much larger than for chromatic contrast (Fig. \@ref(fig:figure4) and table S5; male-male contests: luminance ($dl$), $\beta$ = `r robust_localAdapt_DispBgrdAC[3,1]`, 95% CI = `r robust_localAdapt_DispBgrdAC[3,4]` to `r robust_localAdapt_DispBgrdAC[3,5]`, $F_{`r background_AC_Disp$df_num`,`r background_AC_Disp$df_denom`}$ = `r background_AC_Disp$Fstat`, *P* = `r p_value(background_AC_Disp[,6])`, chromatic ($dS$), $\beta$ = `r robust_DispBgrdCC[3,1]`, 95% CI = `r robust_DispBgrdCC[3,4]` to `r robust_DispBgrdCC[3,5]`, $F_{`r background_CC_Disp$df_num`,`r background_CC_Disp$df_denom`}$ = `r background_CC_Disp$Fstat`, *P* = `r p_value(background_CC_Disp[,6])`; courtship: luminance ($dl$), $\beta$ = `r robust_CourtshipAC[3,1]`, 95% CI = `r robust_CourtshipAC[3,4]` to `r robust_CourtshipAC[3,5]`, $F_{`r background_AC_Court$df_num`,`r background_AC_Court$df_denom`}$ = `r background_AC_Court$Fstat`, *P* = `r p_value(background_AC_Court[,6])`, chromatic ($dS$) $\beta$ = `r robust_CourtshipCC[3,1]`, 95% CI = `r robust_CourtshipCC[3,4]` to `r robust_CourtshipCC[3,5]`, $F_{`r background_CC_Court$df_num`,`r background_CC_Court$df_denom`}$ = `r background_CC_Court$Fstat`, *P* = `r p_value(background_CC_Court[,6]) `). These results are consistent with local adaptation, in which phenotypic plasticity, which can also evolve rapidly [@RN26], may also play a role.
+
+To gauge the extent of color plasticity, we examined individual change between display (male-male contest) and anti-predator (bird) color states (absolute difference in JNDs between states; *n* = `r N_diff[1,2]` Hawaii, *n* = `r N_diff[2,2]` Kenya). While there was evidence for differences between body regions (supplementary text, fig. S9, tables S12 and S13), overall, Hawaiian chameleons showed greater chromatic but not luminance change compared to Kenyan chameleons (chromatic: $F_{`r robust_Diff_dS_pop$df_num`,`r robust_Diff_dS_pop$df_denom`}$ = `r robust_Diff_dS_pop$Fstat`, *P* = `r p_value(robust_Diff_dS_pop[,6])`; luminance: $F_{`r robust_Diff_dl_pop$df_num`,`r robust_Diff_dl_pop$df_denom`}$ = `r robust_Diff_dl_pop$Fstat`, *P* = `r p_value(robust_Diff_dl_pop[,6])`); although luminance change showed similar trends across body regions (fig. S9). Together, these results indicate that chameleons introduced to Hawaii only 50 years ago have evolved signals that are locally adapted, more conspicuous to conspecifics, and show greater changes between display and anti-predator color states. Although differences between Hawaiian and Kenyan chameleons might reflect a founder effect, the traits involved and observed differences are all in the predicted direction of adaptive change, whereas founder effects are expected to be random with respect to the environment.
+
+We have documented a surprisingly strong effect of recent release from predation on a conspicuous, dynamic visual signal. Oahu has no snakes or raptors that feed on lizards. The main threat for Oahu chameleons is domestic and feral cats, and cats have very limited color vision [@RN22]. In the absence of the usual suite of predators they would experience in their native range of Kenya -- a diverse community of snake and bird predators @Measey2014 -- the conditions were highly favorable for character release of social signals. Jackson’s chameleons likely experience strong sexual selection given their polygynous mating system, elaborate courtship displays and intense male contest competition (Fig. \@ref(fig:figure1)) in which males lock and twist their three horns into rivals during intense bouts that sometimes result in physical injury. Consequently, a unique set of conditions set the stage for what we have demonstrated -- character release of a dynamic social signal over a short ecological time scale. To the best of our knowledge, this is also the first example of character release in a dynamic color signal.
+
+Rapid color change enables animals to be highly conspicuous during social interactions and highly cryptic at other times [@RN12]. Our results suggest that even for species capable of dynamic color change there is an upper threshold to signal intensity that is constrained by natural selection. This novel finding raises the question of whether other animals that have convergently evolved dynamic color signals, such as cephalopods, frogs, other lizards, and fishes, may be likewise constrained. More generally, our study highlights the opportunities provided by invasions to study natural and sexual selection in the wild.
+
+# Figures
+
+```{r figure1, cache=FALSE, fig.cap = "**Chameleon color signal change in response to different social stimuli. Male chameleons experience intense sexual selection**. During the breeding season they change from dull green to a highly conspicuous bright yellow display signal. They also readily fight by locking horns and sometimes pierce their rival’s skin with their horns. **(A)** A dominant male in display coloration. **(B)** A subordinate male that lost a contest and turned from bright yellow to brown. **(C)** Two males fighting, both are in display coloration and relatively even matched. **(D)** A courting male in full display color while the female has turned to a contrasting color, rejecting the male. See supplementary text for additional photos, including in response to a snake."}
+library(magick)
+
+img65 <- image_read("./output/figures/fig1.pdf")
+img65
+  
+```
+
+```{r figure2, fig.width = 14, fig.height= 14, fig.cap="**Mean spectral reflectance curves for male chameleons for representative body regions (gular, top flank) and background (leaves) for Hawaii and Kenya**. The context for measurement was **(A)** male contest displays; **(B)** courtship; **(C)** bird predator; and **(D)** snake predator. More details in online supplementary text and Fig. S5."}
+library(magick)
+img <- image_read("./output/figures/Figure3.png")
+img
+
+```
+
+```{r figure3, cache = FALSE, fig.width = 14, fig.height= 14, fig.cap= "**Chromatic and luminance contrast in Just Noticeable Differences (JND), of Hawaiian and Kenyan chameleons against their respective backgrounds (i.e., average environment of stems and leaves)**. Luminance **(A)** and chromatic **(B)** contrast of male chameleons during male-male contests and female courtship. JNDs are calculated based on the chameleon visual system. Luminance **(C)** and chromatic **(D)** contrasts of male chameleons during snake  and birdpredator encounters. JNDs are calculated based on the snake and bird visual systems. Contrasts between means, ‘Beta’, that are bold indicate significant effects."}
+rerun = FALSE
+if(rerun){
+## Make figures that average across body regions, but display Social Context
+
+courtship_data <- Courtship %>% 
+                  select(ID, Population, Colour, SVL, BodyRegion, Background, dS, dL)
+  display_data <- Display_1 %>%
+                  select(ID, Population, Colour, SVL, BodyRegion, Background, dS, dL)
+combined_data <- rbind(courtship_data, display_data)
+
+# Now calculate the averages for each population and Colour (i.e., context) / predation
+
+summary_data_pred <- Predator %>%
+                group_by(Predator, Population) %>%
+                summarise( Mean_dS = mean(dS, na.rm = T), 
+                             SE_dS = sd(dS)/sqrt(length(unique(ID))),
+                             Upper_dS = Mean_dS + 1.96*SE_dS,
+                             Lower_dS = Mean_dS - 1.96*SE_dS, 
+                           Mean_dL = mean(dL, na.rm = T), 
+                             SE_dL = sd(dL)/sqrt(length(unique(ID))),
+                             Upper_dL = Mean_dL + 1.96*SE_dL,
+                             Lower_dL = Mean_dL - 1.96*SE_dL) 
+
+
+summary_data <- combined_data %>%
+                group_by(Population, Colour) %>%
+                summarise( Mean_dS = mean(dS, na.rm = T), 
+                             SE_dS = sd(dS)/sqrt(length(unique(ID))),
+                             Upper_dS = Mean_dS + 1.96*SE_dS,
+                             Lower_dS = Mean_dS - 1.96*SE_dS, 
+                           Mean_dL = mean(dL, na.rm = T), 
+                             SE_dL = sd(dL)/sqrt(length(unique(ID))),
+                             Upper_dL = Mean_dL + 1.96*SE_dL,
+                             Lower_dL = Mean_dL - 1.96*SE_dL) %>%
+                mutate(Colour = if_else(Colour == "Courtship", "Courtship", "Male-male contest"))
+
+
+#Grab photos
+  males <- readPNG("./photos/male_fight.png", native = TRUE)
+females <- readPNG("./photos/courtship.png",  native = TRUE)
+  snake <- readPNG("./photos/snake_cham.png", native = TRUE)
+   bird <- readPNG("./photos/bird_cham.png",  native = TRUE)
+
+#plots
+p1 <- ggplot(summary_data, aes(x = Population, y = Mean_dS, group = Colour, color = Colour)) +
+    ylim(2.5, 6.5) + 
+  geom_point(size = 3, position = position_dodge(width=0.5)) +
+  geom_errorbar(aes(ymin = Lower_dS, ymax = Upper_dS), position = position_dodge(width=0.5), width = 0) + 
+  geom_line(position = position_dodge(width=0.5)) + 
+  scale_color_manual(values = wes_palette("Cavalcanti1")) + #Change color palette here see: https://github.com/karthik/wesanderson
+  xlab("") + 
+  ylab("Chromatic contrast (JND)") +
+  annotate("segment", x = 0.85, xend = 1.85, y = 6.1, yend = 6.1, colour = "black") +
+  annotate("segment", x = 1.12, xend = 2.12, y = 5.7, yend = 5.7, colour = "black") + 
+  annotate("text", x = 0.85+(1.85-0.85)/2,  y = 6.2, label = "NS",  size = 6) + 
+  annotate("text", x = 1.12+(2.12-1.12)/2, y = 5.8, label = "NS", size = 6) + 
+  theme_bw() +
+  labs(colour = "Social Context") +
+  theme(legend.position = c(0.18, 0.08),
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(size=18),
+    axis.title=element_text(size=20,face="bold"),
+    legend.text =element_text(size = 12),
+    legend.title =element_text(size = 12, face = "bold")) +
+   inset_element(males,
+                left = 0.45,
+                right = 0.90,
+                bottom = 0.58,
+                top = 0.75, ignore_tag = TRUE) + 
+    inset_element(females,
+                left = 0.30,
+                right = 0.75,
+                bottom = 0.15,
+                top = 0.28, ignore_tag = TRUE) 
+      #annotation_raster(males, xmin = 1.2, xmax = 1.9, ymin = 4.8, ymax = 5.3) + 
+      #annotation_raster(females, xmin = 1, xmax = 1.7, ymin = 3.5, ymax = 4)
+
+p2 <- ggplot(summary_data, aes(x = Population, y = Mean_dL, group = Colour, color = Colour)) +
+  ylim(15, 45) + 
+  geom_point(size = 3, position = position_dodge(width=0.5)) +
+  geom_errorbar(aes(ymin = Lower_dL, ymax = Upper_dL), position = position_dodge(width=0.5), width = 0) + 
+  geom_line(position = position_dodge(width=0.5)) + 
+  scale_color_manual(values = wes_palette("Cavalcanti1")) + #Change color palette here see: https://github.com/karthik/wesanderson
+  xlab("") + 
+  ylab("Luminance contrast (JND)") +
+   annotate("segment", x = 0.90, xend = 1.90, y = 40, yend = 40, colour = "black") +
+  annotate("segment", x = 1.12, xend = 2.12, y = 42, yend = 42, colour = "black") + 
+  annotate("text", x = 0.9+((1.90 - 0.90)/2), y = 41, label = "**",  size = 6) + 
+  annotate("text", x = 1.12+((2.12 - 1.12)/ 2), y = 43, label = "**", size = 6) + 
+  theme_bw() +
+  theme(legend.position = "none",
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(size=18),
+    axis.title=element_text(size=20,face="bold"),
+    legend.text =element_text(size = 12),
+    legend.title =element_text(size = 12, face = "bold")) +
+    inset_element(males,
+                left = 0.45,
+                right = 0.90,
+                bottom = 0.60,
+                top = 0.75, ignore_tag = TRUE) + 
+    inset_element(females,
+                left = 0.05,
+                right = 0.50,
+                bottom = 0.25,
+                top = 0.38, ignore_tag = TRUE)
+
+
+p3 <- ggplot(summary_data_pred, aes(x = Population, y = Mean_dL, group = Predator, color = Predator)) +
+  ylim(10, 30) + 
+  geom_point(size = 3, position = position_dodge(width=0.5)) +
+  geom_errorbar(aes(ymin = Lower_dL, ymax = Upper_dL), position = position_dodge(width=0.5), width = 0) + 
+  geom_line(position = position_dodge(width=0.5)) + 
+  scale_color_manual(values = wes_palette("Cavalcanti1")) + #Change color palette here see: https://github.com/karthik/wesanderson
+  xlab("") + 
+  ylab("Luminance contrast (JND)") +
+   annotate("segment", x = 0.90, xend = 1.90, y = 28, yend = 28, colour = "black") +
+  annotate("segment", x = 1.12, xend = 2.12, y = 26, yend = 26, colour = "black") + 
+  annotate("text", x = 0.9+((1.90 - 0.90)/2), y = 28.5, label = "**",  size = 6) + 
+  annotate("text", x = 1.12+((2.12 - 1.12)/ 2), y = 26.5, label = "**", size = 6) + 
+  theme_bw() +
+  theme(legend.position = "none",
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(size=18),
+    axis.title=element_text(size=20,face="bold"),
+    legend.text =element_text(size = 12),
+    legend.title =element_text(size = 12, face = "bold")) +
+    inset_element(snake,
+                left = 0.45,
+                right = 0.75,
+                bottom = 0.60,
+                top = 0.70, ignore_tag = TRUE) + 
+    inset_element(bird,
+                left = 0.05,
+                right = 0.50,
+                bottom = 0.25,
+                top = 0.38, ignore_tag = TRUE)
+
+p4 <- ggplot(summary_data_pred, aes(x = Population, y = Mean_dS, group = Predator, color = Predator)) +
+  ylim(1, 9) + 
+  geom_point(size = 3, position = position_dodge(width=0.5)) +
+  geom_errorbar(aes(ymin = Lower_dS, ymax = Upper_dS), position = position_dodge(width=0.5), width = 0) + 
+  geom_line(position = position_dodge(width=0.5)) + 
+  scale_color_manual(values = wes_palette("Cavalcanti1")) + #Change color palette here see: https://github.com/karthik/wesanderson
+  xlab("") + 
+  ylab("Chromatic contrast (JND)") +
+   annotate("segment", x = 0.88, xend = 1.88, y = 8.8, yend = 8.8, colour = "black") +
+  annotate("segment", x = 1.12, xend = 2.12, y =2.5, yend = 2.5, colour = "black") + 
+  annotate("text", x = 0.9+((1.90 - 0.90)/2), y = 8.9, label = "**",  size = 6) + 
+  annotate("text", x = 1.12+((2.12 - 1.12)/ 2), y = 2.7, label = "NS", size = 6) + 
+  theme_bw() +
+  theme(legend.position = c(0.10, 0.08),
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(size=18),
+    axis.title=element_text(size=20,face="bold"),
+    legend.text =element_text(size = 12),
+    legend.title =element_text(size = 12, face = "bold")) +
+    inset_element(bird,
+                left = 0.30,
+                right = 0.60,
+                bottom = 0.45,
+                top = 0.60, ignore_tag = TRUE) + 
+    inset_element(snake,
+                left = 0.02,
+                right = 0.32,
+                bottom = 0.20,
+                top = 0.35, ignore_tag = TRUE)
+
+#pdf(file = "./output/figures/Figure1.1.pdf", width = 14, height = 14)
+plot_grid(p1, p2, p4, p3, labels = c("A", "B", "C", "D"), label_size = 16,
+  label_fontface = "bold", rel_widths=c(1,1))
+#dev.off()
+} else {
+  
+  img2 <- image_read("./output/figures/Figure1.png")
+  img2
+}
+```
+
+```{r figure4, cache = FALSE, fig.width = 14, fig.height= 9, fig.cap= "**Evidence for local adaptation of social color signals in both (A) chromatic- and (B) luminance contrast for Hawaiian chameleons**. For local adaptation, signals are predicted to be more conspicuous against their own background. In this case, Hawaiian chameleons were both significantly more chromatic and brighter (luminance contrast) against their own background compared to the Kenyan background suggesting that selection has acted on increasing local signal conspicuousness."}
+rerun=FALSE
+
+if(rerun){
+##########
+# Data
+##########
+courtship_summary <- CourtshipBgrd %>% 
+                    group_by(Population, Background_pop) %>%
+                summarise( Mean_dS = mean(dS, na.rm = T), 
+                             SE_dS = sd(dS)/sqrt(length(unique(ID))),
+                             Upper_dS = Mean_dS + 1.96*SE_dS,
+                             Lower_dS = Mean_dS - 1.96*SE_dS, 
+                           Mean_dL = mean(dL, na.rm = T), 
+                             SE_dL = sd(dL)/sqrt(length(unique(ID))),
+                             Upper_dL = Mean_dL + 1.96*SE_dL,
+                             Lower_dL = Mean_dL - 1.96*SE_dL) %>% filter(Population == "Hawaii") %>% as.data.frame() %>% mutate(Social_Context = "Courtship")
+
+display_summary <- DisplayBgrd %>%
+                group_by(Population, Background_pop) %>%
+                summarise( Mean_dS = mean(dS, na.rm = T), 
+                             SE_dS = sd(dS)/sqrt(length(unique(ID))),
+                             Upper_dS = Mean_dS + 1.96*SE_dS,
+                             Lower_dS = Mean_dS - 1.96*SE_dS, 
+                           Mean_dL = mean(dL, na.rm = T), 
+                             SE_dL = sd(dL)/sqrt(length(unique(ID))),
+                             Upper_dL = Mean_dL + 1.96*SE_dL,
+                             Lower_dL = Mean_dL - 1.96*SE_dL) %>% filter(Population == "Hawaii") %>% as.data.frame() %>% mutate(Social_Context = "Male-male contest")
+
+summary_data_localAdap <- rbind(courtship_summary, display_summary)
+
+##########
+# Plots
+##########
+#Grab photos
+  males <- readPNG("./photos/male_fight.png", native = TRUE)
+females <- readPNG("./photos/courtship.png",  native = TRUE)
+
+#plots
+p1.2 <- ggplot(summary_data_localAdap, aes(x = Background_pop, y = Mean_dS, group = Social_Context, color = Social_Context)) +
+    ylim(2.5, 6.5) + 
+  geom_point(size = 3, position = position_dodge(width=0.5)) +
+  geom_errorbar(aes(ymin = Lower_dS, ymax = Upper_dS), position = position_dodge(width=0.5), width = 0) + 
+  geom_line(position = position_dodge(width=0.5)) + 
+  scale_color_manual(values = wes_palette("Cavalcanti1")) + #Change color palette here see: https://github.com/karthik/wesanderson
+  xlab("Background Environment") + 
+  ylab("Chromatic contrast (JND)") +
+  annotate("segment", x = 0.85, xend = 1.85, y = 6.1, yend = 6.1, colour = "black") +
+  annotate("segment", x = 1.12, xend = 2.12, y = 5.7, yend = 5.7, colour = "black") + 
+  annotate("text", x = 0.85+(1.85-0.85)/2,  y = 6.2, label = "NS",  size = 6) + 
+  annotate("text", x = 1.12+(2.12-1.12)/2, y = 5.8, label = "NS", size = 6) + 
+  theme_bw() +
+  labs(colour = "Social Context") +
+  theme(legend.position = c(0.15, 0.08),
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(size=18),
+    axis.title=element_text(size=20,face="bold"),
+    legend.text =element_text(size = 12),
+    legend.title =element_text(size = 12, face = "bold")) +
+   inset_element(males,
+                left = 0.45,
+                right = 0.90,
+                bottom = 0.58,
+                top = 0.75, ignore_tag = TRUE) + 
+    inset_element(females,
+                left = 0.30,
+                right = 0.75,
+                bottom = 0.15,
+                top = 0.28, ignore_tag = TRUE) 
+
+p2.2 <- ggplot(summary_data_localAdap, aes(x = Background_pop, y = Mean_dL, group = Social_Context, color = Social_Context)) +
+  ylim(15, 45) + 
+  geom_point(size = 3, position = position_dodge(width=0.5)) +
+  geom_errorbar(aes(ymin = Lower_dL, ymax = Upper_dL), position = position_dodge(width=0.5), width = 0) + 
+  geom_line(position = position_dodge(width=0.5)) + 
+  scale_color_manual(values = wes_palette("Cavalcanti1")) + #Change color palette here see: https://github.com/karthik/wesanderson
+  xlab("Background Environment") + 
+  ylab("Luminance contrast (JND)") +
+   annotate("segment", x = 0.90, xend = 1.90, y = 40, yend = 40, colour = "black") +
+  annotate("segment", x = 1.12, xend = 2.12, y = 42, yend = 42, colour = "black") + 
+  annotate("text", x = 0.9+((1.90 - 0.90)/2), y = 41, label = "**",  size = 6) + 
+  annotate("text", x = 1.12+((2.12 - 1.12)/ 2), y = 43, label = "**", size = 6) + 
+  theme_bw() +
+  theme(legend.position = "none",
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(size=18),
+    axis.title=element_text(size=20,face="bold"),
+    legend.text =element_text(size = 12),
+    legend.title =element_text(size = 12, face = "bold")) +
+    inset_element(males,
+                left = 0.45,
+                right = 0.90,
+                bottom = 0.60,
+                top = 0.75, ignore_tag = TRUE) + 
+    inset_element(females,
+                left = 0.05,
+                right = 0.50,
+                bottom = 0.25,
+                top = 0.38, ignore_tag = TRUE)
+#pdf(file="./output/figures/Figure2.pdf", height = 10, width = 18)
+plot_grid(p1.2, p2.2, labels = c("A", "B"), label_size = 16,
+  label_fontface = "bold", rel_widths=c(1,1))
+#dev.off()
+} else {
+  img3 <- image_read("./output/figures/Figure2.png")
+  img3
+}
+
+
+```
+
+```{r table4, results='hide'}
+#Section will create and write Tables for Supplement. It is not spit out in the main MS. Exported then imported for the supp
+
+# Table S1
+    table1 <- as.data.frame(rbind(robust_ConspicDisplayAC_CI,
+                    robust_ConspicDisplayCC_CI,
+                    robust_ConspicCourtshipAC_CI,
+                    robust_ConspicCourtshipCC_CI))
+    table1$Parameter <- rownames(table1)
+    rownames(table1) <- NULL
+    # Clean
+     final_T1 <- table1 %>% 
+                 mutate(SocialContext = c("Male-Male Display", rep("", 5), "Courtship Display", rep("", 5)),
+                        VisualRealm = c("Luminance  Contrast", rep("", 2), "Chromatic Contrast", rep("", 2), 
+                                        "Luminance Contrast", rep("", 2), "Chromatic Contrast", rep("", 2))) %>%
+                  select(SocialContext, VisualRealm, Parameter, beta, SE, df, CI_L, CI_U)
+     write.csv(final_T1, file = "./output/tables/Table1_MS.csv", row.names = FALSE)
+ 
+# Table S2
+    table2 <- as.data.frame(rbind(robust_PredatorAC_CI_inter,
+                                  robust_PredatorCC_CI_inter))
+    table2$Parameter <- rownames(table2)
+    rownames(table2) <- NULL
+    
+    # Clean
+     final_T2 <- table2 %>% 
+                 mutate(JND = c("Luminance Contrast", rep("", 3), "Chromatic Contrast", rep("", 3))) %>%
+                  select(JND, Parameter, beta, SE, df, CI_L, CI_U)
+     write.csv(final_T2, file = "./output/tables/Table2_MS.csv", row.names = FALSE)
+
+ #Table S3
+    contrast <- rbind(CI_hyp_test,
+                     CI_hyp_testAC)
+    
+    contrast <- contrast %>% mutate(VisualSpec = c("Chromatic Contrast", "", "Luminance Contrast", ""),
+                                    p_val = sapply(p_val, function(x) p_value(x))) %>% 
+                select(VisualSpec, comparison, Estimate, lwr, upr, Fstat, df, p_val, p_bonf)
+    
+    write.csv(contrast, file = "./output/tables/Table3_MS.csv", row.names = FALSE)
+
+
+#TableS4
+    tb4 <- data.frame(rbind(robust_localAdapt_DispBgrdAC,
+                 robust_DispBgrdCC,
+                 robust_CourtshipAC,
+                 robust_CourtshipCC))
+    tb4$parameter <- rownames(tb4)
+    rownames(tb4) <- NULL
+    
+    tb4 <- tb4 %>% mutate(SocialContext = c("Male-Male Display", rep("", 5), 
+                                            "Courtship Display", rep("", 5)),
+                        VisualRealm = c("Luminance Contrast", rep("", 2), "Chromatic Contrast", 
+                                        rep("", 2), "Luminance Contrast", rep("", 2), 
+                                        "Chromatic Contrast", rep("", 2))) %>%
+                  select(SocialContext, VisualRealm, parameter, beta, SE, df, CI_L, CI_U)
+    
+    write.csv(tb4, file = "./output/tables/Table4_MS.csv", row.names = FALSE)
+
+
+# Table S5
+    tb5 <- data.frame(rbind(robust_Diff_dL_BR_int,
+                            robust_Diff_dS_BR_int))
+    tb5$parameter <- rownames(tb5)
+    rownames(tb5) <- NULL
+    
+  tb5 <- tb5 %>% mutate(VisualRealm = c("Luminance Contrast", rep("", 8), "Chromatic Contrast", 
+                                        rep("", 8))) %>%
+                  select(VisualRealm, parameter, beta, SE, df, CI_L, CI_U)
+     write.csv(tb5, file = "./output/tables/Table5_MS.csv", row.names = FALSE)
+  
+# Table S6
+tableS6 <- as.data.frame(rbind(robust_localAdapt_DispBgrdAC_s6,
+                               robust_DispBgrdCC_s6,
+                               robust_CourtshipAC_s6,
+                              robust_CourtshipCC_s6))
+tableS6$Parameter <- rownames(tableS6)
+rownames(tableS6) <- NULL
+
+# Clean
+final_S6 <- tableS6 %>% 
+  mutate(SocialContext = c("Male-Male Display", rep("", 9), "Courtship Display", rep("", 9)),
+         VisualRealm = c("Luminance  Contrast", rep("", 4), "Chromatic Contrast", rep("", 4), 
+                         "Luminance Contrast", rep("", 4), "Chromatic Contrast", rep("", 4))) %>%
+  dplyr::select(SocialContext, VisualRealm, Parameter, beta, SE, df, CI_L, CI_U)
+write.csv(final_S6, file = "./output/tables/tableS6.csv", row.names = FALSE)
+     
+     
+```
+
+**Acknowledgments**: This research was approved by the Kenya Wildlife Service (R. Bagine, KWS 5001) and Ministry of Science & Technology (Research Permit No. MOS&T 13/36C 208). **Funding**: This work was supported by the University of the Witwatersrand. **Authors contributions**: MJW conceived the study. MJW and DSF designed the study with help from JSK and BH. MJW, BSH, JSK and DSF collected the data. MJW, DSF, KJR and DWAN performed data curation, visualisation and exploratory analyses. DWAN performed final analyses. MJW wrote the first draft, with help from DWAN and DSF. All authors contributed substantially to subsequent versions. **Competing interests**: we (the authors) declare no competing interests. **Data and materials availability**: the data and code are available at OSF.
+
+**List of Supplementary materials**
+Materials and Methods
+Figures S1 – S9
+Tables S1 – S13
+References (24-48)
+
+# References and Notes
