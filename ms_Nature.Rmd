@@ -718,28 +718,28 @@ Luminance contrast was calculated using the sensitivity function for the LWS pho
 
 ## Statistical Analysis
 
-Chromatic and luminance contrast from visual models, measured in just noticeable differences (JNDs), were analyzed using linear mixed effects models in R using the `lme4` package @RN24 in combination with the package `clubSandwich` @RN25. For each individual, measurements for each body region (top flank, mid-flank, tail base and gular region) were contrasted against each of six average background spectra (i.e., average top and bottom of lighter leaves, average top and bottom of darker leaves, average green and average brown stems). While we present sensitivity analyses for all body regions (see below - *Additional Supplemental Results*), we were mainly interested in overall signal differences displayed by chameleons. As such, for our main analyses we averaged estimates (marginalized) across these body regions and background environments given that in many cases body regions showed remarkably similar effects (see *Additional Supplemental Results*). In all cases, our results and conclusions were not impacted (see supplementary code). Deriving multiple contrasts for each individual body region and background, however, resulted in a substantial number of comparisons, each of which were not completely independent of each other. To ensure that non-independence of data did not impact our inferences, we included individual ID as a random effect to account for repeated measures on each individual and used a Robust Variance Estimator (RVE) (using our final models to correct standard errors) and a Satterthwaite degrees of freedom correction.
+Chromatic and luminance contrast from visual models, measured in just noticeable differences (JNDs), were analyzed using linear mixed effects models in R using the `lme4` package [@RN24] in combination with the package `clubSandwich` [@RN25]. For each individual, measurements for each body region (top flank, mid-flank, tail base and gular region) were contrasted against each of six average background spectra (i.e., average top and bottom of lighter leaves, average top and bottom of darker leaves, average green and average brown stems). While we present sensitivity analyses for all body regions (see Supplemental Results), we were mainly interested in overall signal differences displayed by chameleons. As such, for our main analyses we averaged estimates (marginalized) across these body regions and background environments given that in many cases body regions showed remarkably similar effects (see Supplemental Results). In all cases, our results and conclusions were not impacted (see Supplemental Results). Deriving multiple contrasts for each individual body region and background, however, resulted in a substantial number of comparisons, each of which were not completely independent of each other. To ensure that non-independence of data did not impact our inferences, we included individual ID as a random effect to account for repeated measures on each individual and used a Robust Variance Estimator (RVE) (using our final models to correct standard errors) and a Satterthwaite degrees of freedom correction.
 
 First, we tested whether Hawaiian chameleons were more conspicuous (as perceived by chameleons) in social contexts than Kenyan chameleons. We ran separate linear models with chromatic and luminance contrast of male display or courtship coloration against the local background as the response variable. We included population of origin and z-transformed snout-vent length (SVL) as fixed effects. Next, we tested whether Kenyan chameleons were more cryptic (less conspicuous against the local background) in response to predators. For these models, chromatic or luminance contrast against the local background (as perceived by the corresponding predator type) was the response variable and predator type (i.e, snake or bird), population of origin (Hawaii or Kenya) and their interaction were fixed effects. Finally, to evaluate evidence for local adaptation, we tested whether the chromatic or luminance contrast of Hawaiian chameleons during social interactions (male-male and male-female) varied depending on whether contrast was against a native Kenyan background or their current introduced habitat background in Hawaii. For all models, interaction terms were first tested using Wald tests. If found to be non-significant (p > 0.1) we dropped the interaction and fitted a main effects model. We then tested the significance of the main effects using Wald tests with robust variance estimators and a Satterthwaite degrees of freedom correction. 
 
 # Figures
 
-```{r figure1, cache=FALSE, fig.cap = "**Chameleon color signal change in response to different social stimuli. Male chameleons experience intense sexual selection**. During the breeding season they change from dull green to a highly conspicuous bright yellow display signal. They also readily fight by locking horns and sometimes pierce their rival’s skin with their horns. a, A dominant male in display coloration. b, A subordinate male that lost a contest and turned from bright yellow to brown. c, Two males fighting, both are in display coloration and relatively even matched. d, A courting male in full display color while the female has turned to a contrasting color, rejecting the male. See Supplementary information for additional photos, including in response to a snake"}
+```{r figure1, cache=FALSE, fig.cap = "**Chameleon color signal change in response to different social stimuli. Male chameleons experience intense sexual selection**. During the breeding season they change from dull green to a highly conspicuous bright yellow display signal. They also readily fight by locking horns and sometimes pierce their rival’s skin with their horns. **a**, A dominant male in display coloration. **b**, A subordinate male that lost a contest and turned from bright yellow to brown. **c**, Two males fighting, both are in display coloration and relatively even matched. **d**, A courting male in full display color while the female has turned to a contrasting color, rejecting the male. See Supplementary information for additional photos, including in response to a snake"}
 library(magick)
 
-img65 <- image_read("./output/figures/fig1.pdf")
+img65 <- image_read("./output/figures/fig1_ms_Nature.png")
 img65
   
 ```
 
-```{r figure2, fig.width = 14, fig.height= 14, fig.cap="**Mean spectral reflectance curves for male chameleons for representative body regions (gular, top flank) and background (leaves) for Hawaii and Kenya**. The context for measurement was a, male contest displays; b, courtship; c, bird predator; and d, snake predator. More details in online Supplementary Information and Supplementary Fig. 5"}
+```{r figure2, fig.width = 14, fig.height= 14, fig.cap="**Mean spectral reflectance curves for male chameleons for representative body regions (gular, top flank) and background (leaves) for Hawaii and Kenya**. The context for measurement was **a**, male contest displays; **b**, courtship; **c**, bird predator; and **d**, snake predator. More details in online Supplementary Information and Supplementary Fig. 5"}
 library(magick)
-img <- image_read("./output/figures/Figure3.png")
+img <- image_read("./output/figures/Figure3_Nature.png")
 img
 
 ```
 
-```{r figure3, cache = FALSE, fig.width = 14, fig.height= 14, fig.cap= "**Chromatic and luminance contrast in Just Noticeable Differences (JND), of Hawaiian and Kenyan chameleons against their respective backgrounds (i.e., average environment of stems and leaves)**. Luminance a, and chromatic b, contrast of male chameleons during male-male contests and female courtship. JNDs are calculated based on the chameleon visual system. Luminance c, and chromatic d, contrast of male chameleons during snake and bird predator encounters. JNDs are calculated based on the snake and bird visual systems. Contrasts between means, ‘Beta’, that are bold indicate significant effects."}
+```{r figure3, cache = FALSE, fig.width = 14, fig.height= 14, fig.cap= "**Chromatic and luminance contrast in Just Noticeable Differences (JND), of Hawaiian and Kenyan chameleons against their respective backgrounds (i.e., average environment of stems and leaves)**. Luminance **a**, and chromatic **b**, contrast of male chameleons during male-male contests and female courtship. JNDs are calculated based on the chameleon visual system. Luminance **c**, and chromatic **d**, contrast of male chameleons during snake and bird predator encounters. JNDs are calculated based on the snake and bird visual systems. Contrasts between means, ‘Beta’, that are bold indicate significant effects."}
 rerun = FALSE
 if(rerun){
 ## Make figures that average across body regions, but display Social Context
@@ -918,7 +918,7 @@ plot_grid(p1, p2, p4, p3, labels = c("A", "B", "C", "D"), label_size = 16,
 #dev.off()
 } else {
   
-  img2 <- image_read("./output/figures/Figure1.png")
+  img2 <- image_read("./output/figures/Figure1_ms_Nature.png")
   img2
 }
 ```
@@ -1029,7 +1029,7 @@ plot_grid(p1.2, p2.2, labels = c("A", "B"), label_size = 16,
   label_fontface = "bold", rel_widths=c(1,1))
 #dev.off()
 } else {
-  img3 <- image_read("./output/figures/Figure2.png")
+  img3 <- image_read("./output/figures/Figure2_ms_Nature.png")
   img3
 }
 
@@ -1125,12 +1125,24 @@ write.csv(final_S6, file = "./output/tables/tableS6.csv", row.names = FALSE)
      
 ```
 
-**Acknowledgments**: This research was approved by the Kenya Wildlife Service (R. Bagine, KWS 5001) and Ministry of Science & Technology (Research Permit No. MOS&T 13/36C 208). **Funding**: This work was supported by the University of the Witwatersrand. **Authors contributions**: MJW conceived the study. MJW and DSF designed the study with help from JSK and BH. MJW, BSH, JSK and DSF collected the data. MJW, DSF, KJR and DWAN performed data curation, visualisation and exploratory analyses. DWAN performed final analyses. MJW wrote the first draft, with help from DWAN and DSF. All authors contributed substantially to subsequent versions. **Competing interests**: we (the authors) declare no competing interests. **Data and materials availability**: the data and code are available at OSF.
+**Acknowledgments** 
+This research was approved by the Kenya Wildlife Service (R. Bagine, KWS 5001) and Ministry of Science & Technology (Research Permit No. MOS&T 13/36C 208). Financial support was provided by the University of the Witwatersrand to MJW. We thank Idle Farah and Patrick Malonza of the National Museums of Kenya for facilitating the research, Joseph Gathua for field support and Jan Stipala for use of his field vehicle. We thank the Ditsong National Museum of Natural History (formerly Transvaal Museum) for the stuffed African Cuckoo Hawk. Ben Phillips, Rick Shine and Tobias Uller provided feedback on earlier drafts of this manuscript. We thank Fonti Kar for help curating data and Drew Allen for statistical advice.
 
-**List of Supplementary materials**
-Materials and Methods
-Figures S1 – S9
-Tables S1 – S13
-References (24-48)
+*Contributions**
+MJW conceived the study. MJW and DSF designed the study with help from JSK and BH. MJW, BSH, JSK and DSF collected the data. MJW, DSF, KJR and DWAN performed data curation, visualisation and exploratory analyses. DWAN performed final analyses. MJW wrote the first draft, with help from DWAN and DSF. All authors contributed substantially to subsequent versions. 
+
+*Corresponding author**
+Correspondence to Martin Whiting.
+
+*Ethics declarations**
+
+*Competing interests**
+We (the authors) declare no competing interests. 
+
+*Extended data figures and tables**
+The data and code are available at OSF.
+
+*Supplementary information**
+This file includes supplementary notes, 9 Supplementary Figures and 13 Supplementary Tables.
 
 # References and Notes
