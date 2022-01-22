@@ -1,5 +1,5 @@
 ---
-title: "Title: Invasive chameleons released from predation display more conspicuous colors"
+title: "Title: Invasive chameleons released from predation display more conspicuous colours"
 bibliography: supp_refs.bib
 csl: nature.csl
 output: 
