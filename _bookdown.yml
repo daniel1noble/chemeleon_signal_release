@@ -1,7 +1,7 @@
 language:
   label:
     fig: !expr function(x) sprintf("**Supplementary Figure %s.** ", x)
-    tab: !expr function(x) sprintf("**Supplementary Table %s.** ", x)
+    tab: !expr function(x) sprintf("Supplementary Table %s. ", x)
     eq: 'Equation '
     thm: 'Theorem '
     lem: 'Lemma '
