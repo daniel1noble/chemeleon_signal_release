@@ -6,7 +6,6 @@ csl: nature.csl
 output: 
   bookdown::word_document2:
     toc: no
-    toc_depth: 6
     number_sections: false
     reference_docx: template.docx
   bookdown::html_document2:
@@ -15,7 +14,6 @@ output:
     toc: yes
     toc_depth: 6
     toc_float: yes
-    bibliography: refs.bib
 ---
 ```{r setup, include=FALSE, purl = FALSE}
 knitr::opts_chunk$set(echo = FALSE, cache = TRUE, message = FALSE, warning = FALSE, tidy = TRUE)
@@ -526,18 +524,19 @@ summary(SVL_pop)
 svl <- data.frame(SVLdat %>% group_by(Population) %>% summarise(mean = mean(SVL), sd = sd(SVL), n = n()))
 
 ```
+
 Of the individuals used in social interactions (male-male display or male courtship), chameleons from Kenya were significantly larger than those from Hawaii (mean ± standard deviation Hawaii: `r svl[1,"mean"]`$\pm$ `r svl[1,"sd"]` mm, *n* = `r svl[1,"n"]`; Kenya `r svl[2,"mean"]`$\pm$ `r svl[2,"sd"]` mm, *n* = `r svl[2,"n"]`; t = `r SVL_pop$statistic`, *P* <0.001). SVL did not significantly predict luminance contrast against the background (Supplementary Table \@ref(tab:ms_tableS2)); thus the higher luminance contrast of Hawaiian chameleons during male-male contests and courtship cannot be explained by body size differences between the population. Snout-vent length was a weak predictor of chromatic contrast (Supplementary Table \@ref(tab:ms_tableS2)): larger chameleons had slightly higher chromatic contrast against the background. However, the populations did not differ in chromatic contrast during male displays (courtship and contests).
 
 ## Supporting Supplementary Tables for Main Text
 
 ```{r ms_tableS2, tab.cap = "Results of models comparing mean differences between Kenyan and Hawaiian lizards in luminance and chromatic contrast against the local background in two social contexts (male-male competition and courtship). Model estimates, standard errors (SE), Satterthwaite's degrees of freedom (df) and 95% confidence internals (95% CI). Standard errors are corrected by using robust variance estimators."}
-source("./R/func.R")
+  source("./R/func.R")
 final_T1 <-  read.csv(file = "./output/tables/Table1_MS.csv")
   
   # Table
  table1 <- flextable(final_T1) %>%  table_style6() %>% fit_to_width(max_width = 7)
- table1
  
+ table1
 ```
 
 ```{r ms_tableS3, tab.cap = "Results of models comparing luminance and chromatic mean differences between Kenyan and Hawaiian lizards in response to snakes and birds. Model estimates, standard errors (SE), Satterthwaite's degrees of freedom (df) and 95% confidence internals (95% CI). Full models are provided and standard errors are corrected by using robust variance estimators."}
@@ -552,12 +551,14 @@ final_T1 <-  read.csv(file = "./output/tables/Table1_MS.csv")
 ```{r ms_tableS4, tab.cap = "Planned contrasts between mean luminance and chromatic contrast in Hawaii and Kenya for both predators (snakes and birds). Estimates of the mean difference ebtween Hawaii and Kenya propulations are provided along with their 95% confidence intervals (95% CI lower and upper). Wald tests of contrast significance are provided (F, degrees of freedom (df) and associated p-value).  We also applied a Bonferroni correction to p-values to control for multiple comparisons."}
  contrast <- read.csv(file = "./output/tables/Table3_MS.csv")
  table3 <- flextable(contrast) %>% table_style8() %>% fit_to_width(max_width = 7)
+ 
  table3
 ```
 
 ```{r ms_tableS5, tab.cap = "Results of models comparing luminance and chromatic contrast of Hawaiian lizards against their introduced Hawaiian background (intercept) and Hawaiian lizards against their native Kenyan background (background = Kenya) in both social contexts (male-male competition and courtship). Model estimates (mean and contrasts), standard error (SE), degrees of freedom (df) and 95% confidence intervals (95% CI) for models were fitted using robust variance estimators to correct standard errors for non-independence, and we used Satterthwaite's degrees of freedom. Significant parameter estimates are those where the 95% CIs do not include zero."}
  tb4 <- read.csv(file = "./output/tables/Table4_MS.csv")
  table4 <- flextable(tb4) %>% table_style9() %>% fit_to_width(max_width = 7)
+ 
  table4
 ```
 
@@ -567,6 +568,7 @@ final_S6 <-  read.csv(file = "./output/tables/tableS6.csv")
   
   # Table
  Tab_S6 <- flextable(final_S6) %>%  table_styleS6() %>% fit_to_width(max_width = 7)
+ 
  Tab_S6
 ```
 
@@ -730,11 +732,11 @@ result6_snake <- result6[grep("snake", result6$hypothesis), ] %>% mutate(Species
 
 ## All body regions exhibit similar contrasts between Kenyan and Hawaiian backgrounds suggesting local adaptation of entire visual signal
 
-We tested whether different body regions of Hawaiian chameleons exhibited different contrasts between Hawaiian habitat background compared to their ancestral, Kenyan background. We started off testing models comparing the interaction between background environment and body region for both chromatic and luminance contrast. However, for luminance contrast, these models had poor convergence. Based on the raw data (Supplementary Fig. \@ref(fig:FigS4)B and S\@ref(fig:FigS4)D) there was also weak evidence that body regions differed in how they changed when viewed by conspecifics against the Hawaiian and Kenyan backgrounds. As such, we simplified models and only present the main effects of body region and background environment for luminance contrast. However, inspection of the raw data (Supplementary Fig. \@ref(fig:FigS4)A and S\@ref(fig:FigS4)C) suggested that body regions may differ in how chromatically contrasting they were against the background environment of Hawaii and Kenya. In addition, our main results suggested that predators may deferentially drive chromatic signal conspicuousness, and given different body regions maybe more exposed to bird compared to snake, predators, we fitted an interaction and main effects model for chromatic contrast. 
+We tested whether different body regions of Hawaiian chameleons exhibited different contrasts between Hawaiian habitat background compared to their ancestral, Kenyan background. We started off testing models comparing the interaction between background environment and body region for both chromatic and luminance contrast. However, for luminance contrast, these models had poor convergence. Based on the raw data (Supplementary Fig. \@ref(fig:FigS4)B and \@ref(fig:FigS4)D) there was also weak evidence that body regions differed in how they changed when viewed by conspecifics against the Hawaiian and Kenyan backgrounds. As such, we simplified models and only present the main effects of body region and background environment for luminance contrast. However, inspection of the raw data (Supplementary Fig. \@ref(fig:FigS4)A and \@ref(fig:FigS4)C) suggested that body regions may differ in how chromatically contrasting they were against the background environment of Hawaii and Kenya. In addition, our main results suggested that predators may deferentially drive chromatic signal conspicuousness, and given different body regions maybe more exposed to bird compared to snake, predators, we fitted an interaction and main effects model for chromatic contrast. 
 
-The magnitude of chromatic contrast differences between Hawaiian chameleons against their own environment and a Kenyan enviroment did depend on the body region (Male-male display: $F_{`r intearction_CC_Disp$df_num`, `r intearction_CC_Disp$df_denom`}$ = `r intearction_CC_Disp$Fstat`, p = `r p_value(intearction_CC_Disp$p_val)`; Courtship Display: $F_{`r intearction_CC_Court$df_num`, `r intearction_CC_Court$df_denom`}$ = `r intearction_CC_Court$Fstat`, *P* = `r p_value(intearction_CC_Court$p_val)`, Supplementary Fig. \@ref(fig:FigS4)A, S\@ref(fig:FigS4)C and Supplementary Table \@ref(tab:tableS7)). However, in all cases there was a tendency for all body regions of Hawaiian populations to decrease in average contrast when viewed by a conspecific against a Hawaiian versus Kenyan background (Supplementary Fig. \@ref(fig:FigS4)A and S\@ref(fig:FigS4)C). Tailbase was the only body region that showed a non-significant change (Supplementary Table \@ref(tab:tableS8)). 
+The magnitude of chromatic contrast differences between Hawaiian chameleons against their own environment and a Kenyan enviroment did depend on the body region (Male-male display: $F_{`r intearction_CC_Disp$df_num`, `r intearction_CC_Disp$df_denom`}$ = `r intearction_CC_Disp$Fstat`, p = `r p_value(intearction_CC_Disp$p_val)`; Courtship Display: $F_{`r intearction_CC_Court$df_num`, `r intearction_CC_Court$df_denom`}$ = `r intearction_CC_Court$Fstat`, *P* = `r p_value(intearction_CC_Court$p_val)`, Supplementary Fig. \@ref(fig:FigS4)A, \@ref(fig:FigS4)C and Supplementary Table \@ref(tab:tableS7)). However, in all cases there was a tendency for all body regions of Hawaiian populations to decrease in average contrast when viewed by a conspecific against a Hawaiian versus Kenyan background (Supplementary Fig. \@ref(fig:FigS4)A and \@ref(fig:FigS4)C). Tailbase was the only body region that showed a non-significant change (Supplementary Table \@ref(tab:tableS8)). 
 
-The magnitude of luminance contrast showed a significant overall decrease when viewed by conspecifics against a Kenyan background (Overall Background Effect: Male-male display, $F_{`r background_AC_Disp$df_num`, `r background_AC_Disp$df_denom`}$ = `r background_AC_Disp$Fstat`, *P* = `r p_value(background_AC_Disp$p_val)`, Courtship Display, $F_{`r background_AC_Court$df_num`, `r background_AC_Court$df_denom`}$ = `r background_AC_Court$Fstat`, *P* = `r p_value(background_AC_Court$p_val)`, Supplementary Fig. \@ref(fig:FigS4)B, S\@ref(fig:FigS4)D and Supplementary Table \@ref(tab:tableS7)), and there were significant differences among body regions (Overall Body Region Effect: Male-male display, $F_{`r BodyRegion_AC_Disp$df_num`, `r BodyRegion_AC_Disp$df_denom`}$ = `r BodyRegion_AC_Disp$Fstat`, *P* = `r p_value(BodyRegion_AC_Disp$p_val)`, Courtship Display, $F_{`r BodyRegion_AC_Court$df_num`, `r BodyRegion_AC_Court$df_denom`}$ = `r BodyRegion_AC_Court$Fstat`, *P* = `r p_value(BodyRegion_AC_Court$p_val)`, Supplementary Fig. \@ref(fig:FigS4)B, S\@ref(fig:FigS4)D and Supplementary Table \@ref(tab:tableS7)). 
+The magnitude of luminance contrast showed a significant overall decrease when viewed by conspecifics against a Kenyan background (Overall Background Effect: Male-male display, $F_{`r background_AC_Disp$df_num`, `r background_AC_Disp$df_denom`}$ = `r background_AC_Disp$Fstat`, *P* = `r p_value(background_AC_Disp$p_val)`, Courtship Display, $F_{`r background_AC_Court$df_num`, `r background_AC_Court$df_denom`}$ = `r background_AC_Court$Fstat`, *P* = `r p_value(background_AC_Court$p_val)`, Supplementary Fig. \@ref(fig:FigS4)B, \@ref(fig:FigS4)D and Supplementary Table \@ref(tab:tableS7)), and there were significant differences among body regions (Overall Body Region Effect: Male-male display, $F_{`r BodyRegion_AC_Disp$df_num`, `r BodyRegion_AC_Disp$df_denom`}$ = `r BodyRegion_AC_Disp$Fstat`, *P* = `r p_value(BodyRegion_AC_Disp$p_val)`, Courtship Display, $F_{`r BodyRegion_AC_Court$df_num`, `r BodyRegion_AC_Court$df_denom`}$ = `r BodyRegion_AC_Court$Fstat`, *P* = `r p_value(BodyRegion_AC_Court$p_val)`, Supplementary Fig. \@ref(fig:FigS4)B, \@ref(fig:FigS4)D and Supplementary Table \@ref(tab:tableS7)). 
 
 ```{r FigS4, fig.align = 'center', fig.width = 13, fig.height = 12, fig.cap = "Local adaptation. All four body regions (gular, mid-flank, tailbase and topflank) are shown averaged across stems and leaves found in their habitat. Mean JNDs are provided along with 95% confidence intervals. **(A & B)** represent male-male contest displays whereas **(C & D)** represent courtship displays."}
 # Courship data
