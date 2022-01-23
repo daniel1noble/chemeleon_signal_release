@@ -429,8 +429,6 @@ Figures 1 -- 9
 Tables 1 -- 13  
 Supplementary References  
 
-[@RN15ms;@RN7ms;@RN11ms;@RN6ms;@RN22ms;@RN2ms;@RN25ms;@RN8ms;@RN3ms;@RN1ms;@RN13ms;@RN18ms;@RN9ms;@RN12ms;@RN26ms;@RN24ms;@RN19ms;@RN5ms;@Measey2014ms;@RN20ms;@RN14ms;@RN4ms;@RN10ms]
-
 # Expanded Hypotheses and Predictions
 
 We provide an expanded table of the key hypothesis and associated predictions. We also identify the data needed to test these predictions.
@@ -569,8 +567,8 @@ final_S6 <-  read.csv(file = "./output/tables/tableS6.csv")
   # Table
  Tab_S6 <- flextable(final_S6) %>%  table_styleS6() %>% fit_to_width(max_width = 7)
  Tab_S6
- 
 ```
+
 # Additional Supplemental Results
 ## Body regions are perceived differently by predators but exhibited similar effect sizes
 
