@@ -30,7 +30,7 @@ knitr::opts_chunk$set(echo = FALSE, cache = TRUE, message = FALSE, warning = FAL
 ```{r getlibrary, echo = FALSE, results = "hide"}
 # load libraries
 devtools::install_github("karthik/wesanderson")
-pacman::p_load(flextable, lme4, lmerTest, ggplot2, lsmeans, emmeans, multcomp, dplyr, wesanderson, patchwork, latex2exp, png, cowplot, magick, jpeg, clubSandwich, readxl, pavo)
+pacman::p_load(tidyverse, flextable, lme4, lmerTest, ggplot2, lsmeans, emmeans, multcomp, dplyr, wesanderson, patchwork, latex2exp, png, cowplot, magick, jpeg, clubSandwich, readxl, pavo)
 source("./R/func.R")
 ```
 
@@ -667,13 +667,14 @@ S4
 source("./R/func.R")
 robust_sc_pred_table <- rbind(robust_PredatorAC,
                          robust_PredatorCC) %>% 
-                    mutate(p_Satt = sapply(p_Satt, function(x) p_value(x)),
-                           JND = c("Luminance Contrast", rep("", 9), 
-                                   "Chromatic Contrast", rep("", 9)))
+                    mutate(JND = c("Luminance Contrast", rep("", 9), 
+                                   "Chromatic Contrast", rep("", 9))) %>%  data.frame()
 
 robust_sc_pred_table$parameter <- rownames(robust_sc_pred_table)
 
-robust_sc_pred_table <- robust_sc_pred_table %>% select(JND, parameter, beta, SE, tstat, df, p_Satt)
+robust_sc_pred_table <- robust_sc_pred_table %>% dplyr::select(JND, parameter, beta, SE, tstat, df_Satt, p_Satt)
+row.names(robust_sc_pred_table) <- 1:nrow(robust_sc_pred_table)
+robust_sc_pred_table <- robust_sc_pred_table %>% mutate(p_Satt = sapply(p_Satt, function(x) p_value(x)))
 
 
 tableS6 <- flextable(robust_sc_pred_table) %>%  table_style5() %>% fit_to_width(max_width = 7)
