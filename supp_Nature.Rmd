@@ -9,9 +9,6 @@ output:
     toc_depth: 6
     number_sections: false
     reference_docx: template.docx
-    language:
-      label:
-        fig: !expr function(x) sprintf("**Figure %s.** ", x)
   bookdown::html_document2:
     code_folding: hide
     number_sections: no
