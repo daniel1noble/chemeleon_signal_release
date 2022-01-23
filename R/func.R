@@ -102,8 +102,8 @@ table_style  <- function(table){
             value = as_paragraph("Kenya", as_sub(" tailbase"), " - ", "Hawaii", as_sub(" tailbase"))) %>% 
     flextable::compose(part = "body", i = 8, j = 2, 
             value = as_paragraph("Kenya", as_sub(" topflank"), " - ", "Hawaii", as_sub(" topflank"))) %>% 
-    font(fontname="Times", part = "body") %>% 
-    font(fontname="Times", part = "header") 
+    font(fontname="Calibri", part = "body") %>% 
+    font(fontname="Calibri", part = "header") 
   return(table)
 }
 
@@ -118,8 +118,8 @@ table_style2 <- function(table){
     flextable::compose(part = "header", j = 5, value = as_paragraph(as_b("df"), as_sub(as_b(" num")))) %>%
     flextable::compose(part = "header", j = 6, value = as_paragraph(as_b("df"), as_sub(as_b(" denom")))) %>% 
     flextable::compose(part = "header", j = 7, value = as_paragraph(as_b("p"))) %>% 
-    font(fontname="Times", part = "body") %>% 
-    font(fontname="Times", part = "header")
+    font(fontname="Calibri", part = "body") %>% 
+    font(fontname="Calibri", part = "header")
   return(table)
 }
 
@@ -135,8 +135,8 @@ table_style3 <- function(table){
     flextable::compose(part = "header", j = 6, value = as_paragraph(as_b("p"))) %>% 
     flextable::compose(part = "body", j = 2, i = c(4,9), value = as_paragraph("Predator", "* BodyRegion")) %>% 
     flextable::compose(part = "body", j = 2, i = c(4,9)+1, value = as_paragraph("Predator", "* Population")) %>% 
-    font(fontname="Times", part = "body") %>% 
-    font(fontname="Times", part = "header")
+    font(fontname="Calibri", part = "body") %>% 
+    font(fontname="Calibri", part = "header")
   return(table)
 }
 
@@ -162,8 +162,8 @@ table_style4 <- function(table){
     flextable::compose(part = "body", j = 3, i = c(1, 10, 19, 28)+7, value = as_paragraph("Population", as_sub(" Kenya"), "* BodyRegion", as_sub(" tailbase"))) %>%
     flextable::compose(part = "body", j = 3, i = c(1, 10, 19, 28)+8, value = as_paragraph("Population", as_sub(" Kenya"), "* BodyRegion", as_sub(" topflank"))) %>% 
     width(j = 3, width = 2) %>% 
-    font(fontname="Times", part = "body") %>% 
-    font(fontname="Times", part = "header")
+    font(fontname="Calibri", part = "body") %>% 
+    font(fontname="Calibri", part = "header")
   
   return(table)
 }
@@ -190,8 +190,8 @@ table_style5 <- function(table){
     flextable::compose(part = "body", j = 2, i = c(1, 11)+7, value = as_paragraph("Predator", as_sub(" Snake"), "* BodyRegion", as_sub(" tailbase"))) %>%
     flextable::compose(part = "body", j = 2, i = c(1, 11)+8, value = as_paragraph("Predator", as_sub(" Snake"), "* BodyRegion", as_sub(" topflank"))) %>% 
     flextable::compose(part = "body", j = 2, i = c(1, 11)+9, value = as_paragraph("Predator", as_sub(" Snake"), "* Population", as_sub(" Kenya"))) %>% 
-    font(fontname="Times", part = "body") %>% 
-    font(fontname="Times", part = "header")
+    font(fontname="Calibri", part = "body") %>% 
+    font(fontname="Calibri", part = "header")
   
   return(table)
 }
@@ -211,8 +211,8 @@ table_style6 <- function(table){
     flextable::compose(part = "body", j = 3, i = c(1,4,7,10), value = as_paragraph("Intercept")) %>%
     flextable::compose(part = "body", j = 3, i = c(1,4,7,10)+1, value = as_paragraph("Snout-vent Length (SVL)")) %>%
     flextable::compose(part = "body", j = 3, i = c(1,4,7,10)+2, value = as_paragraph("Population", as_sub(" Kenya"))) %>% 
-    font(fontname="Times", part = "body") %>% 
-    font(fontname="Times", part = "header")
+    font(fontname="Calibri", part = "body") %>% 
+    font(fontname="Calibri", part = "header")
   return(table)
 }
 
@@ -231,8 +231,8 @@ table_style7 <- function(table){
     flextable::compose(part = "body", j = 2, i = c(1,5)+1, value = as_paragraph("Predator", as_sub(" Snake"))) %>%
     flextable::compose(part = "body", j = 2, i = c(1,5)+2, value = as_paragraph("Population", as_sub(" Kenya"))) %>%
     flextable::compose(part = "body", j = 2, i = c(1,5)+3, value = as_paragraph("Predator", as_sub(" Snake"), "* Population", as_sub(" Kenya"))) %>% 
-    font(fontname="Times", part = "body") %>% 
-    font(fontname="Times", part = "header") %>% 
+    font(fontname="Calibri", part = "body") %>% 
+    font(fontname="Calibri", part = "header") %>% 
     width(j = 2, width = 4)
     return(table)
 }
@@ -250,8 +250,8 @@ table_style8 <- function(table){
     flextable::compose(part = "header", j = 7, value = as_paragraph(as_b("df"))) %>% 
     flextable::compose(part = "header", j = 8, value = as_paragraph(as_b("p"))) %>% 
     flextable::compose(part = "header", j = 9, value = as_paragraph(as_b("p"), as_sub(as_b(" Bonferroni")))) %>% 
-    font(fontname="Times", part = "body") %>% 
-    font(fontname="Times", part = "header") 
+    font(fontname="Calibri", part = "body") %>% 
+    font(fontname="Calibri", part = "header") 
   return(table)
 }
 
@@ -270,8 +270,8 @@ table_style9 <- function(table){
     flextable::compose(part = "body", j = 3, i = c(1,4,7,10), value = as_paragraph("Intercept")) %>%
     flextable::compose(part = "body", j = 3, i = c(1,4,7,10)+1, value = as_paragraph("Snout-vent length (SVL)")) %>%
     flextable::compose(part = "body", j = 3, i = c(1,4,7,10)+2, value = as_paragraph("Background", as_sub(" Kenya"))) %>% 
-    font(fontname="Times", part = "body") %>% 
-    font(fontname="Times", part = "header")
+    font(fontname="Calibri", part = "body") %>% 
+    font(fontname="Calibri", part = "header")
   return(table)
 }
 
@@ -297,8 +297,8 @@ table_style10 <- function(table){
     flextable::compose(part = "body", j = 3, i = c(13,28), value = as_paragraph("Background Population", as_sub(" Kenya"), "* BodyRegion", as_sub(" midflank"))) %>%
     flextable::compose(part = "body", j = 3, i = c(13,28)+1, value = as_paragraph("Background Population", as_sub(" Kenya"), "* BodyRegion", as_sub(" tailbase"))) %>%
     flextable::compose(part = "body", j = 3, i = c(13,28)+2, value = as_paragraph("Background Population", as_sub(" Kenya"), "* BodyRegion", as_sub(" topflank"))) %>% 
-    font(fontname="Times", part = "body") %>% 
-    font(fontname="Times", part = "header")
+    font(fontname="Calibri", part = "body") %>% 
+    font(fontname="Calibri", part = "header")
   
   return(table)
 }
@@ -321,8 +321,8 @@ table_style11  <- function(table){
             value = as_paragraph("Kenyan Background", as_sub(" tailbase"), " - ", "Hawaiian Background", as_sub(" tailbase"))) %>% 
     flextable::compose(part = "body", i = c(4,8), j = 2, 
             value = as_paragraph("Kenyan Background", as_sub(" topflank"), " - ", "Hawaiian Background", as_sub(" topflank"))) %>% 
-    font(fontname="Times", part = "body") %>% 
-    font(fontname="Times", part = "header") %>% 
+    font(fontname="Calibri", part = "body") %>% 
+    font(fontname="Calibri", part = "header") %>% 
     width(j = 1, width = 1) %>% width(j = 2, width = 8)
   
   return(table)
@@ -337,8 +337,8 @@ table_style12 <- function(table){
     flextable::compose(part = "header", j = 3, value = as_paragraph(as_b("Population"))) %>% 
     flextable::compose( part = "header", j = 4, value = as_paragraph(as_b("Visual System"))) %>% 
     flextable::compose( part = "header", j = 5, value = as_paragraph(as_b("Background"))) %>% 
-    font(fontname="Times", part = "body") %>% 
-    font(fontname="Times", part = "header")
+    font(fontname="Calibri", part = "body") %>% 
+    font(fontname="Calibri", part = "header")
   return(table)
 }
 
@@ -364,8 +364,8 @@ table_style13 <- function(table){
     flextable::compose(part = "body", j = 2, i = c(1, 10)+6, value = as_paragraph("Population", as_sub(" Kenya"), "* BodyRegion", as_sub(" midflank"))) %>%
     flextable::compose(part = "body", j = 2, i = c(1, 10)+7, value = as_paragraph("Population", as_sub(" Kenya"), "* BodyRegion", as_sub(" tailbase"))) %>%
     flextable::compose(part = "body", j = 2, i = c(1, 10)+8, value = as_paragraph("Population", as_sub(" Kenya"), "* BodyRegion", as_sub(" topflank"))) %>% 
-    font(fontname="Times", part = "body") %>% 
-    font(fontname="Times", part = "header")
+    font(fontname="Calibri", part = "body") %>% 
+    font(fontname="Calibri", part = "header")
   
   return(table)
 }
@@ -389,8 +389,8 @@ table_style14  <- function(table){
                        value = as_paragraph("Kenyan", as_sub(" tailbase"), " - ", "Hawaiian", as_sub(" tailbase"))) %>% 
     flextable::compose(part = "body", i = c(4,8), j = 2, 
                        value = as_paragraph("Kenyan", as_sub(" topflank"), " - ", "Hawaiian", as_sub(" topflank"))) %>% 
-    font(fontname="Times", part = "body") %>% 
-    font(fontname="Times", part = "header") %>% 
+    font(fontname="Calibri", part = "body") %>% 
+    font(fontname="Calibri", part = "header") %>% 
     width(j = 1, width = 1) %>% width(j = 2, width = 8)
   
   return(table)
@@ -414,7 +414,7 @@ table_styleS6  <- function(table){
     flextable::compose(part = "body", j = 3, i = c(1,6,11,16)+2, value = as_paragraph("Population", as_sub(" Hawaii"),"-", "Background", as_sub(" Hawaii"))) %>% 
     flextable::compose(part = "body", j = 3, i = c(1,6,11,16)+3, value = as_paragraph("Population", as_sub(" Kenya"),"-", "Background", as_sub(" Hawaii"))) %>% 
     flextable::compose(part = "body", j = 3, i = c(1,6,11,16)+4, value = as_paragraph("Population", as_sub(" Kenya"),"-", "Background", as_sub(" Kenya"))) %>% 
-    font(fontname="Times", part = "body") %>% 
-    font(fontname="Times", part = "header")
+    font(fontname="Calibri", part = "body") %>% 
+    font(fontname="Calibri", part = "header")
   return(table)
 }
