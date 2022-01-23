@@ -2,7 +2,7 @@
 title: "Invasive chameleons released from predation display more conspicuous colours"
 date: "`r Sys.Date()`"
 bibliography: supp_refs.bib
-csl: science.csl
+csl: nature.csl
 output: 
   bookdown::word_document2:
     toc: no
