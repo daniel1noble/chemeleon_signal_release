@@ -420,12 +420,6 @@ Martin J. Whiting, Brenden S. Holland, J. Scott Keogh, Daniel W.A.Noble, Katrina
 Correspondence: Martin J. Whiting  
 Email: martin.whiting@mq.edu.au  
 
-**The file includes**:
-
-Supplementary text  
-Figures 1 -- 9  
-Tables 1 -- 13  
-Supplementary References  
 <!-- Note to change the formatting of table and figure legends add a _bookdwon.yml file and manipulate the fig: and tab: settings. Details here: https://community.rstudio.com/t/how-to-change-the-figure-table-caption-style-in-bookdown/110397-->
 
 # Expanded Hypotheses and Predictions
@@ -562,7 +556,7 @@ final_T1 <-  read.csv(file = "./output/tables/Table1_MS.csv")
  table4
 ```
 
-```{r ms_tableS6, tab.cap = "Results of interaction models comparing luminance and chromatic contrast of Hawaiian and Kenyan lizards against a Hawaiian and Kenyan background (background = Kenya) in both social contexts (male-male competition and courtship). Model estimates (mean and contrasts), standard error (SE), degrees of freedom (df) and 95% confidence intervals (95% CI) for models were fitted using robust variance estimators to correct standard errors for non-independence, and we used Satterthwaite's degrees of freedom. Significant parameter estimates are those where the 95% CIs do not include zero. Relevant contrasts that compare Hawaiian and Kenyan populations both againts the same Kenyan background are indicated by '*'."}
+```{r ms_tableS6, tab.cap = "Results of interaction models comparing luminance and chromatic contrast of Hawaiian and Kenyan lizards against a Hawaiian and Kenyan background (background = Kenya) in both social contexts (male-male competition and courtship). Model estimates (mean and contrasts), standard error (SE), degrees of freedom (df) and 95% confidence intervals (95% CI) for models were fitted using robust variance estimators to correct standard errors for non-independence, and we used Satterthwaite's degrees of freedom. Significant parameter estimates are those where the 95% CIs do not include zero. Relevant contrasts that compare Hawaiian and Kenyan populations both against the same Kenyan background are indicated by '*'."}
 source("./R/func.R")
 final_S6 <-  read.csv(file = "./output/tables/tableS6.csv")
   
