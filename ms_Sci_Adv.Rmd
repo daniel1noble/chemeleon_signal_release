@@ -1,20 +1,13 @@
 ---
 title: "Title: Invasive chameleons released from predation display more conspicuous colours"
 bibliography: supp_refs.bib
-csl: nature.csl
+csl: science-advances.csl
 output: 
   bookdown::word_document2:
     toc: no
     toc_depth: 6
     number_sections: false
     reference_docx: template.docx
-  bookdown::html_document2:
-    code_folding: hide
-    number_sections: no
-    toc: yes
-    toc_depth: 6
-    toc_float: yes
-    bibliography: refs.bib
 editor_options: 
   chunk_output_type: console
 ---
@@ -640,7 +633,7 @@ CourtshipBgrd <- CourtshipBgrd %>%
 **Authors**: Martin J. Whiting^1,2^, Brenden S. Holland^3^, J. Scott Keogh^4^, Daniel  W.A. Noble^4^, Katrina J. Rankin^5^ and Devi Stuart-Fox^5^
 
 **Affiliations**:
-^1^ Department of Biological Sciences, Macquarie University, Sydney, NSW 2109, Australia
+^1^ School of Natural Sciences, Macquarie University, Sydney, NSW 2109, Australia; martin.whiting@mq.edu.au
     
 ^2^    School of Animal, Plant and Environmental Sciences, University of the Witwatersrand, Wits 2050, South Africa
 
@@ -1133,6 +1126,7 @@ write.csv(final_S6, file = "./output/tables/tableS6.csv", row.names = FALSE)
      
 ```
 
+[@RN1; @RN2; @RN3; @RN4; @RN5]
 **Acknowledgments**: 
 This research was approved by the Kenya Wildlife Service (R. Bagine, KWS 5001) and Ministry of Science & Technology (Research Permit No. MOS&T 13/36C 208). Financial support was provided by the University of the Witwatersrand to MJW. We thank Idle Farah and Patrick Malonza of the National Museums of Kenya for facilitating the research, Joseph Gathua for amazing field support and Jan Stipala for use of his field vehicle. We thank the Ditsong National Museum of Natural History (formerly Transvaal Museum) for the stuffed African Cuckoo Hawk. Ben Phillips, Rick Shine and Tobias Uller provided feedback on earlier drafts of this manuscript. We thank Fonti Kar for help curating data and Drew Allen for statistical advice.
 

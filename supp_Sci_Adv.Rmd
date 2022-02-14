@@ -2,18 +2,12 @@
 title: "Invasive chameleons released from predation display more conspicuous colours"
 date: "`r Sys.Date()`"
 bibliography: supp_refs.bib
-csl: nature.csl
+csl: science-advances.csl
 output: 
   bookdown::word_document2:
     toc: no
     number_sections: false
     reference_docx: template.docx
-  bookdown::html_document2:
-    code_folding: hide
-    number_sections: no
-    toc: yes
-    toc_depth: 6
-    toc_float: yes
 ---
 ```{r setup, include=FALSE, purl = FALSE}
 knitr::opts_chunk$set(echo = FALSE, cache = TRUE, message = FALSE, warning = FALSE, tidy = TRUE)
@@ -421,6 +415,13 @@ Correspondence: Martin J. Whiting
 Email: martin.whiting@mq.edu.au  
 
 <!-- Note to change the formatting of table and figure legends add a _bookdwon.yml file and manipulate the fig: and tab: settings. Details here: https://community.rstudio.com/t/how-to-change-the-figure-table-caption-style-in-bookdown/110397-->
+
+**The file includes**:
+\n Supplementary text
+\n Figures S1 – S9
+\n Tables S1 – S14
+\n References 1-5
+
 
 # Expanded Hypotheses and Predictions
 
