@@ -635,9 +635,11 @@ CourtshipBgrd <- CourtshipBgrd %>%
    
 ```
 
-**Authors** Martin J. Whiting^1,2^, Brenden S. Holland^3^, J. Scott Keogh^4^, Daniel  W.A. Noble^4^, Katrina J. Rankin^5^ and Devi Stuart-Fox^5^
+**Short title**: Color signal character release in chameleons
 
-**Affiliations**
+**Authors**: Martin J. Whiting^1,2^, Brenden S. Holland^3^, J. Scott Keogh^4^, Daniel  W.A. Noble^4^, Katrina J. Rankin^5^ and Devi Stuart-Fox^5^
+
+**Affiliations**:
 ^1^ Department of Biological Sciences, Macquarie University, Sydney, NSW 2109, Australia
     
 ^2^    School of Animal, Plant and Environmental Sciences, University of the Witwatersrand, Wits 2050, South Africa
@@ -649,9 +651,11 @@ CourtshipBgrd <- CourtshipBgrd %>%
 ^5^ School of BioSciences, The University of Melbourne, Parkville, Victoria 3010, Australia
 
 # Abstract
-Colonization of novel environments can free invasive populations from the constraints imposed by native-range predators and promote rapid phenotypic change [@Losos2004; @RN4ms; @RN5ms; @Stastny2017]. In particular, conspicuous social and sexual signals are predicted to experience significant character release when natural selection via predation is relaxed [@RN7ms; @RN4ms]. However, we have few good examples of this phenomenon in the wild and none in species with dynamic colour change. Here, we show that Jackson’s chameleons (*Trioceros j. xanthopholus*) inadvertently introduced from Kenya to Hawaii (Oahu), where there are no co-evolved, native lizard predators, experienced significant character release of colour signals. Hawaiian chameleons displayed more conspicuous social colour signals than Kenyan chameleons during male contests and courtship, were less cryptic in response to bird and snake predators and showed greater change between display and anti-predator colour states. Hawaiian chameleon display colours were also more conspicuous in their local than ancestral habitats, consistent with local adaptation of social signals. These results demonstrate that relaxed predation pressure can result in character release of dynamic social signals in introduced species experiencing strong sexual selection.
+Conspicuous social and sexual signals are predicted to experience significant character release when natural selection via predation is relaxed. However, we have few good examples of this phenomenon in the wild and none in species with dynamic colour change. Here, we show that Jackson’s chameleons inadvertently introduced from Kenya to Hawaii (Oahu), where there are no co-evolved, native lizard predators, experienced significant character release of colour signals. Hawaiian chameleons displayed more conspicuous social colour signals than Kenyan chameleons during male contests and courtship, were less cryptic in response to bird and snake predators and showed greater change between display and anti-predator colour states. Hawaiian chameleon display colours were also more conspicuous in their local than ancestral habitats, consistent with local adaptation of social signals. These results demonstrate that relaxed predation pressure can result in character release of dynamic social signals in introduced species experiencing strong sexual selection.
 
-# Main
+**One sentence summary**: Relaxing predation results in character release and local adaptation in a dynamic social signal in a chameleon.
+
+# INTRODUCTION
 When species encounter novel environments, such as during human-mediated introductions, phenotypic change through a combination of plasticity and evolution, can occur remarkably rapidly [@RN1ms; @RN2ms; @RN3ms; @RN4ms]. In particular, release from predation by native-range predators enables evolutionary exploration of entirely new regions of the phenotypic landscape [@RN4ms; @RN5ms]. Such character release should be most evident for social and sexual signals; released from constraints on conspicuousness imposed by predation risk, signals could elaborate in many directions [e.g., @RN4ms; @RN6ms; @RN7ms; @RN8ms]. However, we are only beginning to understand how social and sexual signals change in response to rapid environmental change and there remain very few empirical examples from natural populations [but see @RN7ms; @RN9ms; @RN10ms]. This is especially true for species with dynamic colour change, for which we are not aware of any examples. Here, we examine character release of a dynamic colour signal by taking advantage of an unintended evolutionary ‘experiment’: accidental translocation of chameleons to a novel, low predation environment.  
 
 In 1972, a shipment of Jackson’s chameleons (*Trioceros jacksonii xanthopholus*; Fig. \@ref(fig:figure1) and Supplementary Fig. 1; thought to be 36 or fewer individuals) was sent from Kenya to the Hawaiian island of Oahu, destined for the pet trade. The animals arrived in poor condition and were left outdoors to recover, at which point they dispersed and became established on the island [@RN11ms]. Jackson’s chameleons have a high intrinsic population growth rate (9-12 month generation time and live birth of up to 50 young [@RN24ms]), enabling their rapid establishment and potentially rapid evolution (approx. 50 -- 65 generations). On Oahu, there are few potential predators of chameleons (no snakes or lizard-eating raptors, other potential bird predators are absent or rare, Supplementary Information), while in Kenya they are preyed upon by a wide range of bird, snake and occasionally, mammal, predators [@Measey2014ms]. This accidental introduction enables us to test whether relaxed predation results in character release of a dynamic visual signal and whether this might be explained by local adaptation.
@@ -660,7 +664,7 @@ Chameleons are famous for their rapid colour change [@RN12ms; @RN13ms; @RN14ms].
 
 To test these predictions, we presented wild-caught adult male chameleons in both Hawaii and Kenya with either a male chameleon, a female chameleon, a bird predator (stuffed African cuckoo-hawk, *Aviceda cuculoides*) or a snake predator (replica boomslang, *Dispholidus typus*) (Supplementary Fig. 4), or a control (stick). We measured the spectral reflectance of male colour states during male-male display (dominant in male-male contests, *n* = `r N_display[1,2]` Hawaii, *n* = `r N_display[2,2]` Kenya), courtship (*n* = `r N_Courtship[1,2]` Hawaii, *n* = `r N_Courtship[2,2]` Kenya) and in response to bird (*n* = `r N_Pred[1,3]` Hawaii, *n* = `r N_Pred[2,3]` Kenya) and snake (*n* = `r N_Pred[3,3]` Hawaii, *n* = `r N_Pred[4,3]` Kenya) predators (Fig. \@ref(fig:figure2) and Supplementary Fig. 5). We then modelled how conspicuous these colours would appear to the relevant receiver’s visual system (chameleon, bird, snake), estimated as chromatic or luminance contrast (Just Noticeable Differences, JNDs; @RN25ms) against the background vegetation of each environment (Hawaii or Kenya; Supplementary Information).
 
-# Results and Discussion
+# RESULTS AND DISCUSSION
 In support of predictions of character release, male display colouration of Hawaiian chameleons had higher luminance contrast against the local background than those of Kenyan chameleons (Fig. \@ref(fig:figure2), Fig. \@ref(fig:figure3)A and Supplementary Table 2) (male-male contests: luminance contrast ($dl$); $F_{`r Population_ConspicDisplayAC$df_num`,`r Population_ConspicDisplayAC$df_denom`}$ = `r Population_ConspicDisplayAC$Fstat`, *P* = `r p_value(Population_ConspicDisplayAC$p_val)`; courtship displays: luminance contrast ($dl$); $F_{`r Population_ConspicCourtshipAC$df_num`,`r Population_ConspicCourtshipAC$df_denom`}$ = `r Population_ConspicCourtshipAC$Fstat`, *P* = `r p_value(Population_ConspicCourtshipAC$p_val)`). This result was consistent for all body regions and was driven by the increased luminance of Hawaiian chameleons, rather than differences in the background environment (i.e., Hawaiian chameleons were more conspicuous against either Hawaiian or Kenyan environment) (Supplementary Information and Supplementary Table 6). However, Hawaiian chameleons did not differ from Kenyan chameleons in chromatic contrast of colour signals (Fig. \@ref(fig:figure3)b and Supplementary Table 2, male-male contests: $F_{`r Population_ConspicDisplayCC$df_num`,`r Population_ConspicDisplayCC$df_denom`}$ = `r Population_ConspicDisplayCC$Fstat`, *P* = `r p_value(Population_ConspicDisplayCC$p_val)`; courtship: $F_{`r Population_ConspicCourtshipCC$df_num`,`r Population_ConspicCourtshipCC$df_denom`}$ = `r Population_ConspicCourtshipCC$Fstat`, *P* = `r p_value(Population_ConspicCourtshipCC$p_val)`).
 
 The importance of luminance contrast is consistent with the nature and mechanism of rapid colour change in individual chameleons, which usually involves much greater luminance than chromatic change (Fig. \@ref(fig:figure1)). Specifically, colour change is caused by dispersion or concentration of melanin within melanophore pigment cells [@RN15ms] or changes in the spacing of guanine crystals within iridophores [@RN14ms], both of which strongly affect luminance. Accordingly, character release was observed in the overall luminance of signals rather than their hue.
@@ -677,7 +681,7 @@ Oahu has no snakes or raptors that feed on lizards. The main threat for Oahu cha
 
 Rapid colour change enables animals to be highly conspicuous during social interactions and highly cryptic at other times [@RN12ms]. Our results suggest that even for species capable of dynamic colour change there is an upper threshold to signal intensity that is constrained by natural selection. This novel finding raises the question of whether other animals that have convergently evolved dynamic colour signals, such as cephalopods, frogs, other lizards, and fishes, may be likewise constrained. More generally, our study highlights the opportunities provided by invasions to study natural and sexual selection in the wild.
 
-# Methods
+# MATERIALS AND METHODS
 ## Study area and collection of chameleons
 
 We collected most chameleons (Supplementary Fig. 1) at night by spotlighting, and a small proportion of individuals during the day. When chameleons were beyond reach in the forest canopy, we used lightweight 6-m extensible graphite composite poles (South Bend Kwik Stix™ 20' Telescopic Fishing Pole), that chameleons could be encouraged to step on to, before lowering them to the ground. We then placed them in cotton bags with vegetation to cling to, before returning them to the lab. We measured snout-vent length (SVL), a standard measure of body size in lizards, from the tip of the snout to the posterior edge of the vent using a plastic ruler to the nearest 1 mm. Field work was conducted on the island of Oahu, in Hawaii, during January-February 2006 and in Kenya during 5-13 April 2006. We did this work during what we expected to be the reproductive season, based on local knowledge. The timing is different because of seasonal/geographic differences between Kenya and Hawaii. Importantly, the chameleons all exhibited very strong behavioral responses during courtship and male-male competition, consistent with reproductive behavior. In Hawaii, chameleons were collected from a single population in the forested Ko’olau Mountains north of Honolulu, between upper Makiki Valley and the summit of Tantalus Mountain, Oahu, accessible along Tantalus and Roundtop Drives at an elevation of ca. 400-600 m. The vegetation in this area consisted of closed-canopy, mid-elevation tropical rain forest, with extensive vines and undergrowth  (Supplementary Fig. 2C, D). Most of the plants in this area were non-native, and chameleons also occurred in hedge-grows and stands of bamboo. The area experiences high annual rainfall (mean: ca. 1500 mm) [@RN6] and the mean annual temperature is 22-24°C [@RN7]. In Kenya, field work was conducted near the foothills of Mt. Kenya, close to the town of Runyenjes. The area is partially cleared for agriculture, leaving small stands of forest. The vegetation was a mix of native trees and shrubs interspersed with exotic species (Supplementary Fig. 2A, B). Mean annual temperature is 20.2°C (mean max: 24.8°C) and the mean annual rainfall is 121 mm [@RN8]. Jackson’s chameleons are a generalist species which can be locally abundant and relatively mobile. This population is from the region (slopes of Mount Kenya) identified as the source population [@Tilbury2018] for the introduction to the Hawaiian Islands.
@@ -1129,24 +1133,28 @@ write.csv(final_S6, file = "./output/tables/tableS6.csv", row.names = FALSE)
      
 ```
 
-**Acknowledgments** 
-This research was approved by the Kenya Wildlife Service (R. Bagine, KWS 5001) and Ministry of Science & Technology (Research Permit No. MOS&T 13/36C 208). Financial support was provided by the University of the Witwatersrand to MJW. We thank Idle Farah and Patrick Malonza of the National Museums of Kenya for facilitating the research, Joseph Gathua for field support and Jan Stipala for use of his field vehicle. We thank the Ditsong National Museum of Natural History (formerly Transvaal Museum) for the stuffed African Cuckoo Hawk. Ben Phillips, Rick Shine and Tobias Uller provided feedback on earlier drafts of this manuscript. We thank Fonti Kar for help curating data and Drew Allen for statistical advice.
+**Acknowledgments**: 
+This research was approved by the Kenya Wildlife Service (R. Bagine, KWS 5001) and Ministry of Science & Technology (Research Permit No. MOS&T 13/36C 208). Financial support was provided by the University of the Witwatersrand to MJW. We thank Idle Farah and Patrick Malonza of the National Museums of Kenya for facilitating the research, Joseph Gathua for amazing field support and Jan Stipala for use of his field vehicle. We thank the Ditsong National Museum of Natural History (formerly Transvaal Museum) for the stuffed African Cuckoo Hawk. Ben Phillips, Rick Shine and Tobias Uller provided feedback on earlier drafts of this manuscript. We thank Fonti Kar for help curating data and Drew Allen for statistical advice.
 
-**Contributions**
+**Funding**: Financial support was provided by the University of the Witwatersrand to MJW.
+
+**Author contributions**
 MJW conceived the study. MJW and DSF designed the study with help from JSK and BH. MJW, BSH, JSK and DSF collected the data. MJW, DSF, KJR and DWAN performed data curation, visualisation and exploratory analyses. DWAN performed final analyses. MJW wrote the first draft, with help from DWAN and DSF. All authors contributed substantially to subsequent versions. 
 
 **Corresponding author**
 Correspondence to Martin Whiting.
 
-**Ethics declarations**
-
-**Competing interests**
+**Competing interests**:
 We (the authors) declare no competing interests. 
 
-**Extended data figures and tables**
+**Extended data figures and tables**:
 The data and code are available at OSF (https://osf.io/vxyp5/?view_only=7ef95ab5a95048cd8d9944fd6bee4d4c)
 
-**Supplementary information**
-This file includes supplementary notes, 9 Supplementary Figures and 14 Supplementary Tables.
+**Supplementary Materials**:
+This PDF file includes:
+Supplementary notes
+Figs. S1 to S9
+Tables S1 to S14
+
 
 # References and Notes
