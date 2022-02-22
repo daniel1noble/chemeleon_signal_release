@@ -750,7 +750,7 @@ CourtshipBgrd <- CourtshipBgrd %>%
 
 **Short title**: Color signal character release in chameleons
 
-**Authors**: Martin J. Whiting^1,2^, Brenden S. Holland^3^, J. Scott Keogh^4^, Daniel  W.A. Noble^4^, Katrina J. Rankin^5^ and Devi Stuart-Fox^5^
+**Authors**: Martin J. Whiting^1,2,*^, Brenden S. Holland^3^, J. Scott Keogh^4^, Daniel  W.A. Noble^4^, Katrina J. Rankin^5^ and Devi Stuart-Fox^5^
 
 **Affiliations**:
 ^1^ School of Natural Sciences, Macquarie University, Sydney, NSW 2109, Australia; martin.whiting@mq.edu.au
@@ -849,7 +849,7 @@ Finally, to evaluate evidence for local adaptation, we tested whether the chroma
 
 # Figures
 
-```{r figure1, cache=FALSE, fig.cap = "**Chameleon color signal change in response to different social stimuli. Male chameleons experience intense sexual selection**. During the breeding season they change from dull green to a highly conspicuous bright yellow display signal. They also readily fight by locking horns and sometimes pierce their rival’s skin with their horns. **a**, A dominant male in display coloration. **b**, A subordinate male that lost a contest and turned from bright yellow to brown. **c**, Two males fighting, both are in display coloration and relatively even matched. **d**, A courting male in full display color while the female has turned to a contrasting color, rejecting the male. See Supplementary information for additional photos, including in response to a snake"}
+```{r figure1, cache=FALSE, fig.cap = "**Chameleon color signal change in response to different social stimuli. Male chameleons experience intense sexual selection**. During the breeding season they change from dull green to a highly conspicuous bright yellow display signal. They also readily fight by locking horns and sometimes pierce their rival’s skin with their horns. **a**, A dominant male in display coloration. **b**, A subordinate male that lost a contest and turned from bright yellow to brown. **c**, Two males fighting, both are in display coloration and relatively even matched. **d**, A courting male in full display color while the female has turned to a contrasting color, rejecting the male. See Supplementary information for additional photos, including in response to a snake. Photo credit: Martin Whiting, Macquarie University."}
 library(magick)
 
 img65 <- image_read("./output/figures/fig1_ms_Nature.png")
@@ -857,14 +857,14 @@ img65
   
 ```
 
-```{r figure2, fig.width = 14, fig.height= 14, fig.cap="**Mean spectral reflectance curves for male chameleons for representative body regions (gular, top flank) and background (leaves) for Hawaii and Kenya**. The context for measurement was **a**, male contest displays; **b**, courtship; **c**, bird predator; and **d**, snake predator. More details in online Supplementary Information and Supplementary Fig. 5"}
+```{r figure2, fig.width = 14, fig.height= 14, fig.cap="**Mean spectral reflectance curves for male chameleons for representative body regions (gular, top flank) and background (leaves) for Hawaii and Kenya**. The context for measurement was **a**, male contest displays; **b**, courtship; **c**, bird predator; and **d**, snake predator. More details in online Supplementary Information and Supplementary Fig. 5. Photo credit: Martin Whiting, Macquarie University."}
 library(magick)
 img <- image_read("./output/figures/Figure3_Nature.png")
 img
 
 ```
 
-```{r figure3, cache = FALSE, fig.width = 14, fig.height= 14, fig.cap= "**Chromatic and luminance contrast in Just Noticeable Differences (JND), of Hawaiian and Kenyan chameleons against their respective backgrounds (i.e., average environment of stems and leaves)**. Luminance **a**, and chromatic **b**, contrast of male chameleons during male-male contests and female courtship. JNDs are calculated based on the chameleon visual system. Luminance **c**, and chromatic **d**, contrast of male chameleons during snake and bird predator encounters. JNDs are calculated based on the snake and bird visual systems. Contrasts between means, ‘Beta’, that are bold indicate significant effects."}
+```{r figure3, cache = FALSE, fig.width = 14, fig.height= 14, fig.cap= "**Chromatic and luminance contrast in Just Noticeable Differences (JND), of Hawaiian and Kenyan chameleons against their respective backgrounds (i.e., average environment of stems and leaves)**. Luminance **a**, and chromatic **b**, contrast of male chameleons during male-male contests and female courtship. JNDs are calculated based on the chameleon visual system. Luminance **c**, and chromatic **d**, contrast of male chameleons during snake and bird predator encounters. JNDs are calculated based on the snake and bird visual systems. Contrasts between means, ‘Beta’, that are bold indicate significant effects. Photo credit: Martin Whiting, Macquarie University."}
 rerun = FALSE
 if(rerun){
 ## Make figures that average across body regions, but display Social Context
@@ -1048,7 +1048,7 @@ plot_grid(p1, p2, p4, p3, labels = c("A", "B", "C", "D"), label_size = 16,
 }
 ```
 
-```{r figure4, cache = FALSE, fig.width = 14, fig.height= 9, fig.cap= "**Evidence for local adaptation of social color signals in both a, chromatic- and b, luminance contrast for Hawaiian chameleons**. For local adaptation, signals are predicted to be more conspicuous against their own background. In this case, Hawaiian chameleons were both significantly more chromatic and brighter (luminance contrast) against their own background compared to the Kenyan background indicating increased local signal conspicuousness."}
+```{r figure4, cache = FALSE, fig.width = 14, fig.height= 9, fig.cap= "**Evidence for local adaptation of social color signals in both a, chromatic- and b, luminance contrast for Hawaiian chameleons**. For local adaptation, signals are predicted to be more conspicuous against their own background. In this case, Hawaiian chameleons were both significantly more chromatic and brighter (luminance contrast) against their own background compared to the Kenyan background indicating increased local signal conspicuousness. Photo credit: Martin Whiting, Macquarie University."}
 rerun=FALSE
 
 if(rerun){
