@@ -1,0 +1,1065 @@
+## ----getlibrary, echo = FALSE, results = "hide"-----------------------------------------------------------
+# load libraries
+devtools::install_github("karthik/wesanderson")
+pacman::p_load(tidyverse, flextable, lme4, lmerTest, ggplot2, lsmeans, emmeans, multcomp, dplyr, wesanderson, patchwork, latex2exp, png, cowplot, magick, jpeg, clubSandwich, readxl, pavo)
+source("./R/func.R")
+
+
+## ----display, results = "hide"----------------------------------------------------------------------------
+source("./R/func.R")
+#########################################################
+# Male-male Competition Displays
+#########################################################
+  # Load data and clean a bit
+  Display_1 <- read.table("./data/Display_1.csv", 
+                            header=TRUE, sep=",", dec=".", strip.white=TRUE)
+  
+  # Exclude bottom flank.
+  Display_1 <- Display_1 %>% 
+                filter(!BodyRegion == "botflank") %>% as.data.frame() 
+  
+  # Create as factor
+      Display_1$BodyRegion <- factor(Display_1$BodyRegion)
+      
+  # Center SVL to make intercept interpretable
+  Display_1$sc_SVL <- with(Display_1, scale(SVL, scale=FALSE))
+
+
+##########
+## Achromatic Contrast - dL
+##########
+
+    # Fit the model that estimates changes across body regions
+    ConspicDisplayAC <- lmer(dL ~ sc_SVL + Population + BodyRegion + 
+                               Population:BodyRegion + (1|ID), data=Display_1)
+    summary(ConspicDisplayAC)
+    ConspicDisplayAC_main <- lmer(dL ~ sc_SVL + Population + BodyRegion +  (1|ID), data=Display_1)
+    
+    # Wald Table - Test for interaction, plus refit model and test sig of each factor. Uses RVEs
+    wald_table_ConspicDisplayAC <-  wald_table(model_main =  ConspicDisplayAC_main , model_inter = ConspicDisplayAC)
+
+    # Robust variance estimators (RVE). Mostly all consistent
+    Display_subset <- Display_1 %>% filter(!is.na(sc_SVL), !is.na(Population), !is.na(BodyRegion))
+    robust_ConspicDisplayAC <- coef_test(ConspicDisplayAC, cluster = Display_subset$ID, vcov="CR2")
+    
+    # Fit model for linear hypothesis tests
+           Display_1$PopBRInt <- interaction(Display_1$Population,Display_1$BodyRegion)
+            ConspicDisplayAC2 <- lmer(dL ~ -1 + sc_SVL + PopBRInt + (1|ID), data=Display_1)
+            summary(ConspicDisplayAC2)
+    
+     # Fit RVE
+      robust_ConspicDisplayAC2 <- coef_test(ConspicDisplayAC2, cluster = Display_subset$ID, vcov="CR2")
+      
+     # Contrasts hypothesis tests, but use RVE 
+    result1 <- Wald_test(ConspicDisplayAC2, constraints = constrain_pairwise(c(2:9)), vcov="CR2", tidy = TRUE)
+    result1$p_val_bonfer <- sapply(p.adjust(result1$p_val, "bonferroni"), function(x) p_value(x))
+
+##########
+## Chromatic Contrast - dL
+##########
+
+ # Fit the model that esatimtes changes across body regions
+    ConspicDisplayCC <- lmer(dS ~ sc_SVL + Population + BodyRegion + Population:BodyRegion + (1|ID), data=Display_1)
+    ConspicDisplayCC_main <- lmer(dS ~ sc_SVL + Population + BodyRegion + (1|ID), data=Display_1)
+    
+    
+# Wald Table - Test for interaction, plus refit model and test sig of each factor. Uses RVEs
+    wald_table_ConspicDisplayCC <-  wald_table(model_main =  ConspicDisplayCC_main, model_inter = ConspicDisplayCC)
+    
+ # Robust variance estimators (RVE). Mostly all consistent
+             Display_subset <- Display_1 %>% filter(!is.na(sc_SVL), !is.na(Population), !is.na(BodyRegion))
+    robust_ConspicDisplayCC <- coef_test(ConspicDisplayCC, cluster = Display_subset$ID, vcov="CR2")    
+
+  # Fit model for linear hypothesis tests
+    Display_1$PopBRInt <- interaction(Display_1$Population,Display_1$BodyRegion)
+     ConspicDisplayCC2 <- lmer(dS ~ -1 + sc_SVL + PopBRInt + (1|ID), data=Display_1)
+     summary(ConspicDisplayCC2)
+ 
+ # Contrasts hypothesis tests, but use RVE 
+                 result2 <- Wald_test(ConspicDisplayCC2, constraints = constrain_pairwise(c(2:9)), vcov="CR2", tidy = TRUE)
+    result2$p_val_bonfer <- sapply(p.adjust(result2$p_val, "bonferroni"), function(x) p_value(x))
+
+#########################################################
+# Courtship Displays
+#########################################################
+
+Courtship <- read.table("./data/Courtship_1.2.csv", 
+                          header=TRUE, sep=",", dec=".", strip.white=TRUE)
+
+# Center SVL to make intercept interpretable
+Courtship$sc_SVL <- with(Courtship, scale(SVL, scale=FALSE))
+
+
+##########
+## Achromatic Contrast - dL
+##########
+  # Fit model
+    ConspicCourtshipAC <- lmer(dL ~ sc_SVL + Population + BodyRegion + 
+                                 Population:BodyRegion + (1|ID), data=Courtship)
+    summary(ConspicCourtshipAC)
+    
+  # Main effects Model
+    ConspicCourtshipAC_main <- lmer(dL ~ sc_SVL + Population + BodyRegion + (1|ID), data=Courtship)
+
+   # Wald Table - Test for interaction, plus refit model and test sig of each factor. Uses RVEs
+    wald_table_ConspicCourtshipAC <-  wald_table(model_main =  ConspicCourtshipAC_main, model_inter = ConspicCourtshipAC)  
+  # Robust variance estimators (RVE). Mostly all consistent
+             Courtship_subset <- Courtship %>% filter(!is.na(sc_SVL), !is.na(Population), !is.na(BodyRegion))
+    robust_ConspicCourtshipAC <- coef_test(ConspicCourtshipAC, cluster = Courtship_subset$ID, vcov="CR2")    
+      
+  # Refit model for contrasts
+     Courtship$PopBRInt <- interaction(Courtship$Population,Courtship$BodyRegion)
+    ConspicCourtshipAC2 <- lmer(dL ~ -1 + sc_SVL + PopBRInt + (1|ID), data=Courtship)
+
+  # Contrasts hypothesis tests, but use RVE 
+                 result3 <- Wald_test(ConspicCourtshipAC2, constraints = constrain_pairwise(c(2:9)), vcov="CR2", tidy = TRUE)
+    result3$p_val_bonfer <- sapply(p.adjust(result3$p_val, "bonferroni"), function(x) p_value(x))
+
+##########
+## Chromatic Contrast - dL
+#########
+    
+    # Fit model, interaction
+        ConspicCourtshipCC <- lmer(dS ~ sc_SVL + Population + BodyRegion + Population:BodyRegion + (1|ID), data=Courtship)
+    
+    # Fit main effects
+    ConspicCourtshipCC_main <- lmer(dS ~ sc_SVL + Population + BodyRegion + (1|ID), data=Courtship)
+    
+    # Wald Table - Test for interaction, plus refit model and test sig of each factor. Uses RVEs
+    wald_table_ConspicCourtshipCC <-  wald_table(model_main =  ConspicCourtshipCC_main, model_inter = ConspicCourtshipCC)
+
+    # Robust variance estimators (RVE). Mostly all consistent
+             Courtship_subset <- Courtship %>% filter(!is.na(sc_SVL), !is.na(Population), !is.na(BodyRegion))
+    robust_ConspicCourtshipCC <- coef_test(ConspicCourtshipCC, cluster = Courtship_subset$ID, vcov="CR2")    
+    
+    # Refit model to get the contrasts between coefficienst we want
+     Courtship$PopBRInt <- interaction(Courtship$Population,Courtship$BodyRegion)
+    ConspicCourtshipCC2 <- lmer(dS ~ -1 + sc_SVL + PopBRInt + (1|ID), data=Courtship)
+    
+    # Contrasts hypothesis tests, but use RVE 
+            result4 <- Wald_test(ConspicCourtshipCC2, 
+                                 constraints = constrain_pairwise(c(2:9)), 
+                                 vcov="CR2", tidy = TRUE)
+      string <- c("PopBRIntKenya.gular - PopBRIntHawaii.gular|PopBRIntKenya.midflank - PopBRIntHawaii.midflank|PopBRIntKenya.tailbase - PopBRIntHawaii.tailbase|PopBRIntKenya.topflank - PopBRIntHawaii.topflank")
+      result4 <- result4[grep(string, result4$hypothesis),]
+    result4$p_val_bonfer <- sapply(p.adjust(result4$p_val, "bonferroni"), function(x) p_value(x))
+    
+
+#########################################################
+# Displays to Predators, birds and snake
+#########################################################
+   Predator <- read.table("./data/Predator_2_3.csv", 
+                         header=TRUE, sep=",", dec=".", strip.white=TRUE)
+   
+  # Clean up
+             Predator <- Predator %>% filter(!BodyRegion == "botflank" & !BodyRegion =='gularbot') %>% as.data.frame() #exclude bottom flank.
+  Predator$BodyRegion <- factor(Predator$BodyRegion) #updates levels for the variable BodyRegion
+
+##########
+## Achromatic Contrast - dL
+##########
+
+   # Fit model
+      PredatorAC <- lmer(dL ~ Predator + Population + BodyRegion + Predator:BodyRegion + Predator:Population + 
+                           (1|ID), data=Predator)
+      summary(PredatorAC)
+  
+  PredatorAC_main <- lmer(dL ~ Predator + Population + BodyRegion  + (1|ID), data=Predator)
+      
+  # Wald table RVE
+    
+    Wald_table_PredatorAC <- wald_table_p(PredatorAC_main, PredatorAC)
+  
+
+   # Robust variance estimators (RVE). Mostly all consistent
+             Predator_subset <- Predator %>% filter(!is.na(Population), !is.na(BodyRegion))
+           robust_PredatorAC <- coef_test(PredatorAC, cluster = Predator_subset$ID, vcov="CR2")    
+
+  # Fit model for linear hypothesis tests
+    Predator$PopBRInt <- interaction(Predator$Population,Predator$Predator, Predator$BodyRegion)
+     PredatorAC2 <- lmer(dL ~ -1 + PopBRInt + (1|ID), data=Predator)
+     summary(PredatorAC2)
+ 
+ # Contrasts hypothesis tests, but use RVE 
+                 result5 <- Wald_test(PredatorAC2, constraints = constrain_pairwise(c(1:16)), vcov="CR2", tidy = TRUE)
+ string <- c("PopBRIntKenya.snake.midflank - PopBRIntHawaii.snake.midflank|PopBRIntKenya.snake.gular - PopBRIntHawaii.snake.gular|PopBRIntKenya.snake.tailbase - PopBRIntHawaii.snake.tailbase|PopBRIntKenya.snake.topflank - PopBRIntHawaii.snake.topflank|PopBRIntKenya.bird.midflank - PopBRIntHawaii.bird.midflank|PopBRIntKenya.bird.gular - PopBRIntHawaii.bird.gular|PopBRIntKenya.bird.tailbase - PopBRIntHawaii.bird.tailbase|PopBRIntKenya.bird.topflank - PopBRIntHawaii.bird.topflank")
+    result5 <- result5[grep(string, result5$hypothesis),]
+    result5$p_val_bonfer <- sapply(p.adjust(result5$p_val, "bonferroni"), function(x) p_value(x))
+    
+
+##########
+## Chromatic Contrast - dS
+########
+
+  # Fit Model
+        PredatorCC <- lmer(dS ~ Predator + Population + BodyRegion + Predator:BodyRegion + Predator:Population + (1|ID), data=Predator)
+        summary(PredatorCC)
+          anova(PredatorAC)
+          
+    PredatorCC_main <- lmer(dS ~ Predator + Population + BodyRegion  + (1|ID), data=Predator)            
+  
+  # Wald table RVE
+    
+    Wald_table_PredatorCC <- wald_table_p(PredatorCC_main, PredatorCC)
+  
+  # Robust variance estimators (RVE). Mostly all consistent
+             Predator_subset <- Predator %>% filter(!is.na(Population), !is.na(BodyRegion))
+           robust_PredatorCC <- coef_test(PredatorCC, cluster = Predator_subset$ID, vcov="CR2")    
+  
+  # Fit model for linear hypothesis tests
+    Predator$PopBRInt <- interaction(Predator$Population,Predator$Predator, Predator$BodyRegion)
+          PredatorCC2 <- lmer(dS ~ -1 + PopBRInt + (1|ID), data=Predator)
+          summary(PredatorCC2)
+ 
+ # Contrasts hypothesis tests, but use RVE 
+                 result6 <- Wald_test(PredatorCC2, constraints = constrain_pairwise(c(1:16), with_zero = TRUE), vcov="CR2", tidy = TRUE)
+                   string <- c("PopBRIntKenya.snake.midflank - PopBRIntHawaii.snake.midflank|PopBRIntKenya.snake.gular - PopBRIntHawaii.snake.gular|PopBRIntKenya.snake.tailbase - PopBRIntHawaii.snake.tailbase|PopBRIntKenya.snake.topflank - PopBRIntHawaii.snake.topflank|PopBRIntKenya.bird.midflank - PopBRIntHawaii.bird.midflank|PopBRIntKenya.bird.gular - PopBRIntHawaii.bird.gular|PopBRIntKenya.bird.tailbase - PopBRIntHawaii.bird.tailbase|PopBRIntKenya.bird.topflank - PopBRIntHawaii.bird.topflank")
+    result6 <- result6[grep(string, result6$hypothesis),]
+    result6$p_val_bonfer <- sapply(p.adjust(result6$p_val, "bonferroni"), function(x) p_value(x))
+    
+  
+  
+#########################################################
+# Testing local adaptation contrasting backgrounds between hawaii and Kenya
+#########################################################
+##################
+# Social Context: Male-male competition
+##################
+DisplayBgrd <- read.table("./data/Display_5.csv", 
+                        header=TRUE, sep=",", dec=".", strip.white=TRUE)
+svl_dat <- read.csv("./data/SVL2.csv")
+
+DisplayBgrd <- DisplayBgrd %>% 
+                filter(!BodyRegion == "botflank") %>% 
+                mutate(Background_pop = ifelse(Background2 == "own", Population, if_else(Background2 == "other" & Population == "Hawaii", "Kenya", "Hawaii"))) %>% 
+                as.data.frame() #exclude bottom flank.
+DisplayBgrd$BodyRegion <- factor(DisplayBgrd$BodyRegion) #updates levels for the variable BodyRegion
+
+# Filter out only Hawaiian and add in SVL for IDs
+DisplayBgrd$pop_back_region <- with(DisplayBgrd, interaction(Background_pop, BodyRegion))
+DisplayBgrd_Hawaii <- DisplayBgrd %>% 
+               filter(Population == "Hawaii") %>% 
+               left_join(dplyr::select(svl_dat, ID, SVL), by = "ID", keep = FALSE) %>% 
+               mutate(sc_svl = scale(SVL, scale = FALSE)) %>% 
+                filter(!is.na(SVL))
+
+##########
+# Achromatic Contrast - dL
+##########
+
+  # Main effercts
+   DispBgrdAC_main <- lmer(dL ~  sc_svl + Background_pop + BodyRegion + (1|ID), data=DisplayBgrd_Hawaii)
+    summary(DispBgrdAC_main)
+  
+  # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE). Given that there is no interaction, we can just present the main effects model with teh figure. Plus wald tests
+  robust_localAdapt_DispBgrdAC <- clubSandwich::conf_int(DispBgrdAC_main, cluster = DisplayBgrd_Hawaii$ID, vcov =  "CR2")
+
+  # Add Wald test to test signifiacnce of each factor using roust variance 
+  background_AC_Disp <- Wald_test(DispBgrdAC_main, constraints = constrain_zero(3), 
+                                  cluster = DisplayBgrd_Hawaii$ID, vcov = "CR2")
+  
+  BodyRegion_AC_Disp <- Wald_test(DispBgrdAC_main, constraints = constrain_zero(4:6), 
+                                  cluster = DisplayBgrd_Hawaii$ID, vcov = "CR2")
+
+   
+##########
+# Chromatic Contrast - dS
+##########
+   
+     # Fit the inetarction model
+          DispBgrdCC_inter <- lmer(dS ~ sc_svl + Background_pop  + BodyRegion + Background_pop:BodyRegion + (1|ID), data=DisplayBgrd_Hawaii)
+          summary(DispBgrdCC_inter)
+  
+    # Fit the main effect model
+          DispBgrdCC_main <- lmer(dS ~ sc_svl + Background_pop  + BodyRegion + (1|ID), data=DisplayBgrd_Hawaii)
+          summary(DispBgrdCC_main)
+    
+    # Wald test to see if interaction is important. Yes, body regions way in how they change from a Hawaiian and Kenyan population. Fig S4, this makes sense. 
+        intearction_CC_Disp <- Wald_test(DispBgrdCC_inter, constraints = constrain_zero(7:9), 
+                                  cluster = DisplayBgrd_Hawaii$ID, vcov = "CR2")
+
+    # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
+      robust_DispBgrdCC <- clubSandwich::conf_int(DispBgrdCC_inter, cluster = DisplayBgrd_Hawaii$ID, vcov =  "CR2")
+
+ # Get contrasts to understand the specific changes better. Refit model in slight different form. This is essentially an interaction model anyway because it's estimating the mean for Hawaiian and Kenyan background for each body region. The model above is just a contrast-based model.
+    DisplayBgrd_pop_back_regionCC <- lmer(dS ~ -1 + sc_svl + pop_back_region + (1|ID), data = DisplayBgrd_Hawaii) 
+    # Fit Robust model
+    robust_DisplayBgrd_pop_back_regionCC <- clubSandwich::conf_int(DisplayBgrd_pop_back_regionCC, 
+                                                            cluster = DisplayBgrd_Hawaii$ID, 
+                                                            vcov =  "CR2")
+   
+    # Contrasts hypothesis tests, but use RVE 
+      result_DisplayBgrd_pop_back_regionCC <- Wald_test(DisplayBgrd_pop_back_regionCC, 
+                                                 constraints = constrain_pairwise(c(1:9)), 
+                                                 vcov="CR2", tidy = TRUE)
+      
+      result_DisplayBgrd_pop_back_regionCC$p_val_bonfer <- 
+                                  sapply(p.adjust(result_DisplayBgrd_pop_back_regionCC$p_val, "bonferroni"), 
+                                                                  function(x) p_value(x))
+     # Grab contrasts that we need from the robust esatimtes
+      string <- c("pop_back_regionKenya.gular - pop_back_regionHawaii.gular|pop_back_regionKenya.midflank - pop_back_regionHawaii.midflank|pop_back_regionKenya.tailbase - pop_back_regionHawaii.tailbase|pop_back_regionKenya.topflank - pop_back_regionHawaii.topflank")
+      result_DisplayBgrd_pop_back_regionCC <- result_DisplayBgrd_pop_back_regionCC[grep(string, result_DisplayBgrd_pop_back_regionCC$hypothesis),]
+###################
+# Social Context: Courtship
+##################
+CourtshipBgrd <- read.table("./data/Courtship_5.csv", 
+                        header=TRUE, sep=",", dec=".", strip.white=TRUE)
+
+CourtshipBgrd <- CourtshipBgrd %>% 
+                filter(!BodyRegion == "botflank") %>% 
+                mutate(Background_pop = ifelse(Background2 == "own", Population, if_else(Background2 == "other" & Population == "Hawaii", "Kenya", "Hawaii"))) %>% 
+                as.data.frame() #exclude bottom flank.
+CourtshipBgrd$BodyRegion <- factor(CourtshipBgrd$BodyRegion)
+
+# Filter out only Hawaiian and add in SVL for IDs
+CourtshipBgrd$pop_back_region <- with(CourtshipBgrd, interaction(Background_pop, BodyRegion))
+CourtshipBgrd_Hawaii <- CourtshipBgrd %>% 
+               filter(Population == "Hawaii") %>% 
+               left_join(dplyr::select(svl_dat, ID, SVL), by = "ID", keep = FALSE) %>% 
+               mutate(sc_svl = scale(SVL, scale = FALSE)) %>% 
+               filter(!is.na(SVL))
+
+##########
+## Achromatic Contrast - dL
+##########
+
+  # Fit main effects model
+    CourtshipAC_main <- lmer(dL ~ sc_svl + Background_pop + BodyRegion + (1|ID), data=CourtshipBgrd_Hawaii)
+    summary(CourtshipAC_main)
+    
+
+  # Check robustness of results to non-indepenedence using Robust Variance Estimator (RVE)
+   robust_CourtshipAC <- clubSandwich::conf_int(CourtshipAC_main, cluster = CourtshipBgrd_Hawaii$ID, vcov =  "CR2")
+   
+   # Wald tests
+           background_AC_Court <- Wald_test(CourtshipAC_main, constraints = constrain_zero(3), 
+                                  cluster = CourtshipBgrd_Hawaii$ID, vcov = "CR2")
+           
+           BodyRegion_AC_Court <- Wald_test(CourtshipAC_main, constraints = constrain_zero(4:6), 
+                                  cluster = CourtshipBgrd_Hawaii$ID, vcov = "CR2")
+
+   
+
+##########
+# Chromatic - dS
+##########
+  
+  # Fit main effect model
+      CourtshipCC_inter <- lmer(dS ~ sc_svl + Background_pop + BodyRegion + Background_pop:BodyRegion + (1|ID), data=CourtshipBgrd_Hawaii)
+      summary(CourtshipCC_inter)         
+  
+  # Fit main effect model
+      CourtshipCC_main <- lmer(dS ~ sc_svl + Background_pop + BodyRegion + (1|ID), data=CourtshipBgrd_Hawaii)
+      summary(CourtshipCC_main)
+
+  # Robust variance esatimation to correct SE's for fixed effects given spectral curves are used multiple times for generating JNDs for each individuals data. 
+  robust_CourtshipCC <- clubSandwich::conf_int(CourtshipCC_inter, cluster = CourtshipBgrd_Hawaii$ID, vcov =  "CR2")
+  
+  # Wald test of interaction; Not important, so we'll simplify and assume just additive effects. This makes sense when we look at the raw data.
+  intearction_CC_Court <- Wald_test(CourtshipCC_inter, constraints = constrain_zero(7:9), 
+                                  cluster = CourtshipBgrd_Hawaii$ID, vcov = "CR2")
+  
+   # Wald tests
+           background_CC_Court <- Wald_test(CourtshipCC_main, constraints = constrain_zero(3), 
+                                  cluster = CourtshipBgrd_Hawaii$ID, vcov = "CR2")
+  
+           BodyRegion_CC_Court <- Wald_test(CourtshipCC_main, constraints = constrain_zero(4:6), 
+                                  cluster = CourtshipBgrd_Hawaii$ID, vcov = "CR2")
+
+    # Get contrasts to understand the specific changes better. Refit model in slight different form. This is essentially an interaction model anyway because it's estimating the mean for Hawaiian and Kenyan background for each body region. The model above is just a contrast-based model.
+
+          CourtshipBgrd_pop_back_BR_CC <- lmer(dS ~ -1 +  sc_svl + pop_back_region + (1|ID), data = CourtshipBgrd_Hawaii) 
+
+     # Fit Robust model
+          robust_CourtshipBgrd_pop_back_BR_CC <- clubSandwich::conf_int(CourtshipBgrd_pop_back_BR_CC, 
+                                                              cluster = CourtshipBgrd_Hawaii$ID, vcov =  "CR2")
+  
+     # Contrasts hypothesis tests, but use RVE 
+          result_CourtshipBgrd_pop_back_BR_CC <- Wald_test(CourtshipBgrd_pop_back_BR_CC, 
+                                                   constraints = constrain_pairwise(c(1:9)),
+                                                   cluster = CourtshipBgrd_Hawaii$ID,
+                                                   vcov="CR2", tidy = TRUE)
+             result_CourtshipBgrd_pop_back_BR_CC$p_val_bonfer <- sapply(p.adjust(result_CourtshipBgrd_pop_back_BR_CC$p_val, "bonferroni"), 
+                                                                    function(x) p_value(x))
+      
+       # Grab contrasts that we need from the robust esatimtes
+      string <- c("pop_back_regionKenya.gular - pop_back_regionHawaii.gular|pop_back_regionKenya.midflank - pop_back_regionHawaii.midflank|pop_back_regionKenya.tailbase - pop_back_regionHawaii.tailbase|pop_back_regionKenya.topflank - pop_back_regionHawaii.topflank")
+      
+         result_CourtshipBgrd_pop_back_BR_CC <- result_CourtshipBgrd_pop_back_BR_CC[
+                                            grep(string, result_CourtshipBgrd_pop_back_BR_CC$hypothesis),]
+    
+
+
+
+## ----tablehyp, tab.cap = "Hypothesis and associated predictions tested in this paper in relation to the population of interest, the receiver visual system used in visual modelling, and the background against which the contrast of the signal was calculated for chromatic and luminance contrast."----
+  source("./R/func.R") 
+  hyp <-  read.csv(file = "./output/tables/Table_hyp_pred.csv")
+
+  # Table
+  hyp2 <- flextable(hyp) %>% table_style12()
+
+  hyp2
+
+
+## ----Figcolsig, fig.align = 'center', fig.cap = "**Additional examples of chameleon color signals and behavior in response to different social contexts**. **(A)** Two different males in conspicuous display color adopted at the start of a contest and retained by the dominant male. **(B)** Two examples of males engaged in horn locking. Males in the bottom panel are evenly matched at this stage and both are in full display color. In the top image, the male on the left is starting to change to a subordinate color. **(C)** Conspicuous yellow-green male courtship color. When females reject males, they develop a heavily contrasting pattern."----
+figs1 <- image_read("./output/figures/FigS1.png")
+figs1
+
+
+
+## ----Figcolsig2, fig.align = 'center', fig.cap = "**Representative photos of habitat in Kenya (A, B) and Hawaii (C, D)**. In both sites, chameleons favored well-vegetated trees and bushes, often with lots of vines."----
+figs2 <- image_read("./output/figures/FigS2.jpg")
+figs2
+
+
+
+## ----Figcolsig3, fig.align = 'center', fig.cap = "**The experimental setup for behavioral trials**. We constructed a platform of three connected horizontal perches in a triangle, thereby always allowing an individual to escape a rival or if a female, a courting male. The male on the left won this contest and is in full display color while the male on the right has lost this contest and turned brown (subordinate)."----
+figs3 <- image_read("./output/figures/FigS3.jpg")
+figs3
+
+
+
+## ----Figcolsig4, fig.align = 'center', fig.width = 12, fig.height = 12, fig.cap = "**We presented chameleons with model snake and bird predators to elicit an anti-predator response, particularly, color change, to test the hypothesis that character release in Hawaii would also result in a signal more conspicuous to a predator**. **(A)** A model snake (*Dispholidus typus*) causing a characteristic contrasting color change and **(B)** a model bird (*Aviceda cuculoides*) which was flown over the top of the chameleon."----
+figs4 <- image_read("./output/figures/FigS4.jpg")
+figs4
+
+
+
+## ----Figcolsig5, fig.align = 'center', fig.width = 12, fig.height = 12, fig.cap = "**Location of body regions we measured for spectral reflectance**. See details in text."----
+figs5 <- image_read("./output/figures/FigS5.jpg")
+figs5
+
+
+
+## ----Figcolsig6SPec, fig.align = 'center', fig.width = 12, fig.height = 10, fig.cap = "**Spectral sensitivities of chameleons (A), bird (B) and snake (C) used for visual models (details in text)**."----
+sens_cham_c_dilepis <- read_excel("./data/Spectral sensitivities.xls", sheet = "C_dilepis")[,1:6]
+        sens_birdUV <- read_excel("./data/Spectral sensitivities.xls", sheet = "birdUV")
+         sens_snake <- read_excel("./data/Spectral sensitivities.xls", sheet = "snake")[,1:4]
+
+cham <- sens_cham_c_dilepis %>% pivot_longer(cols = c(2:6)) %>% dplyr::select(wavelength, name, value) %>%  data.frame()
+bird <- sens_birdUV %>% pivot_longer(cols = c(2:6)) %>% dplyr::select(wavelength, name, value) %>%  data.frame()
+snake <- sens_snake %>% pivot_longer(cols = c(2:4)) %>% dplyr::select(wavelength, name, value) %>%  data.frame()
+
+plot_spec <- function(data, tri = FALSE){
+        data %>% ggplot(aes(x = wavelength, y = value)) + 
+      geom_line(aes(color = name), size = 1.2) + 
+      theme_bw() +
+    scale_colour_manual(values = rev(c("#8D25CC", "#3770C9", "#93C572", "#FFA500", "#DBD8D6"))) +
+      labs(x = "Wavelength (nm)", y = "Absorbance", color = "") + 
+        theme(legend.position  = c(0.90, 0.65),
+            panel.grid.major = element_blank(), 
+            panel.grid.minor = element_blank(),
+            axis.text = element_text(size = 16),
+            axis.title = element_text(size = 24),
+            legend.text = element_text(size = 16),
+            legend.title = element_text(size = 20))}
+
+p1 <- plot_spec(cham) + theme(legend.position  = "none")
+p2 <- plot_spec(bird) 
+p3 <- plot_spec(snake) + scale_colour_manual(values = rev(c("#8D25CC", "#93C572", "#FFA500"))) + theme(legend.position  = "none")
+
+plot_grid(p1, p2,p3,nrow = 3, ncol = 1, labels = c("A", "B", "C"), label_size = 30,
+  label_fontface = "bold", rel_widths=c(1,1))
+
+
+
+## ----svl, results = "hide"--------------------------------------------------------------------------------
+SVLdat <- read.table("data/SVL2.csv", 
+                        header=TRUE, sep=",", dec=".", strip.white=TRUE)
+SVLdat$SVL2 <- with(SVLdat, scale(SVL))
+
+# Fit the model
+SVL_pop <- t.test(SVL ~ Population, data=SVLdat)
+summary(SVL_pop)
+
+# Body size
+svl <- data.frame(SVLdat %>% group_by(Population) %>% summarise(mean = mean(SVL), sd = sd(SVL), n = n()))
+
+
+
+## ----ms_tableS2, tab.cap = "Results of models comparing mean differences between Kenyan and Hawaiian lizards in luminance and chromatic contrast against the local background in two social contexts (male-male competition and courtship). Model estimates, standard errors (SE), Satterthwaite's degrees of freedom (df) and 95% confidence internals (95% CI). Standard errors are corrected by using robust variance estimators."----
+  source("./R/func.R")
+final_T1 <-  read.csv(file = "./output/tables/Table1_MS.csv")
+  
+  # Table
+ table1 <- flextable(final_T1) %>%  table_style6() %>% fit_to_width(max_width = 7)
+ 
+ table1
+
+
+## ----ms_tableS3, tab.cap = "Results of models comparing luminance and chromatic mean differences between Kenyan and Hawaiian lizards in response to snakes and birds. Model estimates, standard errors (SE), Satterthwaite's degrees of freedom (df) and 95% confidence internals (95% CI). Full models are provided and standard errors are corrected by using robust variance estimators."----
+  final_T2 <- read.csv(file = "./output/tables/Table2_MS.csv")
+  # Table
+ table2 <- flextable(final_T2) %>%
+            table_style7(.) %>% fit_to_width(max_width = 7)
+  
+ table2
+
+
+## ----ms_tableS4, tab.cap = "Planned contrasts between mean luminance and chromatic contrast in Hawaii and Kenya for both predators (snakes and birds). Estimates of the mean difference ebtween Hawaii and Kenya propulations are provided along with their 95% confidence intervals (95% CI lower and upper). Wald tests of contrast significance are provided (F, degrees of freedom (df) and associated p-value).  We also applied a Bonferroni correction to p-values to control for multiple comparisons."----
+ contrast <- read.csv(file = "./output/tables/Table3_MS.csv")
+ table3 <- flextable(contrast) %>% table_style8() %>% fit_to_width(max_width = 7)
+ 
+ table3
+
+
+## ----ms_tableS5, tab.cap = "Results of models comparing luminance and chromatic contrast of Hawaiian lizards against their introduced Hawaiian background (intercept) and Hawaiian lizards against their native Kenyan background (background = Kenya) in both social contexts (male-male competition and courtship). Model estimates (mean and contrasts), standard error (SE), degrees of freedom (df) and 95% confidence intervals (95% CI) for models were fitted using robust variance estimators to correct standard errors for non-independence, and we used Satterthwaite's degrees of freedom. Significant parameter estimates are those where the 95% CIs do not include zero."----
+ tb4 <- read.csv(file = "./output/tables/Table4_MS.csv")
+ table4 <- flextable(tb4) %>% table_style9() %>% fit_to_width(max_width = 7)
+ 
+ table4
+
+
+## ----ms_tableS6, tab.cap = "Results of interaction models comparing luminance and chromatic contrast of Hawaiian and Kenyan lizards against a Hawaiian and Kenyan background (background = Kenya) in both social contexts (male-male competition and courtship). Model estimates (mean and contrasts), standard error (SE), degrees of freedom (df) and 95% confidence intervals (95% CI) for models were fitted using robust variance estimators to correct standard errors for non-independence, and we used Satterthwaite's degrees of freedom. Significant parameter estimates are those where the 95% CIs do not include zero. Relevant contrasts that compare Hawaiian and Kenyan populations both against the same Kenyan background are indicated by '*'."----
+source("./R/func.R")
+final_S6 <-  read.csv(file = "./output/tables/tableS6.csv")
+  
+  # Table
+ Tab_S6 <- flextable(final_S6) %>%  table_styleS6() %>% fit_to_width(max_width = 7)
+ 
+ Tab_S6
+
+
+## ----FigS3, fig.align = 'center', fig.width = 12, fig.height = 12, fig.cap = "All four body regions (gular, mid-flank, tailbase and topflank) and their luminance (B) and chromatic contrast (A) to Hawaiian and Kenyan backgrounds (each population against their own background) are shown averaged across stems and leaves found in their habitat. Just noticable differences (JNDs) were calculated for both bird and snake predators. Mean JNDs are provided along with 95% confidence intervals."----
+
+# Load the data
+Predator <- read.table("./data/Predator_2_3.csv", 
+                       header=TRUE, sep=",", dec=".", strip.white=TRUE)
+ 
+# Clean up
+ Predator <- Predator %>% filter(!BodyRegion == "botflank" & !BodyRegion =='gularbot') %>% as.data.frame() #exclude bottom flank.
+Predator$BodyRegion <- factor(Predator$BodyRegion) #updates levels for the variable BodyRegion
+
+
+# Calculate summary data
+summary_data_pred <- Predator %>%
+                group_by(Predator, Population, BodyRegion) %>%
+                summarise( Mean_dS = mean(dS, na.rm = T), 
+                             SE_dS = sd(dS)/sqrt(length(unique(ID))),
+                             Upper_dS = Mean_dS + 1.96*SE_dS,
+                             Lower_dS = Mean_dS - 1.96*SE_dS, 
+                           Mean_dL = mean(dL, na.rm = T), 
+                             SE_dL = sd(dL)/sqrt(length(unique(ID))),
+                             Upper_dL = Mean_dL + 1.96*SE_dL,
+                             Lower_dL = Mean_dL - 1.96*SE_dL) %>%
+                mutate(Predator = if_else(Predator == "bird", "Birds", "Snakes"))
+
+# PLot 
+p3 <- ggplot(summary_data_pred, aes(x = Population, y = Mean_dL, group = BodyRegion, color = BodyRegion)) + facet_wrap(~Predator) +
+  ylim(8, 30) + 
+  geom_point(size = 3, position = position_dodge(width=0.5)) +
+  geom_errorbar(aes(ymin = Lower_dL, ymax = Upper_dL), position = position_dodge(width=0.5), width = 0) + 
+  geom_line(position = position_dodge(width=0.5)) + 
+  scale_color_manual(values = wes_palette("Cavalcanti1")) + #Change color palette here see: https://github.com/karthik/wesanderson
+  xlab("") + 
+  ylab("Luminance contrast (JND)") +
+  theme_bw() +
+  labs(color = "Body Region") + 
+  theme(legend.position = c(0.90, 0.85), 
+        strip.background = element_blank(),
+    strip.text.x = element_text(size = 24, face = "bold"),
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(size=18),
+    axis.title=element_text(size=20,face="bold"),
+    legend.text =element_text(size = 12),
+    legend.title =element_text(size = 12, face = "bold")) 
+
+p4 <- ggplot(summary_data_pred, aes(x = Population, y = Mean_dS, group = BodyRegion, color = BodyRegion)) + facet_wrap(~Predator) +
+  ylim(1, 9) + 
+  geom_point(size = 3, position = position_dodge(width=0.5)) +
+  geom_errorbar(aes(ymin = Lower_dS, ymax = Upper_dS), position = position_dodge(width=0.5), width = 0) + 
+  geom_line(position = position_dodge(width=0.5)) + 
+  scale_color_manual(values = wes_palette("Cavalcanti1")) + #Change color palette here see: https://github.com/karthik/wesanderson
+  xlab("") + 
+  ylab("Chromatic contrast (JND)") +
+  labs(colour = "Body Region") + 
+  theme_bw() +
+  theme(legend.position = c(0.90, 0.85),
+    strip.background = element_blank(),
+    strip.text.x = element_text(size = 24, face = "bold"),
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(size=18),
+    axis.title=element_text(size=20,face="bold"),
+    legend.text =element_text(size = 12),
+    legend.title =element_text(size = 12, face = "bold"))
+
+plot_grid(p4, p3, nrow = 2, ncol = 1, labels = c("A", "B"), label_size = 30,
+  label_fontface = "bold", rel_widths=c(1,1))
+
+
+
+## ----tableS3, tab.cap = "Wald F tests comparing the significance of model parameters for predator models. Wald F tests were computed using robust variance estimators with a Satterthwaite correction to the degrees of freedom. Interactions were first tested, and models refitted, to test the significance of main effects."----
+source("./R/func.R")
+fulltableP <- rbind(Wald_table_PredatorAC,
+                    Wald_table_PredatorCC)
+
+fulltableP <- fulltableP %>% mutate(JND = c("Luminance Contrast", rep("",4), "Chromatc Contrast", rep("",4)),
+                                            p_val = sapply(p_val, function(x) p_value(x))) %>% 
+                                      dplyr::select(JND, Variable, Fstat, df_num, df_denom, p_val)
+
+S4 <- flextable(fulltableP) %>%
+        table_style3(.) %>% fit_to_width(max_width = 7)
+S4
+
+
+## ----tableS4, tab.cap = "Estimated model parameters, standard errors (SE), degrees of freedom (df) along with 95% confidence interval for each parameter from linear mixed effects models. Standard errors were corrected using robust variance estimators and Satterthwaite's degrees of freedom correction was used for calculated significance."----
+source("./R/func.R")
+robust_sc_pred_table <- rbind(robust_PredatorAC,
+                         robust_PredatorCC) %>% 
+                    mutate(JND = c("Luminance Contrast", rep("", 9), 
+                                   "Chromatic Contrast", rep("", 9))) %>%  data.frame()
+
+robust_sc_pred_table$parameter <- rownames(robust_sc_pred_table)
+
+robust_sc_pred_table <- robust_sc_pred_table %>% dplyr::select(JND, parameter, beta, SE, tstat, df_Satt, p_Satt)
+row.names(robust_sc_pred_table) <- 1:nrow(robust_sc_pred_table)
+robust_sc_pred_table <- robust_sc_pred_table %>% mutate(p_Satt = sapply(p_Satt, function(x) p_value(x)))
+
+
+tableS6 <- flextable(robust_sc_pred_table) %>%  table_style5() %>% fit_to_width(max_width = 7)
+tableS6
+
+
+## ----tableS5, tab.cap = "Pairwise comparisons of luminance contrast between Kenyan and Hawaiian chameleon displays to a snake and bird visual system. Four different body regions ('gular', 'midflank', 'tailbase', topflank') are provided along with pairwise Wald tests for contrast significance. The Wald test uses a robust variance correction on the standard errors."----
+source("./R/func.R")
+# Split snakes and birds
+result5_snake <-  result5[grep("snake", result5$hypothesis), ] %>% mutate(Species = c("Snake", rep("",3)))
+ result5_bird <- result5[grep("bird", result5$hypothesis), ] %>% mutate(Species = c("Bird", rep("",3)))
+
+ # Bind together in order
+  final_r5 <- rbind(result5_snake,result5_bird)
+  
+  
+  # Clean
+  final_r5 <- final_r5 %>% 
+              dplyr::select(-test, -delta, -df_num) %>%
+              mutate(hypothesis = gsub("PopBRInt", "", hypothesis),
+                     p_val = sapply(p_val, function(x) p_value(x))) %>%
+              dplyr::select(Species, hypothesis, Fstat, df_denom, p_val, p_val_bonfer)
+
+
+ft5 <- flextable(final_r5) %>%
+        table_style(.) %>% fit_to_width(max_width = 7)
+  
+ ft5
+
+ 
+
+
+## ----tableS6, tab.cap = "Pairwise comparisons of chromatic contrast between Kenyan and Hawaiian chameleon displays to a snake and bird visual system. Four different body regions ('gular', 'midflank', 'tailbase', topflank') are provided along with a pairwise Wald test for contrast significance. The Wald test uses a robust variance correction on the standard errors."----
+source("./R/func.R")
+# Split snakes and birds
+
+result6_snake <- result6[grep("snake", result6$hypothesis), ] %>% mutate(Species = c("Snake", rep("",3)))
+ result6_bird <- result6[grep("bird", result6$hypothesis), ] %>% mutate(Species = c("Bird", rep("",3)))
+
+# Bind together in order
+ final_r6 <- rbind(result6_snake,result6_bird)
+
+ 
+# Clean
+ final_r6 <- final_r6 %>% 
+              dplyr::select(-test, -delta, -df_num) %>%
+              mutate(hypothesis = gsub("PopBRInt", "", hypothesis),
+                     p_val = sapply(p_val, function(x) p_value(x))) %>%
+              dplyr::select(Species, hypothesis, Fstat, df_denom, p_val, p_val_bonfer)
+ 
+ # Table
+ ft6 <- flextable(final_r6) %>%
+        table_style(.) %>% fit_to_width(max_width = 7)
+ 
+ ft6
+
+
+## ----FigS4, fig.align = 'center', fig.width = 13, fig.height = 12, fig.cap = "Local adaptation. All four body regions (gular, mid-flank, tailbase and topflank) are shown averaged across stems and leaves found in their habitat. Mean JNDs are provided along with 95% confidence intervals. **(A & B)** represent male-male contest displays whereas **(C & D)** represent courtship displays."----
+# Courship data
+
+CourtshipBgrd <- read.table("./data/Courtship_5.csv", 
+                        header=TRUE, sep=",", dec=".", strip.white=TRUE)
+
+CourtshipBgrd <- CourtshipBgrd %>% 
+                filter(!BodyRegion == "botflank") %>% 
+                mutate(Background_pop = ifelse(Background2 == "own", Population, if_else(Background2 == "other" & Population == "Hawaii", "Kenya", "Hawaii"))) %>% 
+                as.data.frame() #exclude bottom flank.
+CourtshipBgrd$BodyRegion <- factor(CourtshipBgrd$BodyRegion)
+
+
+# Display data
+DisplayBgrd <- read.table("./data/Display_5.csv", 
+                        header=TRUE, sep=",", dec=".", strip.white=TRUE)
+
+DisplayBgrd <- DisplayBgrd %>% 
+                filter(!BodyRegion == "botflank") %>% 
+                mutate(Background_pop = ifelse(Background2 == "own", Population, if_else(Background2 == "other" & Population == "Hawaii", "Kenya", "Hawaii"))) %>% 
+                as.data.frame() #exclude bottom flank.
+DisplayBgrd$BodyRegion <- factor(DisplayBgrd$BodyRegion) #updates levels for the variable BodyRegion
+
+##########
+# Data
+##########
+courtship_summary <- CourtshipBgrd %>% 
+                    group_by(Population, Background_pop, BodyRegion) %>%
+                summarise( Mean_dS = mean(dS, na.rm = T), 
+                             SE_dS = sd(dS)/sqrt(length(unique(ID))),
+                             Upper_dS = Mean_dS + 1.96*SE_dS,
+                             Lower_dS = Mean_dS - 1.96*SE_dS, 
+                           Mean_dL = mean(dL, na.rm = T), 
+                             SE_dL = sd(dL)/sqrt(length(unique(ID))),
+                             Upper_dL = Mean_dL + 1.96*SE_dL,
+                             Lower_dL = Mean_dL - 1.96*SE_dL) %>% filter(Population == "Hawaii") %>% as.data.frame() %>% mutate(Social_Context = "Courtship")
+
+display_summary <- DisplayBgrd %>%
+                group_by(Population, Background_pop, BodyRegion) %>%
+                summarise( Mean_dS = mean(dS, na.rm = T), 
+                             SE_dS = sd(dS)/sqrt(length(unique(ID))),
+                             Upper_dS = Mean_dS + 1.96*SE_dS,
+                             Lower_dS = Mean_dS - 1.96*SE_dS, 
+                           Mean_dL = mean(dL, na.rm = T), 
+                             SE_dL = sd(dL)/sqrt(length(unique(ID))),
+                             Upper_dL = Mean_dL + 1.96*SE_dL,
+                             Lower_dL = Mean_dL - 1.96*SE_dL) %>% filter(Population == "Hawaii") %>% as.data.frame() %>% mutate(Social_Context = "Male-male contest")
+
+
+##########
+# Plots
+##########
+
+#plots
+pS4.1 <- ggplot(courtship_summary, aes(x = Background_pop, y = Mean_dS, color = BodyRegion, group = BodyRegion)) +
+  geom_point(size = 3, position = position_dodge(width=0.5)) +
+  geom_errorbar(aes(ymin = Lower_dS, ymax = Upper_dS), position = position_dodge(width=0.5), width = 0) + 
+  geom_line(position = position_dodge(width=0.5)) + 
+  scale_color_manual(values = wes_palette("Cavalcanti1")) + #Change color palette here see: https://github.com/karthik/wesanderson
+  xlab("Background Environment") + 
+  ylab("Chromatic contrast (JND)") +
+  theme_bw() +
+  labs(colour = "Body Region") +
+  theme(legend.position = "none",
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(size=18),
+    axis.title=element_text(size=20,face="bold"),
+    legend.text =element_text(size = 12),
+    legend.title =element_text(size = 12, face = "bold")) 
+
+
+pS4.2 <- ggplot(courtship_summary, aes(x = Background_pop, y = Mean_dL, color = BodyRegion, group = BodyRegion)) +
+  geom_point(size = 3, position = position_dodge(width=0.5)) +
+  geom_errorbar(aes(ymin = Lower_dL, ymax = Upper_dL), position = position_dodge(width=0.5), width = 0) + 
+  geom_line(position = position_dodge(width=0.5)) + 
+  scale_color_manual(values = wes_palette("Cavalcanti1")) + #Change color palette here see: https://github.com/karthik/wesanderson
+  xlab("Background Environment") + 
+  ylab("Luminance contrast (JND)") +
+  theme_bw() +
+  labs(colour = "Body Region") +
+  theme(legend.position = "none",
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(size=18),
+    axis.title=element_text(size=20,face="bold"),
+    legend.text =element_text(size = 12),
+    legend.title =element_text(size = 12, face = "bold")) 
+
+pS4.3 <- ggplot(display_summary, aes(x = Background_pop, y = Mean_dL, group = BodyRegion, color = BodyRegion)) +
+  geom_point(size = 3, position = position_dodge(width=0.5)) +
+  geom_errorbar(aes(ymin = Lower_dL, ymax = Upper_dL), position = position_dodge(width=0.5), width = 0) + 
+  geom_line(position = position_dodge(width=0.5)) + 
+  scale_color_manual(values = wes_palette("Cavalcanti1")) + #Change color palette here see: https://github.com/karthik/wesanderson
+  xlab("Background Environment") + 
+  ylab("Luminance contrast (JND)") +
+  theme_bw() +
+  theme(legend.position = c(0.80, 0.85),
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(size=18),
+    axis.title=element_text(size=20,face="bold"),
+    legend.text =element_text(size = 12),
+    legend.title =element_text(size = 12, face = "bold")) 
+
+pS4.4 <- ggplot(display_summary, aes(x = Background_pop, y = Mean_dS, group = BodyRegion, color = BodyRegion)) +
+  geom_point(size = 3, position = position_dodge(width=0.5)) +
+  geom_errorbar(aes(ymin = Lower_dS, ymax = Upper_dS), position = position_dodge(width=0.5), width = 0) + 
+  geom_line(position = position_dodge(width=0.5)) + 
+  scale_color_manual(values = wes_palette("Cavalcanti1")) + #Change color palette here see: https://github.com/karthik/wesanderson
+  xlab("Background Environment") + 
+  ylab("Chromatic contrast (JND)") +
+  theme_bw() +
+  theme(legend.position = "none",
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(size=18),
+    axis.title=element_text(size=20,face="bold"),
+    legend.text =element_text(size = 12),
+    legend.title =element_text(size = 12, face = "bold")) 
+
+#pdf(file="./output/figures/Figure2.pdf", height = 10, width = 18)
+plot_grid(pS4.4, pS4.3, pS4.1, pS4.2 , labels = c("A", "B", "C", "D"), label_size = 30,
+  label_fontface = "bold", rel_widths=c(1,1))
+
+
+
+## ----tableS7, tab.cap = "Estimated model parameters, standard errors (SE), degrees of freedom (df), and 95% confidence intervals for each parameter. Main effects and interaction models are presented. Only main effect models are presented for luminance contrast (see text for details), whereas interaction models are presented for chromatic contrast. Pairwise contrasts are presented for chromatic contrast models for ease of interpretation."----
+source("./R/func.R")
+table7 <- rbind(robust_localAdapt_DispBgrdAC,
+                robust_DispBgrdCC,
+                robust_CourtshipAC,
+                robust_CourtshipCC) %>% as.data.frame()
+
+table7$Paramater <- rownames(table7)
+rownames(table7) <- NULL
+
+table7 <- table7 %>% 
+              mutate(Context = c("Male-Male Display", rep("", 14), "Courtship Display", rep("", 14)),
+                     JND = c("Luminance Contrast", rep("", 5), "Chromatic Contrast", rep("", 8), 
+                             "Luminance Contrast", rep("", 5), "Chromatic Contrast", rep("", 8))) %>% 
+                      dplyr::select(Context, JND, Paramater, beta, SE, df, CI_L, CI_U)
+
+Table7 <- flextable(table7) %>% table_style10() %>% fit_to_width(max_width = 7)
+Table7
+
+
+## ----tableS8, tab.cap = "Pairwise Wald F tests comparing changes in chromatic contrast between different body regions for Hawaiian lizards against both Hawaiian and Kenyan backgrounds during male-male and courtship displays. F statistic, degrees of freedom (DF) and p-values are provided (p). A Bonferroni correction to p-values is also provided to control for multiple testing."----
+
+source("./R/func.R")
+tab8 <- rbind(result_DisplayBgrd_pop_back_regionCC,
+              result_CourtshipBgrd_pop_back_BR_CC) %>%  as.data.frame()
+
+tab8 <- tab8 %>% mutate(Context = c("Male-Male Display", rep("",3), "Courtship Display", rep("",3)),
+                        p_val = sapply(p_val, function(x) p_value(x))) %>% 
+                        dplyr::select(Context,c(1:8), -test, -delta, -df_num)
+
+Table8 <- flextable(tab8) %>% table_style11() %>% fit_to_width(max_width = 7)
+Table8
+
+
+## ---- results='hide'--------------------------------------------------------------------------------------
+#########################################################
+# Comparing displays
+#########################################################
+source("./R/func.R")
+ # Load data from Devi
+       Display_bird_diff <- read_excel("data/Display_bird_diff.xlsx")
+       
+       Diff <- Display_bird_diff 
+
+      names(Diff) # header rows R is reading
+
+    Diff$BodyRegion <- factor(Diff$BodyRegion) #updates levels for the variable BodyRegion
+    str(diff.difftime) #how R is reading the stucture of the object, double checking the levels for body region after updating levels
+    Diff$ID <- factor(Diff$ID) #updates levels for the variable ID
+    str(diff.difftime) #how R is reading the stucture of the object, double checking the levels for body region after updating levels
+
+# Center SVL to make intercept interpretable
+    Diff$sc_SVL <- with(Diff, as.vector(scale(SVL, scale=FALSE)))
+
+# Filter missing SVL data
+  Diff <- Diff %>% filter(!is.na(SVL)) # filter out misssing SVL data
+
+# create as factor
+    Diff$BodyRegion <- factor(Diff$BodyRegion)
+# Add interaction for contrasts
+    Diff$Pop_BodReg <- with(Diff, interaction(Population, BodyRegion))
+    
+# Sample sizes
+    N_diff <- data.frame(Diff %>% group_by(Population) %>% summarise(n = length(unique(ID))))
+    
+##################
+# Achromatic contrast
+##################
+    
+# Fit model testing this idea above. First just test for body region interaction. But, needs RVE
+    Diff_dL_BR_int <- lmer(dL_diff_abs ~ sc_SVL + Population + BodyRegion + BodyRegion:Population + (1|ID), data=Diff)
+    summary(Diff_dL_BR_int)
+    
+    # Significance of interaction
+      robust_Diff_dl_int <- Wald_test(Diff_dL_BR_int, constraints = constrain_zero(7:9), 
+                                    cluster = Diff$ID, vcov = "CR2")
+# Main effects BR
+    Diff_dL_BR_me <- lmer(dL_diff_abs ~ sc_SVL + Population + BodyRegion  + (1|ID), data=Diff)
+    summary(Diff_dL_BR_me)
+    
+    # Sig of Body Region
+        robust_Diff_dL_BR_me <- Wald_test(Diff_dL_BR_me, constraints = constrain_zero(4:6), 
+                                    cluster = Diff$ID, vcov = "CR2")
+  
+# Then fit marginalised model so that body regions are averaged
+  Diff_dL <- lmer(dL_diff_abs ~ sc_SVL + Population + (1|ID), data=Diff)
+  summary(Diff_dL)
+
+# Check residuals of model
+ # hist(residuals(Diff_dL))
+ # plot(Diff_dL) # Some patterns in residuals, but likely driven by the absolute. Note that results are essentially the same if using absolute or raw, signed values. 
+  
+# Refit mdoel using robust standard errors
+  robust_Diff_dl_BR <- clubSandwich::conf_int(Diff_dL, cluster = Diff$ID, vcov =  "CR2") 
+
+# Wald tests - Test significance of pop dofferences and SVL differences averaging over body regions
+   
+  robust_Diff_dl_pop <- Wald_test(Diff_dL, constraints = constrain_zero(3), 
+                                  cluster = Diff$ID, vcov = "CR2")
+   robust_Diff_dl_svl <- Wald_test(Diff_dL, constraints = constrain_zero(2), 
+                                  cluster = Diff$ID, vcov = "CR2")
+
+ # Get contrasts to understand the specific changes better. Refit model in slight different form. This is essentially an interaction model anyway because it's estimating the mean for Hawaiian and Kenyan background for each body region. The model above is just a contrast-based model.
+
+          Diff_pop_back_BR_AC <- lmer(dL_diff_abs ~ -1 +  sc_SVL + Pop_BodReg + (1|ID), data = Diff) 
+
+     # Fit Robust model
+          robust_Diff_pop_back_BR_AC <- clubSandwich::conf_int(Diff_pop_back_BR_AC, 
+                                                              cluster = Diff$ID, vcov =  "CR2")
+  
+     # Contrasts hypothesis tests, but use RVE 
+          result_robust_Diff_pop_back_BR_AC <- Wald_test(Diff_pop_back_BR_AC, 
+                                                   constraints = constrain_pairwise(c(2:9)),
+                                                   cluster = Diff$ID,
+                                                   vcov="CR2", tidy = TRUE)
+             result_robust_Diff_pop_back_BR_AC$p_val_bonfer <- sapply(p.adjust(result_robust_Diff_pop_back_BR_AC$p_val, "bonferroni"), 
+                                                                    function(x) p_value(x))
+      
+       # Grab contrasts that we need from the robust esatimtes
+      string <- c("Pop_BodRegKenya.gular - Pop_BodRegHawaii.gular|Pop_BodRegKenya.midflank - Pop_BodRegHawaii.midflank|Pop_BodRegKenya.tailbase - Pop_BodRegHawaii.tailbase|Pop_BodRegKenya.topflank - Pop_BodRegHawaii.topflank")
+      
+         result_robust_Diff_pop_back_BR_AC <- result_robust_Diff_pop_back_BR_AC[
+                                            grep(string, result_robust_Diff_pop_back_BR_AC$hypothesis),]
+   
+   
+##################
+# Chromatic contrast
+##################  
+   
+  # Fit model testing this idea above. First just test for body region interaction. But, needs RVE
+    Diff_dS_BR_int <- lmer(dS_diff_abs ~ sc_SVL + Population + BodyRegion + BodyRegion:Population + (1|ID), data=Diff)
+    summary(Diff_dS_BR_int)
+    
+    # Significance of interaction
+      robust_Diff_dS_int <- Wald_test(Diff_dS_BR_int, constraints = constrain_zero(7:9), 
+                                    cluster = Diff$ID, vcov = "CR2")
+  # Main effects BR
+    Diff_dS_BR_me <- lmer(dS_diff_abs ~ sc_SVL + Population + BodyRegion  + (1|ID), data=Diff)
+    summary(Diff_dS_BR_me)
+    
+    # Sig of Body Region
+      robust_Diff_dS_BR_me <- Wald_test(Diff_dS_BR_me, constraints = constrain_zero(4:6), 
+                                    cluster = Diff$ID, vcov = "CR2")
+   
+# Fit model testing this idea above
+  Diff_dS <- lmer(dS_diff_abs ~  SVL + Population + (1|ID), data=Diff)
+  summary(Diff_dS)
+
+# Check residuals of model
+  #hist(residuals(Diff_dS))
+  #plot(Diff_dS) # Some patterns in residuals, but likely driven by the absolute. Note that results are essentially the same if using absolute or raw, signed values. 
+  
+# Refit mdoel using robust standard errors
+  robust_Diff_dS <- clubSandwich::conf_int(Diff_dS, cluster = Diff$ID, vcov =  "CR2") 
+
+# Wald tests - Test significance of pop dofferences and SVL differences averaging over body regions
+   robust_Diff_dS_pop <- Wald_test(Diff_dS, constraints = constrain_zero(3), 
+                                  cluster = Diff$ID, vcov = "CR2")
+   robust_Diff_dS_svl <- Wald_test(Diff_dS, constraints = constrain_zero(2), 
+                                  cluster = Diff$ID, vcov = "CR2")
+   
+   # Get contrasts to understand the specific changes better. Refit model in slight different form. This is essentially an interaction model anyway because it's estimating the mean for Hawaiian and Kenyan background for each body region. The model above is just a contrast-based model.
+
+          Diff_pop_back_BR_CC <- lmer(dS_diff_abs ~ -1 +  sc_SVL + Pop_BodReg + (1|ID), data = Diff) 
+
+     # Fit Robust model
+          robust_Diff_pop_back_BR_CC <- clubSandwich::conf_int(Diff_pop_back_BR_CC, 
+                                                              cluster = Diff$ID, vcov =  "CR2")
+  
+     # Contrasts hypothesis tests, but use RVE 
+          result_robust_Diff_pop_back_BR_CC <- Wald_test(Diff_pop_back_BR_CC, 
+                                                   constraints = constrain_pairwise(c(2:9)),
+                                                   cluster = Diff$ID,
+                                                   vcov="CR2", tidy = TRUE)
+             result_robust_Diff_pop_back_BR_CC$p_val_bonfer <- sapply(p.adjust(result_robust_Diff_pop_back_BR_CC$p_val, "bonferroni"), 
+                                                                    function(x) p_value(x))
+      
+       # Grab contrasts that we need from the robust esatimtes
+      string <- c("Pop_BodRegKenya.gular - Pop_BodRegHawaii.gular|Pop_BodRegKenya.midflank - Pop_BodRegHawaii.midflank|Pop_BodRegKenya.tailbase - Pop_BodRegHawaii.tailbase|Pop_BodRegKenya.topflank - Pop_BodRegHawaii.topflank")
+      
+         result_robust_Diff_pop_back_BR_CC <- result_robust_Diff_pop_back_BR_CC[
+                                            grep(string, result_robust_Diff_pop_back_BR_CC$hypothesis),]
+   
+   
+
+
+## ---- figDisplayPred, fig.align = 'center', fig.width = 13, fig.height = 7, fig.cap = " Extent of color plasticity between display (male-male contest) and anti-predator (bird) color states (absolute difference in JNDs between states) for Hawaiian (*n* = 30) and Kenyan (*n* = 13) chameleons. **(A)** Average chromatic and **(B)** luminance contrast are provided for each body region"----
+##########
+# Data
+##########
+abs_display_pred <- Diff %>%
+                group_by(Population, BodyRegion) %>%
+                summarise( Mean_dS_abs = mean(dS_diff_abs, na.rm = T), 
+                             SE_dS_abs = sd(dS_diff_abs)/sqrt(length(unique(ID))),
+                             Upper_dS_abs = Mean_dS_abs + 1.96*SE_dS_abs,
+                             Lower_dS_abs = Mean_dS_abs - 1.96*SE_dS_abs, 
+                           Mean_dL_abs = mean(dL_diff_abs, na.rm = T), 
+                             SE_dL_abs = sd(dL_diff_abs)/sqrt(length(unique(ID))),
+                             Upper_dL_abs = Mean_dL_abs + 1.96*SE_dL_abs,
+                             Lower_dL_abs = Mean_dL_abs - 1.96*SE_dL_abs) %>% as.data.frame()
+##########
+# Plots
+##########
+
+#plots
+p1 <- ggplot(abs_display_pred, aes(x = Population, y = Mean_dS_abs, color = BodyRegion, group = BodyRegion)) +
+  geom_point(size = 3, position = position_dodge(width=0.5)) +
+  geom_errorbar(aes(ymin = Lower_dS_abs, ymax = Upper_dS_abs), position = position_dodge(width=0.5), width = 0) + 
+  geom_line(position = position_dodge(width=0.5)) + 
+  scale_color_manual(values = wes_palette("Cavalcanti1")) + #Change color palette here see: https://github.com/karthik/wesanderson
+  xlab("Population") + 
+  ylab("Chromatic Change (absolute JND)") +
+  theme_bw() +
+  labs(colour = "Body Region") +
+  theme(legend.position = "none",
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(size=18),
+    axis.title=element_text(size=20,face="bold"),
+    legend.text =element_text(size = 12),
+    legend.title =element_text(size = 12, face = "bold")) 
+
+
+p2 <- ggplot(abs_display_pred, aes(x = Population, y = Mean_dL_abs, color = BodyRegion, group = BodyRegion)) +
+  geom_point(size = 3, position = position_dodge(width=0.5)) +
+  geom_errorbar(aes(ymin = Lower_dL_abs, ymax = Upper_dL_abs), position = position_dodge(width=0.5), width = 0) + 
+  geom_line(position = position_dodge(width=0.5)) + 
+  scale_color_manual(values = wes_palette("Cavalcanti1")) + #Change color palette here see: https://github.com/karthik/wesanderson
+  xlab("Population") + 
+  ylab("Luminance Change (absolute JND)") +
+  theme_bw() +
+  labs(colour = "Body Region") +
+  theme(legend.position = c(0.80, 0.85),
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(size=18),
+    axis.title=element_text(size=20,face="bold"),
+    legend.text =element_text(size = 12),
+    legend.title =element_text(size = 12, face = "bold")) 
+
+#pdf(file="./output/figures/Figure2.pdf", height = 10, width = 18)
+plot_grid(p1, p2, labels = c("A", "B"), label_size = 30,
+  label_fontface = "bold", rel_widths=c(1,1))
+
+
+## ----tableS9, tab.cap = "Estimated model parameters, standard errors (SE), degrees of freedom (df) along with 95% confidence interval for each parameter. Full interaction models are presented for chromatic and luminance change (absolute JND)."----
+source("./R/func.R")
+tab9 <- read.csv("./output/tables/Table5_MS.csv")
+
+Table9 <- flextable(tab9) %>% table_style13() %>% fit_to_width(max_width = 7)
+Table9
+
+
+## ----tableS10, tab.cap = "Pairwise Wald F tests for chromatic and luminance change between different body regions for color plasticity between display (male-male contest) and anti-predator (bird) color states (absolute difference in JNDs between states) for Hawaiian (*n* = 30) and Kenyan (*n* = 13) chameleons. F statistic, degrees of freedom (DF) and p-values are provided (p). A Bonferroni correction to p-values is also provided to control for multiple testing."----
+source("./R/func.R")
+tabS10 <- rbind(result_robust_Diff_pop_back_BR_AC, result_robust_Diff_pop_back_BR_CC)
+
+tabS10 <- tabS10 %>% mutate(VisRealm = c("Luminance Change", rep("",3), "Chromatic Change", rep("",3))) %>% 
+                        dplyr::select(VisRealm, hypothesis, Fstat, df_denom, p_val, p_val_bonfer, -test, -delta, -df_num)
+
+Tables10 <- flextable(tabS10) %>% table_style14() %>% fit_to_width(max_width = 7)
+Tables10
+
